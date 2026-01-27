@@ -1,12 +1,13 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { StyleSheet, View, Pressable, Text, PanResponder } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path, Defs, Pattern, Rect } from 'react-native-svg';
 import { Point, StrokeMode, pointsToPath } from '../utils/strokeUtils';
 import { KanjiVGData, CanvasMode } from '../data/kanjiVGTypes';
 import { validateKanji, ValidationResult } from '../utils/validationUtils';
 import { getKanjiVGData } from '../data/kanjiVGData';
 import { TraceGuide } from './TraceGuide';
 import { StrokeAnimator } from './StrokeAnimator';
+import { useTheme, spacing, borderRadius, typography, getShadow } from '../theme';
 
 interface Stroke {
   path: string;
@@ -21,24 +22,26 @@ interface KanjiCanvasProps {
   strokeColor?: string;
   strokeWidth?: number;
   expectedKanji?: KanjiVGData;
-  /** Canvas mode: practice (free draw), demo (animated playback), trace (guide overlay) */
   canvasMode?: CanvasMode;
 }
 
-const STROKE_MODES: { mode: StrokeMode; label: string }[] = [
-  { mode: 'basic', label: 'Basic' },
-  { mode: 'smooth', label: 'Smooth' },
-  { mode: 'brush', label: 'Brush' },
+const STROKE_MODES: { mode: StrokeMode; label: string; icon: string }[] = [
+  { mode: 'basic', label: 'Basic', icon: '—' },
+  { mode: 'smooth', label: 'Smooth', icon: '∿' },
+  { mode: 'brush', label: 'Brush', icon: '🖌' },
 ];
 
 export function KanjiCanvas({
   width = 300,
   height = 300,
-  strokeColor = '#000000',
+  strokeColor,
   strokeWidth = 8,
   expectedKanji,
   canvasMode = 'practice',
 }: KanjiCanvasProps) {
+  const { colors } = useTheme();
+  const effectiveStrokeColor = strokeColor ?? colors.primary;
+
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [currentPath, setCurrentPath] = useState<string>('');
   const [currentIsFilled, setCurrentIsFilled] = useState(false);
@@ -47,18 +50,16 @@ export function KanjiCanvas({
 
   const pointsRef = useRef<Point[]>([]);
   const pointsHistoryRef = useRef<Point[][]>([]);
-  const strokeColorRef = useRef(strokeColor);
+  const strokeColorRef = useRef(effectiveStrokeColor);
   const strokeWidthRef = useRef(strokeWidth);
   const strokeModeRef = useRef(strokeMode);
 
-  // Get KanjiVG data for the current kanji
   const kanjiVGData = useMemo(() => {
     if (!expectedKanji) return undefined;
     return getKanjiVGData(expectedKanji.character);
   }, [expectedKanji]);
 
-  // Keep refs in sync with props/state
-  strokeColorRef.current = strokeColor;
+  strokeColorRef.current = effectiveStrokeColor;
   strokeWidthRef.current = strokeWidth;
   strokeModeRef.current = strokeMode;
 
@@ -107,7 +108,6 @@ export function KanjiCanvas({
               isFilled,
             },
           ]);
-          // Store raw points for validation
           pointsHistoryRef.current.push([...pointsRef.current]);
           pointsRef.current = [];
           setCurrentPath('');
@@ -147,26 +147,33 @@ export function KanjiCanvas({
     if (!validationResult) return null;
 
     const { strokeCountMatch, expectedStrokes, actualStrokes, strokeDirectionMatches, overallMatch } = validationResult;
-
     const matchedDirections = strokeDirectionMatches.filter(Boolean).length;
     const totalDirections = strokeDirectionMatches.length;
 
     return (
-      <View style={[styles.validationContainer, overallMatch ? styles.validationSuccess : styles.validationError]}>
-        <Text style={styles.validationTitle}>
-          {overallMatch ? 'Good!' : 'Try Again'}
+      <View
+        style={[
+          styles.validationContainer,
+          {
+            backgroundColor: overallMatch ? colors.successLight : colors.errorLight,
+            borderColor: overallMatch ? colors.success : colors.error,
+          },
+        ]}
+      >
+        <Text style={[styles.validationTitle, { color: overallMatch ? colors.success : colors.error }]}>
+          {overallMatch ? 'Great work!' : 'Keep practicing'}
         </Text>
-        <Text style={styles.validationText}>
+        <Text style={[styles.validationText, { color: colors.primary }]}>
           Strokes: {actualStrokes}/{expectedStrokes} {strokeCountMatch ? '✓' : '✗'}
         </Text>
-        <Text style={styles.validationText}>
+        <Text style={[styles.validationText, { color: colors.primary }]}>
           Directions: {matchedDirections}/{totalDirections} matched
         </Text>
       </View>
     );
   };
 
-  // Demo mode: show animated stroke playback
+  // Demo mode
   if (canvasMode === 'demo' && kanjiVGData) {
     return (
       <View style={styles.container}>
@@ -179,54 +186,91 @@ export function KanjiCanvas({
     );
   }
 
-  // Practice or Trace mode with drawing canvas
   const allowDrawing = canvasMode !== 'demo';
 
   return (
     <View style={styles.container}>
-      {/* Stroke Mode Selector - only show in practice/trace modes */}
+      {/* Stroke Mode Selector */}
       {allowDrawing && (
-        <View style={styles.modeSelector}>
-          {STROKE_MODES.map(({ mode, label }) => (
-            <Pressable
-              key={mode}
-              style={[
-                styles.modeButton,
-                strokeMode === mode && styles.modeButtonActive,
-              ]}
-              onPress={() => setStrokeMode(mode)}
-            >
-              <Text
-                style={[
-                  styles.modeButtonText,
-                  strokeMode === mode && styles.modeButtonTextActive,
+        <View
+          style={[
+            styles.modeSelector,
+            { backgroundColor: colors.surface, ...getShadow(colors, 'low') },
+          ]}
+        >
+          {STROKE_MODES.map(({ mode, label, icon }) => {
+            const isActive = strokeMode === mode;
+            return (
+              <Pressable
+                key={mode}
+                style={({ pressed }) => [
+                  styles.modeButton,
+                  {
+                    backgroundColor: isActive ? colors.secondary : 'transparent',
+                    opacity: pressed ? 0.8 : 1,
+                  },
                 ]}
+                onPress={() => setStrokeMode(mode)}
               >
-                {label}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  style={[
+                    styles.modeButtonIcon,
+                    { color: isActive ? '#FFFFFF' : colors.muted },
+                  ]}
+                >
+                  {icon}
+                </Text>
+                <Text
+                  style={[
+                    styles.modeButtonText,
+                    { color: isActive ? '#FFFFFF' : colors.secondary },
+                  ]}
+                >
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       )}
 
+      {/* Canvas */}
       <View
-        style={[styles.canvasContainer, { width, height }]}
+        style={[
+          styles.canvasContainer,
+          {
+            width,
+            height,
+            backgroundColor: colors.canvas,
+            ...getShadow(colors, 'medium'),
+          },
+        ]}
         {...(allowDrawing ? panResponder.panHandlers : {})}
       >
         <Svg width={width} height={height} style={styles.svg}>
-          {/* Trace guide - show faded KanjiVG strokes in trace mode */}
+          {/* Washi paper texture pattern */}
+          <Defs>
+            <Pattern id="washiPattern" patternUnits="userSpaceOnUse" width="4" height="4">
+              <Rect width="4" height="4" fill={colors.canvas} />
+              <Rect x="0" y="0" width="1" height="1" fill={colors.border} opacity="0.15" />
+              <Rect x="2" y="2" width="1" height="1" fill={colors.border} opacity="0.1" />
+            </Pattern>
+          </Defs>
+          <Rect width={width} height={height} fill="url(#washiPattern)" />
+
+          {/* Trace guide */}
           {canvasMode === 'trace' && kanjiVGData && (
             <TraceGuide
               data={kanjiVGData}
               width={width}
               height={height}
-              opacity={0.25}
-              strokeColor="#888"
+              opacity={0.2}
+              strokeColor={colors.muted}
               strokeWidth={6}
             />
           )}
 
-          {/* Render completed user strokes */}
+          {/* Completed strokes */}
           {strokes.map((stroke, index) =>
             stroke.isFilled ? (
               <Path
@@ -247,14 +291,15 @@ export function KanjiCanvas({
               />
             )
           )}
-          {/* Render current stroke being drawn */}
+
+          {/* Current stroke */}
           {currentPath &&
             (currentIsFilled ? (
-              <Path d={currentPath} fill={strokeColor} stroke="none" />
+              <Path d={currentPath} fill={effectiveStrokeColor} stroke="none" />
             ) : (
               <Path
                 d={currentPath}
-                stroke={strokeColor}
+                stroke={effectiveStrokeColor}
                 strokeWidth={strokeWidth}
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -264,30 +309,72 @@ export function KanjiCanvas({
         </Svg>
       </View>
 
+      {/* Action Buttons */}
       {allowDrawing && (
         <View style={styles.buttons}>
-          <Pressable style={styles.button} onPress={handleUndo}>
-            <Text style={styles.buttonText}>Undo</Text>
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              {
+                backgroundColor: colors.surface,
+                opacity: pressed ? 0.8 : 1,
+                ...getShadow(colors, 'low'),
+              },
+            ]}
+            onPress={handleUndo}
+          >
+            <Text style={[styles.buttonIcon, { color: colors.secondary }]}>↩</Text>
+            <Text style={[styles.buttonText, { color: colors.secondary }]}>Undo</Text>
           </Pressable>
-          <Pressable style={styles.button} onPress={handleClear}>
-            <Text style={styles.buttonText}>Clear</Text>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              {
+                backgroundColor: colors.surface,
+                opacity: pressed ? 0.8 : 1,
+                ...getShadow(colors, 'low'),
+              },
+            ]}
+            onPress={handleClear}
+          >
+            <Text style={[styles.buttonIcon, { color: colors.secondary }]}>✕</Text>
+            <Text style={[styles.buttonText, { color: colors.secondary }]}>Clear</Text>
           </Pressable>
+
           {expectedKanji && (
-            <Pressable style={[styles.button, styles.checkButton]} onPress={handleCheck}>
-              <Text style={styles.buttonText}>Check</Text>
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                styles.checkButton,
+                {
+                  backgroundColor: colors.accent,
+                  opacity: pressed ? 0.8 : 1,
+                  ...getShadow(colors, 'medium'),
+                },
+              ]}
+              onPress={handleCheck}
+            >
+              <Text style={[styles.buttonIcon, { color: '#FFFFFF' }]}>✓</Text>
+              <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>Check</Text>
             </Pressable>
           )}
         </View>
       )}
 
-      {allowDrawing && <Text style={styles.strokeCount}>Strokes: {strokes.length}</Text>}
+      {/* Stroke Count */}
+      {allowDrawing && (
+        <Text style={[styles.strokeCount, { color: colors.muted }]}>
+          {strokes.length} {strokes.length === 1 ? 'stroke' : 'strokes'}
+        </Text>
+      )}
 
       {renderValidationMessage()}
     </View>
   );
 }
 
-// Separate component for demo mode to manage its own animation state with replay
+// Demo mode component
 function StrokeAnimatorWithReplay({
   kanjiVGData,
   width,
@@ -297,6 +384,7 @@ function StrokeAnimatorWithReplay({
   width: number;
   height: number;
 }) {
+  const { colors } = useTheme();
   const [key, setKey] = useState(0);
 
   const handleReplay = useCallback(() => {
@@ -305,21 +393,42 @@ function StrokeAnimatorWithReplay({
 
   return (
     <>
-      <View style={[styles.canvasContainer, { width, height }]}>
+      <View
+        style={[
+          styles.canvasContainer,
+          {
+            width,
+            height,
+            backgroundColor: colors.canvas,
+            ...getShadow(colors, 'medium'),
+          },
+        ]}
+      >
         <StrokeAnimator
           key={key}
           data={kanjiVGData}
           width={width}
           height={height}
-          strokeColor="#333"
+          strokeColor={colors.primary}
           strokeWidth={6}
           autoPlay={true}
           showControls={false}
         />
       </View>
       <View style={styles.buttons}>
-        <Pressable style={[styles.button, styles.checkButton]} onPress={handleReplay}>
-          <Text style={styles.buttonText}>Replay</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            {
+              backgroundColor: colors.accent,
+              opacity: pressed ? 0.8 : 1,
+              ...getShadow(colors, 'medium'),
+            },
+          ]}
+          onPress={handleReplay}
+        >
+          <Text style={[styles.buttonIcon, { color: '#FFFFFF' }]}>↻</Text>
+          <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>Replay</Text>
         </Pressable>
       </View>
     </>
@@ -332,84 +441,74 @@ const styles = StyleSheet.create({
   },
   modeSelector: {
     flexDirection: 'row',
-    marginBottom: 12,
-    gap: 8,
+    marginBottom: spacing.md,
+    padding: spacing.xs,
+    borderRadius: borderRadius.full,
+    gap: spacing.xs,
   },
   modeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 16,
-    backgroundColor: '#e0e0e0',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    gap: spacing.xs,
   },
-  modeButtonActive: {
-    backgroundColor: '#333',
+  modeButtonIcon: {
+    fontSize: 14,
   },
   modeButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
-  },
-  modeButtonTextActive: {
-    color: '#fff',
+    fontSize: typography.caption.fontSize,
+    fontWeight: typography.button.fontWeight,
   },
   canvasContainer: {
-    borderWidth: 2,
-    borderColor: '#333',
-    borderRadius: 8,
+    borderRadius: borderRadius.lg,
     overflow: 'hidden',
-    backgroundColor: '#fff',
   },
   svg: {
     backgroundColor: 'transparent',
   },
   buttons: {
     flexDirection: 'row',
-    marginTop: 16,
-    gap: 12,
+    marginTop: spacing.lg,
+    gap: spacing.md,
   },
   button: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: '#333',
-    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.xl,
+    gap: spacing.sm,
   },
-  checkButton: {
-    backgroundColor: '#2563eb',
-  },
-  buttonText: {
-    color: '#fff',
+  checkButton: {},
+  buttonIcon: {
     fontSize: 16,
     fontWeight: '600',
   },
+  buttonText: {
+    fontSize: typography.button.fontSize,
+    fontWeight: typography.button.fontWeight,
+  },
   strokeCount: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#666',
+    marginTop: spacing.md,
+    fontSize: typography.caption.fontSize,
   },
   validationContainer: {
-    marginTop: 12,
-    padding: 12,
-    borderRadius: 8,
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
     alignItems: 'center',
     minWidth: 200,
-  },
-  validationSuccess: {
-    backgroundColor: '#dcfce7',
-    borderColor: '#16a34a',
-    borderWidth: 1,
-  },
-  validationError: {
-    backgroundColor: '#fee2e2',
-    borderColor: '#dc2626',
     borderWidth: 1,
   },
   validationTitle: {
     fontSize: 18,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   validationText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: typography.body.fontSize,
   },
 });

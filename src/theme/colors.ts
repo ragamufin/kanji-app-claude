@@ -1,0 +1,66 @@
+// Zen Ink Color System
+// Inspired by Japanese calligraphy and modern zen aesthetics
+
+export const lightColors = {
+  // Backgrounds
+  background: '#FAF8F5',      // warm cream, like aged paper
+  surface: '#FFFFFF',         // white
+  canvas: '#FFF9F0',          // soft cream with warmth
+
+  // Text & Primary
+  primary: '#2D2D2D',         // rich black ink
+  secondary: '#6B5B4F',       // warm brown, like aged wood
+
+  // Accents
+  accent: '#D4594B',          // vermillion red, traditional hanko seal
+  accentLight: '#E8756A',     // lighter vermillion for hover states
+
+  // Semantic
+  success: '#4A7C59',         // matcha green
+  successLight: '#dcfce7',    // light green background
+  error: '#C45B4D',           // soft red
+  errorLight: '#fee2e2',      // light red background
+
+  // Neutral
+  muted: '#9C9184',           // warm gray
+  border: '#E8E4DF',          // subtle warm border
+  borderStrong: '#D4CFC8',    // stronger border
+
+  // Shadows
+  shadow: 'rgba(45, 45, 45, 0.08)',
+  shadowMedium: 'rgba(45, 45, 45, 0.12)',
+  shadowStrong: 'rgba(45, 45, 45, 0.16)',
+};
+
+export const darkColors = {
+  // Backgrounds
+  background: '#1A1918',      // deep warm black
+  surface: '#242220',         // elevated surface
+  canvas: '#2A2725',          // dark paper feel
+
+  // Text & Primary
+  primary: '#F5F2ED',         // off-white
+  secondary: '#B8A99A',       // warm tan
+
+  // Accents
+  accent: '#E8756A',          // soft vermillion
+  accentLight: '#F08A7F',     // lighter vermillion
+
+  // Semantic
+  success: '#6B9B7A',         // muted green
+  successLight: '#2D3D32',    // dark green background
+  error: '#D47A6F',           // soft red
+  errorLight: '#3D2A28',      // dark red background
+
+  // Neutral
+  muted: '#6B645C',           // muted warm gray
+  border: '#3A3634',          // subtle border
+  borderStrong: '#4A4542',    // stronger border
+
+  // Shadows
+  shadow: 'rgba(0, 0, 0, 0.2)',
+  shadowMedium: 'rgba(0, 0, 0, 0.3)',
+  shadowStrong: 'rgba(0, 0, 0, 0.4)',
+};
+
+export type ColorScheme = typeof lightColors;
