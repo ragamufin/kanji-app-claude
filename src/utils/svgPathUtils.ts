@@ -4,20 +4,25 @@
 
 import { StrokeDirection, Quadrant } from '../data/kanjiVGTypes';
 
-interface PathEndpoints {
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface PathAnalysis {
   startX: number;
   startY: number;
   endX: number;
   endY: number;
+  /** Key waypoints along the path for detecting bends */
+  waypoints: Point[];
 }
 
 /**
- * Parse an SVG path string to extract start and end coordinates.
- * Handles M (moveto), L (lineto), C (curveto), c (relative curveto), and other commands.
+ * Parse an SVG path string to extract start, end, and waypoints.
+ * Waypoints are collected at each command endpoint to detect bends.
  */
-export function parsePathEndpoints(path: string): PathEndpoints {
-  // Extract all numeric values as coordinate pairs
-  // Match commands and their parameters
+export function parsePathWithWaypoints(path: string): PathAnalysis {
   const commandRegex = /([MmLlHhVvCcSsQqTtAaZz])([^MmLlHhVvCcSsQqTtAaZz]*)/g;
   let match;
 
@@ -26,14 +31,21 @@ export function parsePathEndpoints(path: string): PathEndpoints {
   let currentX = 0;
   let currentY = 0;
   let hasStart = false;
+  const waypoints: Point[] = [];
+
+  const addWaypoint = () => {
+    waypoints.push({ x: currentX, y: currentY });
+  };
 
   while ((match = commandRegex.exec(path)) !== null) {
     const command = match[1];
-    const params = match[2]
-      .trim()
-      .split(/[\s,]+/)
-      .filter((s) => s.length > 0)
-      .map(parseFloat);
+    // Parse SVG path numbers - handles concatenated numbers like "17.46-2.17"
+    const numRegex = /-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/g;
+    const params: number[] = [];
+    let numMatch;
+    while ((numMatch = numRegex.exec(match[2])) !== null) {
+      params.push(parseFloat(numMatch[0]));
+    }
 
     switch (command) {
       case 'M': // Absolute moveto
@@ -45,10 +57,12 @@ export function parsePathEndpoints(path: string): PathEndpoints {
             startY = currentY;
             hasStart = true;
           }
+          addWaypoint();
           // Additional pairs are implicit lineto
           for (let i = 2; i + 1 < params.length; i += 2) {
             currentX = params[i];
             currentY = params[i + 1];
+            addWaypoint();
           }
         }
         break;
@@ -61,9 +75,11 @@ export function parsePathEndpoints(path: string): PathEndpoints {
             startY = currentY;
             hasStart = true;
           }
+          addWaypoint();
           for (let i = 2; i + 1 < params.length; i += 2) {
             currentX += params[i];
             currentY += params[i + 1];
+            addWaypoint();
           }
         }
         break;
@@ -71,120 +87,116 @@ export function parsePathEndpoints(path: string): PathEndpoints {
         for (let i = 0; i + 1 < params.length; i += 2) {
           currentX = params[i];
           currentY = params[i + 1];
+          addWaypoint();
         }
         break;
       case 'l': // Relative lineto
         for (let i = 0; i + 1 < params.length; i += 2) {
           currentX += params[i];
           currentY += params[i + 1];
+          addWaypoint();
         }
         break;
       case 'H': // Absolute horizontal lineto
-        if (params.length >= 1) {
-          currentX = params[params.length - 1];
+        for (const p of params) {
+          currentX = p;
+          addWaypoint();
         }
         break;
       case 'h': // Relative horizontal lineto
         for (const p of params) {
           currentX += p;
+          addWaypoint();
         }
         break;
       case 'V': // Absolute vertical lineto
-        if (params.length >= 1) {
-          currentY = params[params.length - 1];
+        for (const p of params) {
+          currentY = p;
+          addWaypoint();
         }
         break;
       case 'v': // Relative vertical lineto
         for (const p of params) {
           currentY += p;
+          addWaypoint();
         }
         break;
       case 'C': // Absolute cubic bezier
-        // C x1 y1 x2 y2 x y (can have multiple sets)
-        for (let i = 0; i + 5 < params.length; i += 6) {
+        // C x1 y1 x2 y2 x y - collect endpoint of each curve
+        for (let i = 0; i + 5 <= params.length; i += 6) {
           currentX = params[i + 4];
           currentY = params[i + 5];
-        }
-        if (params.length >= 6) {
-          currentX = params[params.length - 2];
-          currentY = params[params.length - 1];
+          addWaypoint();
         }
         break;
       case 'c': // Relative cubic bezier
-        for (let i = 0; i + 5 < params.length; i += 6) {
+        for (let i = 0; i + 5 <= params.length; i += 6) {
           currentX += params[i + 4];
           currentY += params[i + 5];
+          addWaypoint();
         }
         break;
       case 'S': // Absolute smooth cubic bezier
-        // S x2 y2 x y
-        for (let i = 0; i + 3 < params.length; i += 4) {
+        for (let i = 0; i + 3 <= params.length; i += 4) {
           currentX = params[i + 2];
           currentY = params[i + 3];
-        }
-        if (params.length >= 4) {
-          currentX = params[params.length - 2];
-          currentY = params[params.length - 1];
+          addWaypoint();
         }
         break;
       case 's': // Relative smooth cubic bezier
-        for (let i = 0; i + 3 < params.length; i += 4) {
+        for (let i = 0; i + 3 <= params.length; i += 4) {
           currentX += params[i + 2];
           currentY += params[i + 3];
+          addWaypoint();
         }
         break;
       case 'Q': // Absolute quadratic bezier
-        // Q x1 y1 x y
-        for (let i = 0; i + 3 < params.length; i += 4) {
+        for (let i = 0; i + 3 <= params.length; i += 4) {
           currentX = params[i + 2];
           currentY = params[i + 3];
-        }
-        if (params.length >= 4) {
-          currentX = params[params.length - 2];
-          currentY = params[params.length - 1];
+          addWaypoint();
         }
         break;
       case 'q': // Relative quadratic bezier
-        for (let i = 0; i + 3 < params.length; i += 4) {
+        for (let i = 0; i + 3 <= params.length; i += 4) {
           currentX += params[i + 2];
           currentY += params[i + 3];
+          addWaypoint();
         }
         break;
       case 'T': // Absolute smooth quadratic bezier
-        // T x y
-        for (let i = 0; i + 1 < params.length; i += 2) {
+        for (let i = 0; i + 1 <= params.length; i += 2) {
           currentX = params[i];
           currentY = params[i + 1];
+          addWaypoint();
         }
         break;
       case 't': // Relative smooth quadratic bezier
-        for (let i = 0; i + 1 < params.length; i += 2) {
+        for (let i = 0; i + 1 <= params.length; i += 2) {
           currentX += params[i];
           currentY += params[i + 1];
+          addWaypoint();
         }
         break;
       case 'A': // Absolute arc
-        // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
-        for (let i = 0; i + 6 < params.length; i += 7) {
+        for (let i = 0; i + 6 <= params.length; i += 7) {
           currentX = params[i + 5];
           currentY = params[i + 6];
-        }
-        if (params.length >= 7) {
-          currentX = params[params.length - 2];
-          currentY = params[params.length - 1];
+          addWaypoint();
         }
         break;
       case 'a': // Relative arc
-        for (let i = 0; i + 6 < params.length; i += 7) {
+        for (let i = 0; i + 6 <= params.length; i += 7) {
           currentX += params[i + 5];
           currentY += params[i + 6];
+          addWaypoint();
         }
         break;
       case 'Z':
       case 'z':
-        // Close path - return to start point
         currentX = startX;
         currentY = startY;
+        addWaypoint();
         break;
     }
   }
@@ -194,7 +206,75 @@ export function parsePathEndpoints(path: string): PathEndpoints {
     startY,
     endX: currentX,
     endY: currentY,
+    waypoints,
   };
+}
+
+/**
+ * Legacy function for backward compatibility.
+ */
+export function parsePathEndpoints(path: string): { startX: number; startY: number; endX: number; endY: number } {
+  const { startX, startY, endX, endY } = parsePathWithWaypoints(path);
+  return { startX, startY, endX, endY };
+}
+
+/**
+ * Calculate angle between two points in degrees (0-360).
+ */
+function angleBetweenPoints(from: Point, to: Point): number {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+  return angle < 0 ? angle + 360 : angle;
+}
+
+/**
+ * Calculate the absolute difference between two angles, accounting for wraparound.
+ */
+function angleDifference(angle1: number, angle2: number): number {
+  let diff = Math.abs(angle1 - angle2);
+  if (diff > 180) {
+    diff = 360 - diff;
+  }
+  return diff;
+}
+
+/**
+ * Check if path has a significant bend by analyzing direction changes between waypoints.
+ * Returns true if any consecutive segments change direction by more than the threshold.
+ */
+function hasBend(waypoints: Point[], thresholdDegrees = 50): boolean {
+  if (waypoints.length < 3) {
+    return false;
+  }
+
+  // Filter out waypoints that are too close together (< 5 units apart)
+  const significantWaypoints: Point[] = [waypoints[0]];
+  for (let i = 1; i < waypoints.length; i++) {
+    const prev = significantWaypoints[significantWaypoints.length - 1];
+    const curr = waypoints[i];
+    const dist = Math.sqrt(Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2));
+    if (dist >= 5) {
+      significantWaypoints.push(curr);
+    }
+  }
+
+  if (significantWaypoints.length < 3) {
+    return false;
+  }
+
+  // Check direction changes between consecutive segments
+  for (let i = 1; i < significantWaypoints.length - 1; i++) {
+    const angle1 = angleBetweenPoints(significantWaypoints[i - 1], significantWaypoints[i]);
+    const angle2 = angleBetweenPoints(significantWaypoints[i], significantWaypoints[i + 1]);
+    const diff = angleDifference(angle1, angle2);
+
+    if (diff > thresholdDegrees) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -265,6 +345,7 @@ export function deriveQuadrant(x: number, y: number, viewBoxSize = 109): Quadran
 
 /**
  * Derive all stroke metadata from an SVG path string.
+ * Detects bending strokes and marks them as 'curved'.
  */
 export function deriveStrokeMetadata(
   path: string,
@@ -274,10 +355,18 @@ export function deriveStrokeMetadata(
   startQuadrant: Quadrant;
   endQuadrant: Quadrant;
 } {
-  const { startX, startY, endX, endY } = parsePathEndpoints(path);
+  const { startX, startY, endX, endY, waypoints } = parsePathWithWaypoints(path);
+
+  // Check for bending strokes first
+  let direction: StrokeDirection;
+  if (hasBend(waypoints)) {
+    direction = 'curved';
+  } else {
+    direction = deriveStrokeDirection(startX, startY, endX, endY);
+  }
 
   return {
-    direction: deriveStrokeDirection(startX, startY, endX, endY),
+    direction,
     startQuadrant: deriveQuadrant(startX, startY, viewBoxSize),
     endQuadrant: deriveQuadrant(endX, endY, viewBoxSize),
   };
