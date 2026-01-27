@@ -1,5 +1,5 @@
 import { Point } from './strokeUtils';
-import { KanjiData, StrokeDirection, Quadrant } from '../data/kanjiData';
+import { KanjiVGData, StrokeDirection, Quadrant } from '../data/kanjiVGTypes';
 
 export interface ValidationResult {
   strokeCountMatch: boolean;
@@ -57,16 +57,18 @@ export function detectStrokeDirection(points: Point[]): StrokeDirection {
     return 'vertical';
   }
 
-  // Diagonal down: 22.5 to 67.5 or 202.5 to 247.5
+  // "/" slant (down-right or up-left): 22.5 to 67.5 or 202.5 to 247.5
+  // Visually rises from left to right = diagonal-up
   if (
     (normalizedAngle >= 22.5 && normalizedAngle < 67.5) ||
     (normalizedAngle >= 202.5 && normalizedAngle < 247.5)
   ) {
-    return 'diagonal-down';
+    return 'diagonal-up';
   }
 
-  // Diagonal up: 112.5 to 157.5 or 292.5 to 337.5
-  return 'diagonal-up';
+  // "\" slant (down-left or up-right): 112.5 to 157.5 or 292.5 to 337.5
+  // Visually falls from left to right = diagonal-down
+  return 'diagonal-down';
 }
 
 /**
@@ -169,11 +171,11 @@ function directionsMatch(
  */
 export function validateKanji(
   drawnStrokes: Point[][],
-  expectedKanji: KanjiData,
+  expectedKanji: KanjiVGData,
   canvasSize: number
 ): ValidationResult {
   const actualStrokes = drawnStrokes.length;
-  const expectedStrokes = expectedKanji.strokeCount;
+  const expectedStrokes = expectedKanji.strokes.length;
   const strokeCountMatch = actualStrokes === expectedStrokes;
 
   // Compare each stroke's direction

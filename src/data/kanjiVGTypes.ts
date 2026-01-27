@@ -3,6 +3,15 @@
  * KanjiVG data is CC BY-SA 3.0 - https://kanjivg.tagaini.net/
  */
 
+export type StrokeDirection =
+  | 'horizontal'
+  | 'vertical'
+  | 'diagonal-down'
+  | 'diagonal-up'
+  | 'curved';
+
+export type Quadrant = 1 | 2 | 3 | 4; // 1=top-left, 2=top-right, 3=bottom-left, 4=bottom-right
+
 export interface KanjiVGStroke {
   /** Unique identifier for the stroke */
   id: string;
@@ -10,11 +19,19 @@ export interface KanjiVGStroke {
   path: string;
   /** Pre-calculated path length for animation */
   length: number;
+  /** Derived stroke direction */
+  direction: StrokeDirection;
+  /** Quadrant where stroke starts */
+  startQuadrant: Quadrant;
+  /** Quadrant where stroke ends */
+  endQuadrant: Quadrant;
 }
 
 export interface KanjiVGData {
   /** The kanji character */
   character: string;
+  /** English meaning of the kanji */
+  meaning: string;
   /** Array of strokes in drawing order */
   strokes: KanjiVGStroke[];
   /** SVG viewBox (typically "0 0 109 109" for KanjiVG) */

@@ -3,8 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Pressable, useWindowDimensions } from 'react-native';
 import { KanjiCanvas } from './src/components/KanjiCanvas';
 import { KanjiSelector } from './src/components/KanjiSelector';
-import { kanjiList, KanjiData } from './src/data/kanjiData';
-import { CanvasMode } from './src/data/kanjiVGTypes';
+import { kanjiVGList } from './src/data/kanjiVGData';
+import { KanjiVGData, CanvasMode } from './src/data/kanjiVGTypes';
 
 const CANVAS_MODES: { mode: CanvasMode; label: string }[] = [
   { mode: 'practice', label: 'Practice' },
@@ -15,7 +15,7 @@ const CANVAS_MODES: { mode: CanvasMode; label: string }[] = [
 export default function App() {
   const { width } = useWindowDimensions();
   const canvasSize = Math.min(width - 40, 350);
-  const [selectedKanji, setSelectedKanji] = useState<KanjiData>(kanjiList[0]);
+  const [selectedKanji, setSelectedKanji] = useState<KanjiVGData>(kanjiVGList[0]);
   const [canvasMode, setCanvasMode] = useState<CanvasMode>('practice');
 
   return (
@@ -25,7 +25,7 @@ export default function App() {
         <Text style={styles.hint}>{selectedKanji.character}</Text>
 
         <KanjiSelector
-          kanjiList={kanjiList}
+          kanjiList={kanjiVGList}
           selectedKanji={selectedKanji}
           onSelect={setSelectedKanji}
         />

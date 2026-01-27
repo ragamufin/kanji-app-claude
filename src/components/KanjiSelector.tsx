@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Pressable, Text } from 'react-native';
-import { KanjiData } from '../data/kanjiData';
+import { KanjiVGData } from '../data/kanjiVGTypes';
 
 interface KanjiSelectorProps {
-  kanjiList: KanjiData[];
-  selectedKanji: KanjiData;
-  onSelect: (kanji: KanjiData) => void;
+  kanjiList: KanjiVGData[];
+  selectedKanji: KanjiVGData;
+  onSelect: (kanji: KanjiVGData) => void;
 }
 
 export function KanjiSelector({

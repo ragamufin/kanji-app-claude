@@ -2,9 +2,8 @@ import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { StyleSheet, View, Pressable, Text, PanResponder } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { Point, StrokeMode, pointsToPath } from '../utils/strokeUtils';
-import { KanjiData } from '../data/kanjiData';
+import { KanjiVGData, CanvasMode } from '../data/kanjiVGTypes';
 import { validateKanji, ValidationResult } from '../utils/validationUtils';
-import { CanvasMode } from '../data/kanjiVGTypes';
 import { getKanjiVGData } from '../data/kanjiVGData';
 import { TraceGuide } from './TraceGuide';
 import { StrokeAnimator } from './StrokeAnimator';
@@ -21,7 +20,7 @@ interface KanjiCanvasProps {
   height?: number;
   strokeColor?: string;
   strokeWidth?: number;
-  expectedKanji?: KanjiData;
+  expectedKanji?: KanjiVGData;
   /** Canvas mode: practice (free draw), demo (animated playback), trace (guide overlay) */
   canvasMode?: CanvasMode;
 }
