@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "kanji-app",
-    "slug": "kanji-app",
+    "name": "kanji-app-claude",
+    "slug": "kanji-app-claude",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
