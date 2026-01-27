@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanji App - Design Themes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #eaeaf5;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #ff2e63, #08d9d6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #9090b0;
+      margin-bottom: 50px;
+      font-size: 1.1rem;
+    }
+
+    .themes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .theme-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .theme-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(255, 46, 99, 0.2);
+    }
+
+    .theme-header {
+      padding: 20px;
+      border-bottom: 1px solid #2a2a4a;
+    }
+
+    .theme-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .theme-desc {
+      color: #9090b0;
+      font-size: 0.9rem;
+    }
+
+    .theme-links {
+      display: flex;
+      gap: 10px;
+      padding: 20px;
+    }
+
+    .theme-link {
+      flex: 1;
+      display: block;
+      padding: 14px 20px;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .theme-link:hover {
+      opacity: 0.85;
+    }
+
+    .theme-link.light {
+      background: #f5f5f5;
+      color: #1a1a2e;
+    }
+
+    .theme-link.dark {
+      background: #2a2a4a;
+      color: #eaeaf5;
+    }
+
+    /* Theme-specific accent colors */
+    .neon-dojo .theme-name { color: #ff2e63; }
+    .neon-dojo .theme-link.light { background: linear-gradient(135deg, #f0f4f8, #e8f0f8); }
+    .neon-dojo .theme-link.dark { background: linear-gradient(135deg, #1a1a2e, #0f0f1a); }
+
+    .sakura-garden .theme-name { color: #e8829b; }
+    .sakura-garden .theme-link.light { background: linear-gradient(135deg, #fff5f8, #fff9fb); }
+    .sakura-garden .theme-link.dark { background: linear-gradient(135deg, #2a2530, #1e1a22); }
+
+    .edo-woodblock .theme-name { color: #c53d43; }
+    .edo-woodblock .theme-link.light { background: linear-gradient(135deg, #f5e6d3, #fff8ee); }
+    .edo-woodblock .theme-link.dark { background: linear-gradient(135deg, #2a2318, #1a1510); }
+
+    .digital-mono .theme-name { color: #0055ff; }
+    .digital-mono .theme-link.light { background: #ffffff; border: 2px solid #000; }
+    .digital-mono .theme-link.dark { background: #0a0a0a; border: 2px solid #fff; color: #fff; }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      color: #5a5a7a;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kanji App Design Themes</h1>
+  <p class="subtitle">4 alternative design concepts for the Kanji drawing practice app</p>
+
+  <div class="themes-grid">
+    <div class="theme-card neon-dojo">
+      <div class="theme-header">
+        <div class="theme-name">Neon Dojo</div>
+        <div class="theme-desc">Cyberpunk meets traditional dojo - neon glows against dark surfaces</div>
+      </div>
+      <div class="theme-links">
+        <a href="neon-dojo/light.html" class="theme-link light">Light Mode</a>
+        <a href="neon-dojo/dark.html" class="theme-link dark">Dark Mode</a>
+      </div>
+    </div>
+
+    <div class="theme-card sakura-garden">
+      <div class="theme-header">
+        <div class="theme-name">Sakura Garden</div>
+        <div class="theme-desc">Soft, feminine, nature-inspired with cherry blossom motifs</div>
+      </div>
+      <div class="theme-links">
+        <a href="sakura-garden/light.html" class="theme-link light">Light Mode</a>
+        <a href="sakura-garden/dark.html" class="theme-link dark">Dark Mode</a>
+      </div>
+    </div>
+
+    <div class="theme-card edo-woodblock">
+      <div class="theme-header">
+        <div class="theme-name">Edo Woodblock</div>
+        <div class="theme-desc">Traditional ukiyo-e print inspired - bold, graphic, woodcut textures</div>
+      </div>
+      <div class="theme-links">
+        <a href="edo-woodblock/light.html" class="theme-link light">Light Mode</a>
+        <a href="edo-woodblock/dark.html" class="theme-link dark">Dark Mode</a>
+      </div>
+    </div>
+
+    <div class="theme-card digital-mono">
+      <div class="theme-header">
+        <div class="theme-name">Digital Mono</div>
+        <div class="theme-desc">Swiss design / Brutalist - stark contrast, grid-based, functional beauty</div>
+      </div>
+      <div class="theme-links">
+        <a href="digital-mono/light.html" class="theme-link light">Light Mode</a>
+        <a href="digital-mono/dark.html" class="theme-link dark">Dark Mode</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Open each theme in browser, then use Puppeteer to capture screenshots at 390x844px</p>
+  </footer>
+</body>
+</html>
