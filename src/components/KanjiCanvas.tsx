@@ -1,9 +1,13 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { StyleSheet, View, Pressable, Text, PanResponder } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { Point, StrokeMode, pointsToPath } from '../utils/strokeUtils';
 import { KanjiData } from '../data/kanjiData';
 import { validateKanji, ValidationResult } from '../utils/validationUtils';
+import { CanvasMode } from '../data/kanjiVGTypes';
+import { getKanjiVGData } from '../data/kanjiVGData';
+import { TraceGuide } from './TraceGuide';
+import { StrokeAnimator } from './StrokeAnimator';
 
 interface Stroke {
   path: string;
@@ -18,6 +22,8 @@ interface KanjiCanvasProps {
   strokeColor?: string;
   strokeWidth?: number;
   expectedKanji?: KanjiData;
+  /** Canvas mode: practice (free draw), demo (animated playback), trace (guide overlay) */
+  canvasMode?: CanvasMode;
 }
 
 const STROKE_MODES: { mode: StrokeMode; label: string }[] = [
@@ -32,6 +38,7 @@ export function KanjiCanvas({
   strokeColor = '#000000',
   strokeWidth = 8,
   expectedKanji,
+  canvasMode = 'practice',
 }: KanjiCanvasProps) {
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [currentPath, setCurrentPath] = useState<string>('');
@@ -44,6 +51,12 @@ export function KanjiCanvas({
   const strokeColorRef = useRef(strokeColor);
   const strokeWidthRef = useRef(strokeWidth);
   const strokeModeRef = useRef(strokeMode);
+
+  // Get KanjiVG data for the current kanji
+  const kanjiVGData = useMemo(() => {
+    if (!expectedKanji) return undefined;
+    return getKanjiVGData(expectedKanji.character);
+  }, [expectedKanji]);
 
   // Keep refs in sync with props/state
   strokeColorRef.current = strokeColor;
@@ -154,37 +167,67 @@ export function KanjiCanvas({
     );
   };
 
+  // Demo mode: show animated stroke playback
+  if (canvasMode === 'demo' && kanjiVGData) {
+    return (
+      <View style={styles.container}>
+        <StrokeAnimatorWithReplay
+          kanjiVGData={kanjiVGData}
+          width={width}
+          height={height}
+        />
+      </View>
+    );
+  }
+
+  // Practice or Trace mode with drawing canvas
+  const allowDrawing = canvasMode !== 'demo';
+
   return (
     <View style={styles.container}>
-      {/* Mode Selector */}
-      <View style={styles.modeSelector}>
-        {STROKE_MODES.map(({ mode, label }) => (
-          <Pressable
-            key={mode}
-            style={[
-              styles.modeButton,
-              strokeMode === mode && styles.modeButtonActive,
-            ]}
-            onPress={() => setStrokeMode(mode)}
-          >
-            <Text
+      {/* Stroke Mode Selector - only show in practice/trace modes */}
+      {allowDrawing && (
+        <View style={styles.modeSelector}>
+          {STROKE_MODES.map(({ mode, label }) => (
+            <Pressable
+              key={mode}
               style={[
-                styles.modeButtonText,
-                strokeMode === mode && styles.modeButtonTextActive,
+                styles.modeButton,
+                strokeMode === mode && styles.modeButtonActive,
               ]}
+              onPress={() => setStrokeMode(mode)}
             >
-              {label}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+              <Text
+                style={[
+                  styles.modeButtonText,
+                  strokeMode === mode && styles.modeButtonTextActive,
+                ]}
+              >
+                {label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
 
       <View
         style={[styles.canvasContainer, { width, height }]}
-        {...panResponder.panHandlers}
+        {...(allowDrawing ? panResponder.panHandlers : {})}
       >
         <Svg width={width} height={height} style={styles.svg}>
-          {/* Render completed strokes */}
+          {/* Trace guide - show faded KanjiVG strokes in trace mode */}
+          {canvasMode === 'trace' && kanjiVGData && (
+            <TraceGuide
+              data={kanjiVGData}
+              width={width}
+              height={height}
+              opacity={0.25}
+              strokeColor="#888"
+              strokeWidth={6}
+            />
+          )}
+
+          {/* Render completed user strokes */}
           {strokes.map((stroke, index) =>
             stroke.isFilled ? (
               <Path
@@ -222,24 +265,65 @@ export function KanjiCanvas({
         </Svg>
       </View>
 
-      <View style={styles.buttons}>
-        <Pressable style={styles.button} onPress={handleUndo}>
-          <Text style={styles.buttonText}>Undo</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={handleClear}>
-          <Text style={styles.buttonText}>Clear</Text>
-        </Pressable>
-        {expectedKanji && (
-          <Pressable style={[styles.button, styles.checkButton]} onPress={handleCheck}>
-            <Text style={styles.buttonText}>Check</Text>
+      {allowDrawing && (
+        <View style={styles.buttons}>
+          <Pressable style={styles.button} onPress={handleUndo}>
+            <Text style={styles.buttonText}>Undo</Text>
           </Pressable>
-        )}
-      </View>
+          <Pressable style={styles.button} onPress={handleClear}>
+            <Text style={styles.buttonText}>Clear</Text>
+          </Pressable>
+          {expectedKanji && (
+            <Pressable style={[styles.button, styles.checkButton]} onPress={handleCheck}>
+              <Text style={styles.buttonText}>Check</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
 
-      <Text style={styles.strokeCount}>Strokes: {strokes.length}</Text>
+      {allowDrawing && <Text style={styles.strokeCount}>Strokes: {strokes.length}</Text>}
 
       {renderValidationMessage()}
     </View>
+  );
+}
+
+// Separate component for demo mode to manage its own animation state with replay
+function StrokeAnimatorWithReplay({
+  kanjiVGData,
+  width,
+  height,
+}: {
+  kanjiVGData: NonNullable<ReturnType<typeof getKanjiVGData>>;
+  width: number;
+  height: number;
+}) {
+  const [key, setKey] = useState(0);
+
+  const handleReplay = useCallback(() => {
+    setKey((k) => k + 1);
+  }, []);
+
+  return (
+    <>
+      <View style={[styles.canvasContainer, { width, height }]}>
+        <StrokeAnimator
+          key={key}
+          data={kanjiVGData}
+          width={width}
+          height={height}
+          strokeColor="#333"
+          strokeWidth={6}
+          autoPlay={true}
+          showControls={false}
+        />
+      </View>
+      <View style={styles.buttons}>
+        <Pressable style={[styles.button, styles.checkButton]} onPress={handleReplay}>
+          <Text style={styles.buttonText}>Replay</Text>
+        </Pressable>
+      </View>
+    </>
   );
 }
 

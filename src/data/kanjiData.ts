@@ -228,4 +228,17 @@ export const kanjiList: KanjiData[] = [
       { direction: 'vertical', startQuadrant: 2, endQuadrant: 4 },
     ],
   },
+  {
+    character: '気',
+    meaning: 'spirit/energy',
+    strokeCount: 6,
+    strokes: [
+      { direction: 'horizontal', startQuadrant: 1, endQuadrant: 2 },
+      { direction: 'horizontal', startQuadrant: 1, endQuadrant: 2 },
+      { direction: 'diagonal-down', startQuadrant: 1, endQuadrant: 3 },
+      { direction: 'curved', startQuadrant: 1, endQuadrant: 4 },
+      { direction: 'diagonal-down', startQuadrant: 1, endQuadrant: 3 },
+      { direction: 'diagonal-up', startQuadrant: 3, endQuadrant: 4 },
+    ],
+  },
 ];
