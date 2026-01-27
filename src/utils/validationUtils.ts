@@ -14,7 +14,7 @@ export interface ValidationResult {
  */
 export function detectStrokeDirection(points: Point[]): StrokeDirection {
   if (points.length < 2) {
-    return 'horizontal';
+    return 'right';
   }
 
   const start = points[0];
@@ -38,37 +38,37 @@ export function detectStrokeDirection(points: Point[]): StrokeDirection {
   // Normalize angle to 0-360
   const normalizedAngle = angle < 0 ? angle + 360 : angle;
 
-  // Horizontal: pointing right (0) or left (180)
-  // -22.5 to 22.5 or 157.5 to 202.5
-  if (
-    (normalizedAngle >= 0 && normalizedAngle < 22.5) ||
-    (normalizedAngle >= 337.5 && normalizedAngle <= 360) ||
-    (normalizedAngle >= 157.5 && normalizedAngle < 202.5)
-  ) {
-    return 'horizontal';
+  // 8 cardinal directions, each covering a 45° sector
+  // right: 337.5° to 22.5° (centered on 0°)
+  if (normalizedAngle >= 337.5 || normalizedAngle < 22.5) {
+    return 'right';
   }
-
-  // Vertical: pointing down (90) or up (270)
-  // 67.5 to 112.5 or 247.5 to 292.5
-  if (
-    (normalizedAngle >= 67.5 && normalizedAngle < 112.5) ||
-    (normalizedAngle >= 247.5 && normalizedAngle < 292.5)
-  ) {
-    return 'vertical';
+  // down-right: 22.5° to 67.5° (centered on 45°)
+  if (normalizedAngle >= 22.5 && normalizedAngle < 67.5) {
+    return 'down-right';
   }
-
-  // "/" slant (down-right or up-left): 22.5 to 67.5 or 202.5 to 247.5
-  // Visually rises from left to right = diagonal-up
-  if (
-    (normalizedAngle >= 22.5 && normalizedAngle < 67.5) ||
-    (normalizedAngle >= 202.5 && normalizedAngle < 247.5)
-  ) {
-    return 'diagonal-up';
+  // down: 67.5° to 112.5° (centered on 90°)
+  if (normalizedAngle >= 67.5 && normalizedAngle < 112.5) {
+    return 'down';
   }
-
-  // "\" slant (down-left or up-right): 112.5 to 157.5 or 292.5 to 337.5
-  // Visually falls from left to right = diagonal-down
-  return 'diagonal-down';
+  // down-left: 112.5° to 157.5° (centered on 135°)
+  if (normalizedAngle >= 112.5 && normalizedAngle < 157.5) {
+    return 'down-left';
+  }
+  // left: 157.5° to 202.5° (centered on 180°)
+  if (normalizedAngle >= 157.5 && normalizedAngle < 202.5) {
+    return 'left';
+  }
+  // up-left: 202.5° to 247.5° (centered on 225°)
+  if (normalizedAngle >= 202.5 && normalizedAngle < 247.5) {
+    return 'up-left';
+  }
+  // up: 247.5° to 292.5° (centered on 270°)
+  if (normalizedAngle >= 247.5 && normalizedAngle < 292.5) {
+    return 'up';
+  }
+  // up-right: 292.5° to 337.5° (centered on 315°)
+  return 'up-right';
 }
 
 /**

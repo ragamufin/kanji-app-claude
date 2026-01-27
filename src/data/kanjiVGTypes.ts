@@ -4,10 +4,14 @@
  */
 
 export type StrokeDirection =
-  | 'horizontal'
-  | 'vertical'
-  | 'diagonal-down'
-  | 'diagonal-up'
+  | 'right'       // 0° (left-to-right)
+  | 'down-right'  // 45°
+  | 'down'        // 90° (top-to-bottom)
+  | 'down-left'   // 135°
+  | 'left'        // 180° (right-to-left)
+  | 'up-left'     // 225°
+  | 'up'          // 270° (bottom-to-top)
+  | 'up-right'    // 315°
   | 'curved';
 
 export type Quadrant = 1 | 2 | 3 | 4; // 1=top-left, 2=top-right, 3=bottom-left, 4=bottom-right
