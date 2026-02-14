@@ -31,6 +31,8 @@ interface RawKanji {
   grade: number;
   viewBox: string;
   strokes: RawStroke[];
+  heisigIndex?: number;
+  heisigKeyword?: string;
 }
 
 function processStroke(raw: RawStroke): KanjiVGStroke {
@@ -46,6 +48,8 @@ function processBundle(rawList: RawKanji[]): KanjiVGData[] {
     grade: raw.grade,
     viewBox: raw.viewBox,
     strokes: raw.strokes.map(processStroke),
+    ...(raw.heisigIndex != null && { heisigIndex: raw.heisigIndex }),
+    ...(raw.heisigKeyword != null && { heisigKeyword: raw.heisigKeyword }),
   }));
 }
 

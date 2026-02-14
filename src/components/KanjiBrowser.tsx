@@ -1,7 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, Pressable, FlatList } from 'react-native';
 import { KanjiVGData, JLPTLevel } from '../data/kanjiVGTypes';
-import { getAvailableLevels, getKanjiCounts } from '../data/kanjiDataService';
+import {
+  getAvailableLevels,
+  getKanjiCounts,
+  getTotalKanjiCount,
+  getHeisigRanges,
+  getHeisigKanjiCount,
+} from '../data/kanjiDataService';
 import { useKanjiList } from '../hooks/useKanjiList';
 import { spacing, borderRadius, typography, getShadow, useTheme, useThemedStyles } from '../theme';
 import { ColorScheme } from '../theme/colors';
@@ -44,6 +50,15 @@ const createStyles = (colors: ColorScheme) => ({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  sectionHeader: {
+    fontSize: typography.caption.fontSize,
+    fontWeight: '600' as const,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+    color: colors.muted,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.xs,
+  },
   filterRow: {
     flexDirection: 'row' as const,
     flexWrap: 'wrap' as const,
@@ -68,27 +83,6 @@ const createStyles = (colors: ColorScheme) => ({
     gap: spacing.sm,
     paddingBottom: spacing.xl,
   },
-  kanjiCard: {
-    flex: 1,
-    aspectRatio: 1,
-    borderRadius: borderRadius.md,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    borderWidth: 1,
-    minWidth: 70,
-    maxWidth: 90,
-  },
-  kanjiCharacter: {
-    fontSize: 32,
-    fontWeight: '500' as const,
-  },
-  kanjiMeaning: {
-    fontSize: 10,
-    marginTop: 2,
-  },
-  strokeCount: {
-    fontSize: 9,
-  },
   emptyText: {
     textAlign: 'center' as const,
     color: colors.muted,
@@ -100,10 +94,12 @@ const createStyles = (colors: ColorScheme) => ({
 function KanjiCard({
   kanji,
   isSelected,
+  showHeisigIndex,
   onSelect,
 }: {
   kanji: KanjiVGData;
   isSelected: boolean;
+  showHeisigIndex: boolean;
   onSelect: () => void;
 }) {
   const { colors } = useTheme();
@@ -128,6 +124,20 @@ function KanjiCard({
       ]}
       onPress={onSelect}
     >
+      {showHeisigIndex && kanji.heisigIndex != null && (
+        <Text
+          style={{
+            position: 'absolute',
+            top: 3,
+            right: 5,
+            fontSize: 8,
+            fontWeight: '600',
+            color: colors.accent,
+          }}
+        >
+          #{kanji.heisigIndex}
+        </Text>
+      )}
       <Text style={{ fontSize: 32, fontWeight: '500', color: colors.primary }}>
         {kanji.character}
       </Text>
@@ -143,23 +153,49 @@ function KanjiCard({
   );
 }
 
+/** Toggle a value in/out of an array (by equality check). */
+function toggleInArray<T>(arr: T[], value: T, eq: (a: T, b: T) => boolean = (a, b) => a === b): T[] {
+  const idx = arr.findIndex((v) => eq(v, value));
+  if (idx >= 0) {
+    return [...arr.slice(0, idx), ...arr.slice(idx + 1)];
+  }
+  return [...arr, value];
+}
+
+function rangesEqual(a: [number, number], b: [number, number]): boolean {
+  return a[0] === b[0] && a[1] === b[1];
+}
+
 export function KanjiBrowser({ onSelect, selectedCharacter }: KanjiBrowserProps) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
   const [search, setSearch] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState<JLPTLevel | null>(null);
+  const [selectedLevels, setSelectedLevels] = useState<JLPTLevel[]>([]);
+  const [selectedHeisigRanges, setSelectedHeisigRanges] = useState<[number, number][]>([]);
   const availableLevels = getAvailableLevels();
-  const { kanji } = useKanjiList(selectedLevel ?? undefined, undefined, search || undefined);
+  const heisigRanges = getHeisigRanges();
+  const heisigCount = getHeisigKanjiCount();
+  const totalCount = getTotalKanjiCount();
+
+  const hasHeisigFilter = selectedHeisigRanges.length > 0;
+
+  const { kanji } = useKanjiList(
+    selectedLevels.length > 0 ? selectedLevels : undefined,
+    undefined,
+    search || undefined,
+    hasHeisigFilter ? selectedHeisigRanges : undefined
+  );
 
   const renderItem = useCallback(
     ({ item }: { item: KanjiVGData }) => (
       <KanjiCard
         kanji={item}
         isSelected={item.character === selectedCharacter}
+        showHeisigIndex={hasHeisigFilter}
         onSelect={() => onSelect(item)}
       />
     ),
-    [onSelect, selectedCharacter]
+    [onSelect, selectedCharacter, hasHeisigFilter]
   );
 
   return (
@@ -168,7 +204,7 @@ export function KanjiBrowser({ onSelect, selectedCharacter }: KanjiBrowserProps)
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search kanji or meaning..."
+          placeholder="Search kanji, meaning, or keyword..."
           placeholderTextColor={colors.muted}
           value={search}
           onChangeText={setSearch}
@@ -178,48 +214,103 @@ export function KanjiBrowser({ onSelect, selectedCharacter }: KanjiBrowserProps)
       </View>
 
       {/* JLPT Filter */}
+      <Text style={styles.sectionHeader}>JLPT Level</Text>
       <View style={styles.filterRow}>
         <Pressable
           style={[
             styles.filterChip,
             {
-              backgroundColor: selectedLevel === null ? colors.accent : colors.surface,
-              borderColor: selectedLevel === null ? colors.accent : colors.border,
+              backgroundColor: selectedLevels.length === 0 ? colors.accent : colors.surface,
+              borderColor: selectedLevels.length === 0 ? colors.accent : colors.border,
             },
           ]}
-          onPress={() => setSelectedLevel(null)}
+          onPress={() => setSelectedLevels([])}
         >
           <Text
             style={[
               styles.filterChipText,
-              { color: selectedLevel === null ? colors.accentText : colors.secondary },
+              { color: selectedLevels.length === 0 ? colors.accentText : colors.secondary },
             ]}
           >
-            All
+            All ({totalCount})
           </Text>
         </Pressable>
-        {availableLevels.map((level) => (
-          <Pressable
-            key={level}
-            style={[
-              styles.filterChip,
-              {
-                backgroundColor: selectedLevel === level ? colors.accent : colors.surface,
-                borderColor: selectedLevel === level ? colors.accent : colors.border,
-              },
-            ]}
-            onPress={() => setSelectedLevel(selectedLevel === level ? null : level)}
-          >
-            <Text
+        {availableLevels.map((level) => {
+          const isActive = selectedLevels.includes(level);
+          return (
+            <Pressable
+              key={level}
               style={[
-                styles.filterChipText,
-                { color: selectedLevel === level ? colors.accentText : colors.secondary },
+                styles.filterChip,
+                {
+                  backgroundColor: isActive ? colors.accent : colors.surface,
+                  borderColor: isActive ? colors.accent : colors.border,
+                },
               ]}
+              onPress={() => setSelectedLevels(toggleInArray(selectedLevels, level))}
             >
-              {getJlptLabel(level)}
-            </Text>
-          </Pressable>
-        ))}
+              <Text
+                style={[
+                  styles.filterChipText,
+                  { color: isActive ? colors.accentText : colors.secondary },
+                ]}
+              >
+                {getJlptLabel(level)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {/* Heisig RTK Filter */}
+      <Text style={styles.sectionHeader}>Heisig RTK</Text>
+      <View style={styles.filterRow}>
+        <Pressable
+          style={[
+            styles.filterChip,
+            {
+              backgroundColor: !hasHeisigFilter ? colors.accent : colors.surface,
+              borderColor: !hasHeisigFilter ? colors.accent : colors.border,
+            },
+          ]}
+          onPress={() => setSelectedHeisigRanges([])}
+        >
+          <Text
+            style={[
+              styles.filterChipText,
+              { color: !hasHeisigFilter ? colors.accentText : colors.secondary },
+            ]}
+          >
+            All ({heisigCount})
+          </Text>
+        </Pressable>
+        {heisigRanges.map(({ label, range }) => {
+          const isActive = selectedHeisigRanges.some((r) => rangesEqual(r, range));
+          return (
+            <Pressable
+              key={label}
+              style={[
+                styles.filterChip,
+                {
+                  backgroundColor: isActive ? colors.accent : colors.surface,
+                  borderColor: isActive ? colors.accent : colors.border,
+                },
+              ]}
+              onPress={() =>
+                setSelectedHeisigRanges(toggleInArray(selectedHeisigRanges, range, rangesEqual))
+              }
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  { color: isActive ? colors.accentText : colors.secondary },
+                ]}
+              >
+                {label}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
 
       {/* Kanji Grid */}

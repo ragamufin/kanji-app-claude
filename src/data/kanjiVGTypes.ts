@@ -49,6 +49,10 @@ export interface KanjiVGData {
   jlpt?: JLPTLevel;
   /** School grade level (1-6 for kyouiku kanji) */
   grade?: number;
+  /** Heisig RTK 6th edition frame number (1–2200) */
+  heisigIndex?: number;
+  /** Heisig RTK keyword (e.g., "one", "mouth") */
+  heisigKeyword?: string;
 }
 
 /** Canvas mode for the kanji drawing interface */

@@ -52,6 +52,8 @@ interface ProcessedKanji {
   grade: number;
   viewBox: string;
   strokes: ProcessedStroke[];
+  heisigIndex?: number;
+  heisigKeyword?: string;
 }
 
 /**
@@ -79,6 +81,32 @@ function loadDictionary(dictPath: string): Map<string, { level: string; grade: n
       grade: entry.grade || 9,
       meaning,
     });
+  }
+
+  return map;
+}
+
+/**
+ * Load Heisig RTK data from CSV.
+ * Returns a map from kanji character → { index, keyword } using 6th edition columns.
+ */
+function loadHeisigData(csvPath: string): Map<string, { index: number; keyword: string }> {
+  const raw = fs.readFileSync(csvPath, 'utf-8');
+  const lines = raw.trim().split('\n');
+  const map = new Map<string, { index: number; keyword: string }>();
+
+  // Skip header line
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    // CSV format: kanji,id_5th_ed,id_6th_ed,keyword_5th_ed,keyword_6th_ed,...
+    const parts = line.split(',');
+    const kanji = parts[0];
+    const id6th = parseInt(parts[2], 10);
+    const keyword6th = parts[4];
+
+    if (kanji && !isNaN(id6th) && keyword6th) {
+      map.set(kanji, { index: id6th, keyword: keyword6th });
+    }
   }
 
   return map;
@@ -150,13 +178,15 @@ function main(): void {
   const inputIdx = args.indexOf('--input');
   const outputIdx = args.indexOf('--output');
   const dictIdx = args.indexOf('--dict');
+  const heisigIdx = args.indexOf('--heisig');
 
   if (inputIdx === -1 || outputIdx === -1) {
-    console.log('Usage: npx tsx scripts/processKanjiVG.ts --input <dir> --output <dir> [--dict <json>]');
+    console.log('Usage: npx tsx scripts/processKanjiVG.ts --input <dir> --output <dir> [--dict <json>] [--heisig <csv>]');
     console.log('');
     console.log('  --input   Directory containing KanjiVG SVG files (e.g., 04e00.svg)');
     console.log('  --output  Directory for JSON bundles per JLPT level');
     console.log('  --dict    Path to kanji-dictionary.json (default: scripts/kanji-dictionary.json)');
+    console.log('  --heisig  Path to heisig-kanjis.csv (default: scripts/heisig-kanjis.csv)');
     process.exit(1);
   }
 
@@ -165,6 +195,9 @@ function main(): void {
   const dictPath = dictIdx !== -1
     ? args[dictIdx + 1]
     : path.join(__dirname, 'kanji-dictionary.json');
+  const heisigPath = heisigIdx !== -1
+    ? args[heisigIdx + 1]
+    : path.join(__dirname, 'heisig-kanjis.csv');
 
   if (!fs.existsSync(inputDir)) {
     console.error(`Input directory not found: ${inputDir}`);
@@ -180,6 +213,15 @@ function main(): void {
   console.log(`Loading kanji dictionary from ${dictPath}...`);
   const dictionary = loadDictionary(dictPath);
   console.log(`  Dictionary has ${dictionary.size} JLPT kanji entries`);
+
+  let heisigData = new Map<string, { index: number; keyword: string }>();
+  if (fs.existsSync(heisigPath)) {
+    console.log(`Loading Heisig data from ${heisigPath}...`);
+    heisigData = loadHeisigData(heisigPath);
+    console.log(`  Heisig data has ${heisigData.size} entries`);
+  } else {
+    console.log(`Heisig CSV not found at ${heisigPath}, skipping Heisig data`);
+  }
 
   fs.mkdirSync(outputDir, { recursive: true });
 
@@ -203,6 +245,11 @@ function main(): void {
     const kanji = parseSVG(svgContent, codepoint, meta);
 
     if (kanji) {
+      const heisig = heisigData.get(kanji.character);
+      if (heisig) {
+        kanji.heisigIndex = heisig.index;
+        kanji.heisigKeyword = heisig.keyword;
+      }
       const list = byLevel.get(kanji.jlpt) ?? [];
       list.push(kanji);
       byLevel.set(kanji.jlpt, list);

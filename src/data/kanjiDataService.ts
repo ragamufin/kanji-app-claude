@@ -8,9 +8,10 @@ import { KanjiVGData, JLPTLevel } from './kanjiVGTypes';
 import { kanjiVGData, kanjiVGList } from './kanjiVGData';
 
 export interface KanjiFilter {
-  jlpt?: JLPTLevel;
+  jlptLevels?: JLPTLevel[];
   grade?: number;
   search?: string;
+  heisigRanges?: [number, number][];
 }
 
 /** In-memory cache for loaded kanji bundles */
@@ -40,19 +41,37 @@ export async function getAvailableKanji(filter?: KanjiFilter): Promise<KanjiVGDa
 
   let results = kanjiVGList;
 
-  if (filter?.jlpt) {
-    results = results.filter((k) => k.jlpt === filter.jlpt);
+  if (filter?.jlptLevels && filter.jlptLevels.length > 0) {
+    const levels = new Set(filter.jlptLevels);
+    results = results.filter((k) => k.jlpt != null && levels.has(k.jlpt));
   }
 
   if (filter?.grade) {
     results = results.filter((k) => k.grade === filter.grade);
   }
 
+  if (filter?.heisigRanges && filter.heisigRanges.length > 0) {
+    const ranges = filter.heisigRanges;
+    results = results.filter(
+      (k) =>
+        k.heisigIndex != null &&
+        ranges.some(([min, max]) => k.heisigIndex! >= min && k.heisigIndex! <= max)
+    );
+  }
+
   if (filter?.search) {
     const term = filter.search.toLowerCase();
     results = results.filter(
-      (k) => k.character.includes(term) || k.meaning.toLowerCase().includes(term)
+      (k) =>
+        k.character.includes(term) ||
+        k.meaning.toLowerCase().includes(term) ||
+        (k.heisigKeyword && k.heisigKeyword.toLowerCase().includes(term))
     );
+  }
+
+  // Sort by Heisig index when Heisig ranges are active
+  if (filter?.heisigRanges && filter.heisigRanges.length > 0) {
+    results = [...results].sort((a, b) => (a.heisigIndex ?? 0) - (b.heisigIndex ?? 0));
   }
 
   return results;
@@ -93,4 +112,38 @@ export function getKanjiCounts(): Record<string, number> {
     counts[key] = list.length;
   }
   return counts;
+}
+
+/**
+ * Get total count of all kanji.
+ */
+export function getTotalKanjiCount(): number {
+  return kanjiVGList.length;
+}
+
+/**
+ * Get total count of kanji with Heisig indices.
+ */
+export function getHeisigKanjiCount(): number {
+  return kanjiVGList.filter((k) => k.heisigIndex != null).length;
+}
+
+/**
+ * Get dynamic range chips for Heisig browsing.
+ * Returns ranges like [1, 200], [201, 400], etc.
+ */
+export function getHeisigRanges(): { label: string; range: [number, number] }[] {
+  const maxIndex = kanjiVGList.reduce(
+    (max, k) => (k.heisigIndex != null && k.heisigIndex > max ? k.heisigIndex : max),
+    0
+  );
+  const step = 200;
+  const ranges: { label: string; range: [number, number] }[] = [];
+
+  for (let start = 1; start <= maxIndex; start += step) {
+    const end = Math.min(start + step - 1, maxIndex);
+    ranges.push({ label: `${start}–${end}`, range: [start, end] });
+  }
+
+  return ranges;
 }
