@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# KanjiVG build resources (cloned at build time)
+kanjivg-repo/
+scripts/kanji-dictionary.json

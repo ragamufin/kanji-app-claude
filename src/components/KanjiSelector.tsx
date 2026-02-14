@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Pressable, Text, Animated } from 'react-native';
+import { View, ScrollView, Pressable, Text, Animated } from 'react-native';
 import { KanjiVGData } from '../data/kanjiVGTypes';
-import { useTheme, spacing, borderRadius, getShadow } from '../theme';
+import { useTheme, spacing, borderRadius, getShadow, useThemedStyles } from '../theme';
+import { ColorScheme } from '../theme/colors';
 
 interface KanjiSelectorProps {
   kanjiList: KanjiVGData[];
@@ -42,8 +43,13 @@ function KanjiItem({
     <Pressable onPress={onSelect}>
       <Animated.View
         style={[
-          styles.kanjiButton,
           {
+            width: 56,
+            height: 56,
+            borderRadius: borderRadius.xl,
+            borderWidth: 2,
+            alignItems: 'center',
+            justifyContent: 'center',
             backgroundColor: isSelected ? colors.surface : colors.background,
             borderColor: isSelected ? colors.accent : colors.border,
             transform: [{ scale: scaleAnim }],
@@ -53,10 +59,11 @@ function KanjiItem({
         ]}
       >
         <Text
-          style={[
-            styles.kanjiText,
-            { color: isSelected ? colors.primary : colors.muted },
-          ]}
+          style={{
+            fontSize: 28,
+            fontWeight: '500',
+            color: isSelected ? colors.primary : colors.muted,
+          }}
         >
           {kanji.character}
         </Text>
@@ -65,13 +72,21 @@ function KanjiItem({
   );
 }
 
-export function KanjiSelector({
-  kanjiList,
-  selectedKanji,
-  onSelect,
-}: KanjiSelectorProps) {
-  const { colors } = useTheme();
+const createStyles = (_colors: ColorScheme) => ({
+  container: {
+    width: '100%' as const,
+    marginBottom: spacing.lg,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.lg,
+    gap: spacing.md,
+    alignItems: 'center' as const,
+  },
+});
+
+export function KanjiSelector({ kanjiList, selectedKanji, onSelect }: KanjiSelectorProps) {
   const scrollViewRef = useRef<ScrollView>(null);
+  const styles = useThemedStyles(createStyles);
 
   return (
     <View style={styles.container}>
@@ -98,27 +113,3 @@ export function KanjiSelector({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    marginBottom: spacing.lg,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.md,
-    alignItems: 'center',
-  },
-  kanjiButton: {
-    width: 56,
-    height: 56,
-    borderRadius: borderRadius.xl,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  kanjiText: {
-    fontSize: 28,
-    fontWeight: '500',
-  },
-});

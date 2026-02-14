@@ -1,3 +1,13 @@
+import {
+  CATMULL_ROM_TENSION,
+  VELOCITY_NORMALIZATION,
+  BRUSH_WIDTH_MIN,
+  BRUSH_WIDTH_MAX,
+  BRUSH_START_TAPER,
+  BRUSH_END_TAPER,
+  SMOOTHING_ITERATIONS,
+} from '../config/strokeConfig';
+
 export interface Point {
   x: number;
   y: number;
@@ -44,12 +54,10 @@ export function pointsToSmoothPath(points: Point[]): string {
 
     // Convert Catmull-Rom to cubic bezier control points
     // Using tension = 0.5 (standard Catmull-Rom)
-    const tension = 6;
-
-    const cp1x = p1.x + (p2.x - p0.x) / tension;
-    const cp1y = p1.y + (p2.y - p0.y) / tension;
-    const cp2x = p2.x - (p3.x - p1.x) / tension;
-    const cp2y = p2.y - (p3.y - p1.y) / tension;
+    const cp1x = p1.x + (p2.x - p0.x) / CATMULL_ROM_TENSION;
+    const cp1y = p1.y + (p2.y - p0.y) / CATMULL_ROM_TENSION;
+    const cp2x = p2.x - (p3.x - p1.x) / CATMULL_ROM_TENSION;
+    const cp2y = p2.y - (p3.y - p1.y) / CATMULL_ROM_TENSION;
 
     path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
   }
@@ -73,12 +81,12 @@ function calculateVelocity(p1: Point, p2: Point): number {
  * Faster movement = thinner stroke
  */
 function velocityToWidth(velocity: number, baseWidth: number): number {
-  const minWidth = baseWidth * 0.3;
-  const maxWidth = baseWidth * 1.5;
+  const minWidth = baseWidth * BRUSH_WIDTH_MIN;
+  const maxWidth = baseWidth * BRUSH_WIDTH_MAX;
 
   // Velocity typically ranges from 0 to ~2 pixels/ms
   // Invert: higher velocity = thinner
-  const normalizedVelocity = Math.min(1, velocity / 1.5);
+  const normalizedVelocity = Math.min(1, velocity / VELOCITY_NORMALIZATION);
   const width = maxWidth - normalizedVelocity * (maxWidth - minWidth);
 
   return Math.max(minWidth, Math.min(maxWidth, width));
@@ -87,11 +95,7 @@ function velocityToWidth(velocity: number, baseWidth: number): number {
 /**
  * Calculate perpendicular offset for a point given direction
  */
-function getPerpendicularOffset(
-  dx: number,
-  dy: number,
-  width: number
-): { ox: number; oy: number } {
+function getPerpendicularOffset(dx: number, dy: number, width: number): { ox: number; oy: number } {
   const len = Math.sqrt(dx * dx + dy * dy);
   if (len === 0) return { ox: 0, oy: width / 2 };
 
@@ -121,10 +125,10 @@ export function pointsToBrushPath(points: Point[], baseWidth: number): string {
   for (let i = 0; i < points.length; i++) {
     if (i === 0) {
       // Start with tapered width
-      widths.push(baseWidth * 0.5);
+      widths.push(baseWidth * BRUSH_START_TAPER);
     } else if (i === points.length - 1) {
       // End with tapered width
-      widths.push(baseWidth * 0.3);
+      widths.push(baseWidth * BRUSH_END_TAPER);
     } else {
       const velocity = calculateVelocity(points[i - 1], points[i]);
       widths.push(velocityToWidth(velocity, baseWidth));
@@ -172,19 +176,16 @@ export function pointsToBrushPath(points: Point[], baseWidth: number): string {
     const p2 = leftEdge[i + 1];
     const p3 = leftEdge[Math.min(leftEdge.length - 1, i + 2)];
 
-    const tension = 6;
-    const cp1x = p1.x + (p2.x - p0.x) / tension;
-    const cp1y = p1.y + (p2.y - p0.y) / tension;
-    const cp2x = p2.x - (p3.x - p1.x) / tension;
-    const cp2y = p2.y - (p3.y - p1.y) / tension;
+    const cp1x = p1.x + (p2.x - p0.x) / CATMULL_ROM_TENSION;
+    const cp1y = p1.y + (p2.y - p0.y) / CATMULL_ROM_TENSION;
+    const cp2x = p2.x - (p3.x - p1.x) / CATMULL_ROM_TENSION;
+    const cp2y = p2.y - (p3.y - p1.y) / CATMULL_ROM_TENSION;
 
     path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
   }
 
   // Connect to right edge at the end (rounded cap)
-  const lastLeft = leftEdge[leftEdge.length - 1];
   const lastRight = rightEdge[rightEdge.length - 1];
-  const lastPoint = points[points.length - 1];
   const endRadius = smoothedWidths[smoothedWidths.length - 1] / 2;
 
   // Arc to right edge
@@ -197,18 +198,16 @@ export function pointsToBrushPath(points: Point[], baseWidth: number): string {
     const p2 = rightEdge[i - 1];
     const p3 = rightEdge[Math.max(0, i - 2)];
 
-    const tension = 6;
-    const cp1x = p1.x + (p2.x - p0.x) / tension;
-    const cp1y = p1.y + (p2.y - p0.y) / tension;
-    const cp2x = p2.x - (p3.x - p1.x) / tension;
-    const cp2y = p2.y - (p3.y - p1.y) / tension;
+    const cp1x = p1.x + (p2.x - p0.x) / CATMULL_ROM_TENSION;
+    const cp1y = p1.y + (p2.y - p0.y) / CATMULL_ROM_TENSION;
+    const cp2x = p2.x - (p3.x - p1.x) / CATMULL_ROM_TENSION;
+    const cp2y = p2.y - (p3.y - p1.y) / CATMULL_ROM_TENSION;
 
     path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
   }
 
   // Close path with rounded start cap
   const firstLeft = leftEdge[0];
-  const firstRight = rightEdge[0];
   const startRadius = smoothedWidths[0] / 2;
 
   path += ` A ${startRadius} ${startRadius} 0 0 1 ${firstLeft.x} ${firstLeft.y}`;
@@ -224,7 +223,7 @@ function smoothWidths(widths: number[]): number[] {
   if (widths.length <= 2) return widths;
 
   const smoothed = [...widths];
-  const iterations = 2;
+  const iterations = SMOOTHING_ITERATIONS;
 
   for (let iter = 0; iter < iterations; iter++) {
     for (let i = 1; i < smoothed.length - 1; i++) {

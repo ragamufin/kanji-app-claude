@@ -4,14 +4,14 @@
  */
 
 export type StrokeDirection =
-  | 'right'       // 0° (left-to-right)
-  | 'down-right'  // 45°
-  | 'down'        // 90° (top-to-bottom)
-  | 'down-left'   // 135°
-  | 'left'        // 180° (right-to-left)
-  | 'up-left'     // 225°
-  | 'up'          // 270° (bottom-to-top)
-  | 'up-right'    // 315°
+  | 'right' // 0° (left-to-right)
+  | 'down-right' // 45°
+  | 'down' // 90° (top-to-bottom)
+  | 'down-left' // 135°
+  | 'left' // 180° (right-to-left)
+  | 'up-left' // 225°
+  | 'up' // 270° (bottom-to-top)
+  | 'up-right' // 315°
   | 'curved';
 
 export type Quadrant = 1 | 2 | 3 | 4; // 1=top-left, 2=top-right, 3=bottom-left, 4=bottom-right
@@ -25,11 +25,16 @@ export interface KanjiVGStroke {
   length: number;
   /** Derived stroke direction */
   direction: StrokeDirection;
+  /** For curved strokes, the primary start-to-end direction */
+  primaryDirection?: StrokeDirection;
   /** Quadrant where stroke starts */
   startQuadrant: Quadrant;
   /** Quadrant where stroke ends */
   endQuadrant: Quadrant;
 }
+
+/** JLPT proficiency levels (N5 = easiest, N1 = hardest) */
+export type JLPTLevel = 'N5' | 'N4' | 'N3' | 'N2' | 'N1';
 
 export interface KanjiVGData {
   /** The kanji character */
@@ -40,6 +45,10 @@ export interface KanjiVGData {
   strokes: KanjiVGStroke[];
   /** SVG viewBox (typically "0 0 109 109" for KanjiVG) */
   viewBox: string;
+  /** JLPT proficiency level */
+  jlpt?: JLPTLevel;
+  /** School grade level (1-6 for kyouiku kanji) */
+  grade?: number;
 }
 
 /** Canvas mode for the kanji drawing interface */

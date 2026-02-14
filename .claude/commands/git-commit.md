@@ -15,10 +15,6 @@ Commit staged and unstaged changes to git:
 
 3. Stage and commit:
    - Stage relevant changed files (prefer specific files over `git add -A`)
-   - Create the commit with message ending with:
-     ```
-     Co-Authored-By: Claude <noreply@anthropic.com>
-     ```
    - Run `git status` after commit to verify success
 
 4. If commit fails due to pre-commit hooks:

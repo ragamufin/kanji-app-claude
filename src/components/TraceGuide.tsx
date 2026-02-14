@@ -1,6 +1,7 @@
 import React from 'react';
 import { G, Path } from 'react-native-svg';
 import { KanjiVGData } from '../data/kanjiVGTypes';
+import { KANJIVG_VIEWBOX_SIZE } from '../config/kanjiConfig';
 
 interface TraceGuideProps {
   /** KanjiVG data for the character to display */
@@ -29,9 +30,8 @@ export function TraceGuide({
   strokeColor = '#888',
   strokeWidth = 4,
 }: TraceGuideProps) {
-  // KanjiVG uses 109x109 viewBox
-  const scaleX = width / 109;
-  const scaleY = height / 109;
+  const scaleX = width / KANJIVG_VIEWBOX_SIZE;
+  const scaleY = height / KANJIVG_VIEWBOX_SIZE;
 
   return (
     <G opacity={opacity} transform={`scale(${scaleX}, ${scaleY})`}>

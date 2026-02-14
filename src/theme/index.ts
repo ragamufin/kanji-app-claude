@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
 import { lightColors, darkColors, ColorScheme } from './colors';
 
@@ -109,14 +109,17 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     return isDark ? darkColors : lightColors;
   }, [isDark]);
 
-  const toggleTheme = () => {
-    setMode((current) => {
-      if (current === 'system') {
-        return systemColorScheme === 'dark' ? 'light' : 'dark';
-      }
-      return current === 'dark' ? 'light' : 'dark';
-    });
-  };
+  const toggleTheme = useMemo(
+    () => () => {
+      setMode((current) => {
+        if (current === 'system') {
+          return systemColorScheme === 'dark' ? 'light' : 'dark';
+        }
+        return 'system';
+      });
+    },
+    [systemColorScheme]
+  );
 
   const value = useMemo(
     () => ({
@@ -126,7 +129,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       setMode,
       toggleTheme,
     }),
-    [colors, isDark, mode]
+    [colors, isDark, mode, toggleTheme]
   );
 
   return React.createElement(ThemeContext.Provider, { value }, children);
@@ -143,3 +146,4 @@ export function useTheme(): ThemeContextType {
 // Re-export colors for convenience
 export { lightColors, darkColors };
 export type { ColorScheme };
+export { useThemedStyles } from './createThemedStyles';

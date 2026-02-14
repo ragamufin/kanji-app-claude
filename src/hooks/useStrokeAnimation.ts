@@ -1,12 +1,5 @@
 import { useCallback, useRef, useEffect } from 'react';
-import {
-  useSharedValue,
-  withTiming,
-  withDelay,
-  Easing,
-  runOnJS,
-  SharedValue,
-} from 'react-native-reanimated';
+import { useSharedValue, withTiming, Easing, runOnJS, SharedValue } from 'react-native-reanimated';
 import { KanjiVGStroke } from '../data/kanjiVGTypes';
 
 export interface StrokeAnimationConfig {
@@ -38,24 +31,20 @@ export function useStrokeAnimation(
   config: StrokeAnimationConfig = {},
   onComplete?: () => void
 ): UseStrokeAnimationResult {
-  const {
-    strokeDuration = 500,
-    strokeDelay = 200,
-    easing = Easing.inOut(Easing.ease),
-  } = config;
+  const { strokeDuration = 500, strokeDelay = 200, easing = Easing.inOut(Easing.ease) } = config;
 
   const isPlaying = useSharedValue(false);
 
   // Store initial lengths for reset
-  const strokeLengths = useRef(strokes.map(s => s.length));
+  const strokeLengths = useRef(strokes.map((s) => s.length));
 
   // Single shared value holding array of offsets (initialized to stroke lengths = hidden)
-  const dashOffsets = useSharedValue<number[]>(strokes.map(s => s.length));
+  const dashOffsets = useSharedValue<number[]>(strokes.map((s) => s.length));
 
   // Update lengths ref when strokes change
   useEffect(() => {
-    strokeLengths.current = strokes.map(s => s.length);
-    dashOffsets.value = strokes.map(s => s.length);
+    strokeLengths.current = strokes.map((s) => s.length);
+    dashOffsets.value = strokes.map((s) => s.length);
   }, [strokes, dashOffsets]);
 
   const reset = useCallback(() => {

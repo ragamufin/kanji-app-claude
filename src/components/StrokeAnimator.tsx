@@ -1,28 +1,23 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 import Animated, { useAnimatedProps, useDerivedValue, SharedValue } from 'react-native-reanimated';
 import { KanjiVGData } from '../data/kanjiVGTypes';
 import { useStrokeAnimation, StrokeAnimationConfig } from '../hooks/useStrokeAnimation';
+import { KANJIVG_VIEWBOX_SIZE } from '../config/kanjiConfig';
+import { useTheme, spacing, borderRadius, useThemedStyles } from '../theme';
+import { ColorScheme } from '../theme/colors';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 interface StrokeAnimatorProps {
-  /** KanjiVG data for the character to animate */
   data: KanjiVGData;
-  /** Canvas width in pixels */
   width: number;
-  /** Canvas height in pixels */
   height: number;
-  /** Stroke color (default: '#333') */
   strokeColor?: string;
-  /** Stroke width (default: 6) */
   strokeWidth?: number;
-  /** Animation configuration */
   animationConfig?: StrokeAnimationConfig;
-  /** Whether to auto-play on mount (default: true) */
   autoPlay?: boolean;
-  /** Show playback controls (default: true) */
   showControls?: boolean;
 }
 
@@ -45,7 +40,6 @@ function AnimatedStroke({
   strokeWidth,
   scale,
 }: AnimatedStrokeProps) {
-  // Derive the offset for this specific stroke from the array
   const strokeOffset = useDerivedValue(() => {
     return dashOffsets.value[index] ?? length;
   });
@@ -68,31 +62,47 @@ function AnimatedStroke({
   );
 }
 
-/**
- * Animated stroke-by-stroke display of kanji using KanjiVG data.
- * Uses strokeDasharray/strokeDashoffset technique for progressive reveal.
- */
+const createStyles = (colors: ColorScheme) => ({
+  container: {
+    alignItems: 'center' as const,
+  },
+  controls: {
+    flexDirection: 'row' as const,
+    marginTop: spacing.md,
+    gap: spacing.md,
+  },
+  button: {
+    paddingHorizontal: spacing.lg + spacing.xs,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.accent,
+  },
+  buttonText: {
+    color: colors.accentText,
+    fontSize: 14,
+    fontWeight: '600' as const,
+  },
+});
+
 export function StrokeAnimator({
   data,
   width,
   height,
-  strokeColor = '#333',
+  strokeColor,
   strokeWidth = 6,
   animationConfig,
   autoPlay = true,
   showControls = true,
 }: StrokeAnimatorProps) {
-  // KanjiVG uses 109x109 viewBox
-  const scale = Math.min(width / 109, height / 109);
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const effectiveStrokeColor = strokeColor ?? colors.primary;
+  const scale = Math.min(width / KANJIVG_VIEWBOX_SIZE, height / KANJIVG_VIEWBOX_SIZE);
 
-  const { dashOffsets, play, reset } = useStrokeAnimation(
-    data.strokes,
-    animationConfig
-  );
+  const { dashOffsets, play, reset } = useStrokeAnimation(data.strokes, animationConfig);
 
   useEffect(() => {
     if (autoPlay) {
-      // Small delay to ensure component is mounted
       const timer = setTimeout(play, 100);
       return () => clearTimeout(timer);
     }
@@ -109,7 +119,7 @@ export function StrokeAnimator({
               length={stroke.length}
               index={index}
               dashOffsets={dashOffsets}
-              strokeColor={strokeColor}
+              strokeColor={effectiveStrokeColor}
               strokeWidth={strokeWidth}
               scale={scale}
             />
@@ -130,25 +140,3 @@ export function StrokeAnimator({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-  },
-  controls: {
-    flexDirection: 'row',
-    marginTop: 12,
-    gap: 12,
-  },
-  button: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: '#2563eb',
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});

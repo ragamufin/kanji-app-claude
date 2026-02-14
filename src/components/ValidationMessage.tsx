@@ -1,0 +1,135 @@
+import React from 'react';
+import { View, Text } from 'react-native';
+import { ValidationResult } from '../utils/validationUtils';
+import { spacing, borderRadius, typography, useTheme, useThemedStyles } from '../theme';
+import { ColorScheme } from '../theme/colors';
+
+interface ValidationMessageProps {
+  result: ValidationResult;
+}
+
+const createStyles = (colors: ColorScheme) => ({
+  container: {
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center' as const,
+    minWidth: 200,
+    borderWidth: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '700' as const,
+    marginBottom: spacing.xs,
+  },
+  score: {
+    fontSize: 22,
+    fontWeight: '700' as const,
+    marginBottom: spacing.xs,
+    color: colors.primary,
+  },
+  text: {
+    fontSize: typography.body.fontSize,
+    color: colors.primary,
+  },
+  perStrokeContainer: {
+    marginTop: spacing.sm,
+    width: '100%' as const,
+    gap: 4,
+  },
+  perStrokeRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: spacing.sm,
+  },
+  perStrokeText: {
+    fontSize: 12,
+    width: 60,
+    color: colors.primary,
+  },
+  accuracyBarBg: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden' as const,
+    backgroundColor: colors.border,
+  },
+  accuracyFill: {
+    height: '100%' as const,
+    borderRadius: 3,
+  },
+  perStrokeAccuracy: {
+    fontSize: 11,
+    width: 32,
+    textAlign: 'right' as const,
+    color: colors.muted,
+  },
+  orderWarning: {
+    fontSize: 10,
+    fontWeight: '600' as const,
+    color: colors.error,
+  },
+});
+
+export function ValidationMessage({ result }: ValidationMessageProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
+  const {
+    strokeCountMatch,
+    expectedStrokes,
+    actualStrokes,
+    overallMatch,
+    overallScore,
+    strokeOrderCorrect,
+    perStroke,
+  } = result;
+
+  const statusColor = overallMatch ? colors.success : colors.error;
+
+  return (
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: overallMatch ? colors.successLight : colors.errorLight,
+          borderColor: statusColor,
+        },
+      ]}
+    >
+      <Text style={[styles.title, { color: statusColor }]}>
+        {overallMatch ? 'Great work!' : 'Keep practicing'}
+      </Text>
+      <Text style={styles.score}>Score: {overallScore}%</Text>
+      <Text style={styles.text}>
+        Strokes: {actualStrokes}/{expectedStrokes} {strokeCountMatch ? '\u2713' : '\u2717'}
+      </Text>
+      <Text style={[styles.text, { color: strokeOrderCorrect ? colors.success : colors.error }]}>
+        Order: {strokeOrderCorrect ? 'Correct' : 'Incorrect'}
+      </Text>
+      {perStroke.length > 0 && (
+        <View style={styles.perStrokeContainer}>
+          {perStroke.map((s, i) => (
+            <View key={i} style={styles.perStrokeRow}>
+              <Text style={styles.perStrokeText}>Stroke {i + 1}:</Text>
+              <View style={styles.accuracyBarBg}>
+                <View
+                  style={[
+                    styles.accuracyFill,
+                    {
+                      width: `${Math.round(s.spatialAccuracy * 100)}%`,
+                      backgroundColor: s.spatialAccuracy > 0.5 ? colors.success : colors.error,
+                    },
+                  ]}
+                />
+              </View>
+              <Text style={styles.perStrokeAccuracy}>{Math.round(s.spatialAccuracy * 100)}%</Text>
+              {!s.orderCorrect && <Text style={styles.orderWarning}>reordered</Text>}
+            </View>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}

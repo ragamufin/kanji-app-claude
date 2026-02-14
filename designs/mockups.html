@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanji App - 18 Design Concepts (Light + Dark)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gallery-bg: #0a0a0a;
+    --gallery-text: #e5e5e5;
+    --gallery-muted: #737373;
+    --gallery-border: #262626;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--gallery-bg);
+    color: var(--gallery-text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .header {
+    text-align: center;
+    padding: 48px 24px 16px;
+  }
+  .header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, #fff 0%, #a3a3a3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: var(--gallery-muted);
+    font-size: 16px;
+  }
+
+  .nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .nav-btn {
+    background: transparent;
+    border: 1px solid var(--gallery-border);
+    color: var(--gallery-muted);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { border-color: #525252; color: #d4d4d4; }
+  .nav-btn.active { background: #fff; color: #0a0a0a; border-color: #fff; }
+
+  /* Design pair sections */
+  .designs { padding: 16px 32px 80px; max-width: 1400px; margin: 0 auto; }
+  .design-section {
+    margin-bottom: 64px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+  .design-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .design-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .design-header p {
+    font-size: 14px;
+    color: var(--gallery-muted);
+  }
+
+  .pair {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .phone-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .mode-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gallery-muted);
+  }
+
+  .phone {
+    width: 360px;
+    height: 780px;
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 32px;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+    z-index: 100;
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 22px 28px;
+    overflow-y: auto;
+    position: relative;
+  }
+  .theme-toggle {
+    position: absolute;
+    top: 50px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+  .kanji-ghost {
+    font-weight: 700;
+    opacity: 0.12;
+    line-height: 1;
+    margin-bottom: -6px;
+  }
+  .meaning { font-weight: 600; margin-bottom: 5px; }
+  .stroke-badge {
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .kanji-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    justify-content: center;
+  }
+  .kanji-item {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 500;
+    border: 2px solid transparent;
+  }
+  .mode-selector {
+    display: flex;
+    padding: 3px;
+    border-radius: 999px;
+    gap: 3px;
+    margin-bottom: 12px;
+  }
+  .mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .mode-icon { font-size: 11px; }
+  .canvas-area {
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .canvas-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .canvas-grid line { stroke-dasharray: 6 4; }
+  .canvas-kanji {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0.08;
+    font-weight: 700;
+  }
+  .canvas-strokes { position: absolute; inset: 0; }
+  .canvas-strokes svg { width: 100%; height: 100%; }
+  .stroke-modes {
+    display: flex;
+    gap: 3px;
+    padding: 3px;
+    border-radius: 999px;
+    margin-top: 10px;
+    margin-bottom: 3px;
+  }
+  .stroke-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 16px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .stroke-count {
+    font-size: 11px;
+    margin-top: 6px;
+  }
+
+  /* Shared canvas size */
+  .canvas-area { width: 264px; height: 264px; }
+  .canvas-kanji { font-size: 200px; }
+  .kanji-ghost { font-size: 66px; }
+  .meaning { font-size: 24px; }
+
+  /* ===================== DESIGN 1: Sakura Bloom ===================== */
+  .d1 .screen { background: #FFF5F7; font-family: 'Outfit', sans-serif; }
+  .d1 .theme-toggle { background: #FFF0F3; color: #c4748e; }
+  .d1 .kanji-ghost { color: #e8a0b5; font-family: 'Noto Sans JP'; }
+  .d1 .meaning { color: #a04668; }
+  .d1 .stroke-badge { background: #FFE4EC; color: #c4748e; }
+  .d1 .kanji-item { background: #FFF0F3; color: #c9a0b0; border-color: #f5d5de; font-family: 'Noto Sans JP'; }
+  .d1 .kanji-item.active { background: #fff; color: #a04668; border-color: #e8758f; box-shadow: 0 4px 12px rgba(232,117,143,0.2); }
+  .d1 .mode-selector { background: #FFF0F3; }
+  .d1 .mode-btn { color: #c4748e; }
+  .d1 .mode-btn.active { background: #e8758f; color: #fff; }
+  .d1 .canvas-area { background: #FFFBFC; box-shadow: 0 6px 24px rgba(232,117,143,0.12); }
+  .d1 .canvas-grid line { stroke: #f5d5de; stroke-width: 0.5; }
+  .d1 .canvas-kanji { color: #e8a0b5; font-family: 'Noto Sans JP'; }
+  .d1 .stroke-modes { background: #FFF0F3; }
+  .d1 .stroke-mode-btn { color: #c4748e; }
+  .d1 .stroke-mode-btn.active { background: #a04668; color: #fff; }
+  .d1 .action-btn { background: #FFF0F3; color: #a04668; }
+  .d1 .action-btn.primary { background: #e8758f; color: #fff; box-shadow: 0 4px 12px rgba(232,117,143,0.3); }
+  .d1 .stroke-count { color: #c4748e; }
+  .d1 .canvas-strokes path { stroke: #a04668; }
+
+  .d1-dark .screen { background: #1F1218; font-family: 'Outfit', sans-serif; }
+  .d1-dark .theme-toggle { background: #2a1a22; color: #e8a0b5; }
+  .d1-dark .kanji-ghost { color: #e8758f; font-family: 'Noto Sans JP'; }
+  .d1-dark .meaning { color: #f0a0b8; }
+  .d1-dark .stroke-badge { background: #2a1a22; color: #e8a0b5; }
+  .d1-dark .kanji-item { background: #261820; color: #6a4a58; border-color: #3a2530; font-family: 'Noto Sans JP'; }
+  .d1-dark .kanji-item.active { background: #301e28; color: #f0a0b8; border-color: #e8758f; box-shadow: 0 4px 12px rgba(232,117,143,0.15); }
+  .d1-dark .mode-selector { background: #261820; }
+  .d1-dark .mode-btn { color: #6a4a58; }
+  .d1-dark .mode-btn.active { background: #e8758f; color: #fff; }
+  .d1-dark .canvas-area { background: #1a1015; border: 1px solid #3a2530; box-shadow: 0 6px 24px rgba(0,0,0,0.3); }
+  .d1-dark .canvas-grid line { stroke: #3a2530; stroke-width: 0.5; }
+  .d1-dark .canvas-kanji { color: #e8758f; font-family: 'Noto Sans JP'; }
+  .d1-dark .stroke-modes { background: #261820; }
+  .d1-dark .stroke-mode-btn { color: #6a4a58; }
+  .d1-dark .stroke-mode-btn.active { background: #a04668; color: #fff; }
+  .d1-dark .action-btn { background: #261820; color: #e8a0b5; }
+  .d1-dark .action-btn.primary { background: #e8758f; color: #fff; box-shadow: 0 4px 12px rgba(232,117,143,0.25); }
+  .d1-dark .stroke-count { color: #6a4a58; }
+  .d1-dark .canvas-strokes path { stroke: #f0a0b8; }
+
+  /* ===================== DESIGN 2: Midnight Neon ===================== */
+  .d2 .screen { background: #F5F5FF; font-family: 'Space Grotesk', sans-serif; }
+  .d2 .theme-toggle { background: #EAEAFF; color: #5a5aaa; }
+  .d2 .kanji-ghost { color: #7B68EE; font-family: 'Noto Sans JP'; }
+  .d2 .meaning { color: #4A3ADA; }
+  .d2 .stroke-badge { background: #EAEAFF; color: #7B68EE; }
+  .d2 .kanji-item { background: #EEEEFF; color: #a0a0d0; border-color: #d5d5f0; font-family: 'Noto Sans JP'; }
+  .d2 .kanji-item.active { background: #fff; color: #4A3ADA; border-color: #7B68EE; box-shadow: 0 4px 16px rgba(123,104,238,0.2); }
+  .d2 .mode-selector { background: #EAEAFF; }
+  .d2 .mode-btn { color: #a0a0d0; }
+  .d2 .mode-btn.active { background: linear-gradient(135deg, #7B68EE, #00d4e0); color: #fff; }
+  .d2 .canvas-area { background: #FBFBFF; border: 1px solid #e0e0f5; box-shadow: 0 8px 24px rgba(123,104,238,0.08); }
+  .d2 .canvas-grid line { stroke: #e0e0f5; stroke-width: 0.5; }
+  .d2 .canvas-kanji { color: #7B68EE; font-family: 'Noto Sans JP'; }
+  .d2 .stroke-modes { background: #EAEAFF; }
+  .d2 .stroke-mode-btn { color: #a0a0d0; }
+  .d2 .stroke-mode-btn.active { background: #7B68EE; color: #fff; }
+  .d2 .action-btn { background: #EAEAFF; color: #5a5aaa; }
+  .d2 .action-btn.primary { background: linear-gradient(135deg, #7B68EE, #00d4e0); color: #fff; box-shadow: 0 4px 16px rgba(123,104,238,0.3); }
+  .d2 .stroke-count { color: #a0a0d0; }
+  .d2 .canvas-strokes path { stroke: #4A3ADA; }
+
+  .d2-dark .screen { background: #0D0D1A; font-family: 'Space Grotesk', sans-serif; }
+  .d2-dark .theme-toggle { background: #1a1a2e; color: #00f0ff; }
+  .d2-dark .kanji-ghost { color: #00f0ff; font-family: 'Noto Sans JP'; opacity: 0.15; }
+  .d2-dark .meaning { color: #00f0ff; }
+  .d2-dark .stroke-badge { background: #1a1a2e; color: #7B68EE; border: 1px solid #2a2a4e; }
+  .d2-dark .kanji-item { background: #12122a; color: #4a4a7a; border-color: #1e1e3e; font-family: 'Noto Sans JP'; }
+  .d2-dark .kanji-item.active { background: #1a1a3a; color: #00f0ff; border-color: #00f0ff; box-shadow: 0 0 16px rgba(0,240,255,0.2); }
+  .d2-dark .mode-selector { background: #12122a; border: 1px solid #1e1e3e; }
+  .d2-dark .mode-btn { color: #4a4a7a; }
+  .d2-dark .mode-btn.active { background: linear-gradient(135deg, #7B68EE, #00f0ff); color: #fff; }
+  .d2-dark .canvas-area { background: #0a0a1a; border: 1px solid #1e1e3e; box-shadow: 0 0 40px rgba(0,240,255,0.06), inset 0 0 40px rgba(0,240,255,0.02); }
+  .d2-dark .canvas-grid line { stroke: #1e1e3e; stroke-width: 0.5; }
+  .d2-dark .canvas-kanji { color: #00f0ff; font-family: 'Noto Sans JP'; }
+  .d2-dark .stroke-modes { background: #12122a; border: 1px solid #1e1e3e; }
+  .d2-dark .stroke-mode-btn { color: #4a4a7a; }
+  .d2-dark .stroke-mode-btn.active { background: #7B68EE; color: #fff; }
+  .d2-dark .action-btn { background: #12122a; color: #7B68EE; border: 1px solid #1e1e3e; }
+  .d2-dark .action-btn.primary { background: linear-gradient(135deg, #7B68EE, #00f0ff); color: #fff; border: none; box-shadow: 0 4px 20px rgba(123,104,238,0.3); }
+  .d2-dark .stroke-count { color: #4a4a7a; }
+  .d2-dark .canvas-strokes path { stroke: #00f0ff; }
+
+  /* ===================== DESIGN 3: Bamboo Forest ===================== */
+  .d3 .screen { background: #F4F7F0; font-family: 'DM Sans', sans-serif; }
+  .d3 .theme-toggle { background: #E8EFE0; color: #5a7247; }
+  .d3 .kanji-ghost { color: #8aa87a; font-family: 'Noto Sans JP'; }
+  .d3 .meaning { color: #3a5a2a; }
+  .d3 .stroke-badge { background: #E0EBD5; color: #5a7247; }
+  .d3 .kanji-item { background: #E8EFE0; color: #8aa87a; border-color: #d0dcc5; font-family: 'Noto Sans JP'; }
+  .d3 .kanji-item.active { background: #fff; color: #3a5a2a; border-color: #6a9a52; box-shadow: 0 4px 12px rgba(106,154,82,0.15); }
+  .d3 .mode-selector { background: #E8EFE0; }
+  .d3 .mode-btn { color: #7a9a6a; }
+  .d3 .mode-btn.active { background: #5a7a42; color: #fff; }
+  .d3 .canvas-area { background: #FBFDF8; box-shadow: 0 6px 20px rgba(90,122,66,0.1); border-radius: 20px; }
+  .d3 .canvas-grid line { stroke: #d0dcc5; stroke-width: 0.5; }
+  .d3 .canvas-kanji { color: #8aa87a; font-family: 'Noto Sans JP'; }
+  .d3 .stroke-modes { background: #E8EFE0; }
+  .d3 .stroke-mode-btn { color: #7a9a6a; }
+  .d3 .stroke-mode-btn.active { background: #5a7a42; color: #fff; }
+  .d3 .action-btn { background: #E8EFE0; color: #3a5a2a; }
+  .d3 .action-btn.primary { background: #5a7a42; color: #fff; box-shadow: 0 4px 12px rgba(90,122,66,0.25); }
+  .d3 .stroke-count { color: #8aa87a; }
+  .d3 .canvas-strokes path { stroke: #3a5a2a; }
+
+  .d3-dark .screen { background: #141A12; font-family: 'DM Sans', sans-serif; }
+  .d3-dark .theme-toggle { background: #1e2818; color: #8aa87a; }
+  .d3-dark .kanji-ghost { color: #6a9a52; font-family: 'Noto Sans JP'; }
+  .d3-dark .meaning { color: #a0c888; }
+  .d3-dark .stroke-badge { background: #1e2818; color: #6a8a55; }
+  .d3-dark .kanji-item { background: #1a2215; color: #4a5a3a; border-color: #2a3822; font-family: 'Noto Sans JP'; }
+  .d3-dark .kanji-item.active { background: #222e1a; color: #a0c888; border-color: #6a9a52; box-shadow: 0 4px 12px rgba(106,154,82,0.12); }
+  .d3-dark .mode-selector { background: #1a2215; }
+  .d3-dark .mode-btn { color: #4a5a3a; }
+  .d3-dark .mode-btn.active { background: #5a7a42; color: #fff; }
+  .d3-dark .canvas-area { background: #121810; border: 1px solid #2a3822; box-shadow: 0 6px 20px rgba(0,0,0,0.3); border-radius: 20px; }
+  .d3-dark .canvas-grid line { stroke: #2a3822; stroke-width: 0.5; }
+  .d3-dark .canvas-kanji { color: #6a9a52; font-family: 'Noto Sans JP'; }
+  .d3-dark .stroke-modes { background: #1a2215; }
+  .d3-dark .stroke-mode-btn { color: #4a5a3a; }
+  .d3-dark .stroke-mode-btn.active { background: #5a7a42; color: #fff; }
+  .d3-dark .action-btn { background: #1a2215; color: #8aa87a; }
+  .d3-dark .action-btn.primary { background: #5a7a42; color: #fff; box-shadow: 0 4px 12px rgba(90,122,66,0.2); }
+  .d3-dark .stroke-count { color: #4a5a3a; }
+  .d3-dark .canvas-strokes path { stroke: #a0c888; }
+
+  /* ===================== DESIGN 4: Ocean Calm ===================== */
+  .d4 .screen { background: #F0F7FA; font-family: 'Sora', sans-serif; }
+  .d4 .theme-toggle { background: #E0EFF5; color: #4a8a9a; }
+  .d4 .kanji-ghost { color: #7abacf; font-family: 'Noto Sans JP'; }
+  .d4 .meaning { color: #1a5a6a; }
+  .d4 .stroke-badge { background: #D5EBF2; color: #4a8a9a; }
+  .d4 .kanji-item { background: #E5F2F7; color: #7abacf; border-color: #c5dfe8; font-family: 'Noto Sans JP'; border-radius: 50%; }
+  .d4 .kanji-item.active { background: #fff; color: #1a5a6a; border-color: #2a8a9a; box-shadow: 0 4px 16px rgba(42,138,154,0.2); }
+  .d4 .mode-selector { background: #E5F2F7; }
+  .d4 .mode-btn { color: #7abacf; }
+  .d4 .mode-btn.active { background: linear-gradient(135deg, #2a8a9a, #4abacf); color: #fff; }
+  .d4 .canvas-area { background: #FBFDFE; box-shadow: 0 8px 30px rgba(42,138,154,0.08); border-radius: 24px; }
+  .d4 .canvas-grid line { stroke: #c5dfe8; stroke-width: 0.5; }
+  .d4 .canvas-kanji { color: #7abacf; font-family: 'Noto Sans JP'; }
+  .d4 .stroke-modes { background: #E5F2F7; }
+  .d4 .stroke-mode-btn { color: #7abacf; }
+  .d4 .stroke-mode-btn.active { background: #2a8a9a; color: #fff; }
+  .d4 .action-btn { background: #E5F2F7; color: #1a5a6a; }
+  .d4 .action-btn.primary { background: linear-gradient(135deg, #2a8a9a, #4abacf); color: #fff; box-shadow: 0 4px 16px rgba(42,138,154,0.3); }
+  .d4 .stroke-count { color: #7abacf; }
+  .d4 .canvas-strokes path { stroke: #1a5a6a; }
+
+  .d4-dark .screen { background: #0E1A1E; font-family: 'Sora', sans-serif; }
+  .d4-dark .theme-toggle { background: #152228; color: #4abacf; }
+  .d4-dark .kanji-ghost { color: #2a8a9a; font-family: 'Noto Sans JP'; }
+  .d4-dark .meaning { color: #6ad0e0; }
+  .d4-dark .stroke-badge { background: #152228; color: #4a8a9a; }
+  .d4-dark .kanji-item { background: #12202a; color: #2a5a6a; border-color: #1a3040; font-family: 'Noto Sans JP'; border-radius: 50%; }
+  .d4-dark .kanji-item.active { background: #1a2a35; color: #6ad0e0; border-color: #2a8a9a; box-shadow: 0 4px 16px rgba(42,138,154,0.15); }
+  .d4-dark .mode-selector { background: #12202a; }
+  .d4-dark .mode-btn { color: #2a5a6a; }
+  .d4-dark .mode-btn.active { background: linear-gradient(135deg, #2a8a9a, #4abacf); color: #fff; }
+  .d4-dark .canvas-area { background: #0c161a; border: 1px solid #1a3040; box-shadow: 0 8px 30px rgba(0,0,0,0.3); border-radius: 24px; }
+  .d4-dark .canvas-grid line { stroke: #1a3040; stroke-width: 0.5; }
+  .d4-dark .canvas-kanji { color: #2a8a9a; font-family: 'Noto Sans JP'; }
+  .d4-dark .stroke-modes { background: #12202a; }
+  .d4-dark .stroke-mode-btn { color: #2a5a6a; }
+  .d4-dark .stroke-mode-btn.active { background: #2a8a9a; color: #fff; }
+  .d4-dark .action-btn { background: #12202a; color: #4a9aaa; }
+  .d4-dark .action-btn.primary { background: linear-gradient(135deg, #2a8a9a, #4abacf); color: #fff; box-shadow: 0 4px 16px rgba(42,138,154,0.25); }
+  .d4-dark .stroke-count { color: #2a5a6a; }
+  .d4-dark .canvas-strokes path { stroke: #6ad0e0; }
+
+  /* ===================== DESIGN 5: Sunset Warmth ===================== */
+  .d5 .screen { background: linear-gradient(180deg, #FFF8F0 0%, #FFF0E5 100%); font-family: 'Plus Jakarta Sans', sans-serif; }
+  .d5 .theme-toggle { background: #FFE8D5; color: #c4703a; }
+  .d5 .kanji-ghost { color: #e8a060; font-family: 'Noto Sans JP'; }
+  .d5 .meaning { color: #b85a20; }
+  .d5 .stroke-badge { background: #FFE0C5; color: #c4703a; }
+  .d5 .kanji-item { background: #FFF0E5; color: #d4a080; border-color: #f5d5b8; font-family: 'Noto Sans JP'; }
+  .d5 .kanji-item.active { background: #fff; color: #b85a20; border-color: #e8853a; box-shadow: 0 4px 14px rgba(232,133,58,0.2); }
+  .d5 .mode-selector { background: #FFE8D5; }
+  .d5 .mode-btn { color: #d4a080; }
+  .d5 .mode-btn.active { background: linear-gradient(135deg, #e8753a, #f0a050); color: #fff; }
+  .d5 .canvas-area { background: #FFFCF8; box-shadow: 0 8px 24px rgba(232,133,58,0.1); border-radius: 20px; }
+  .d5 .canvas-grid line { stroke: #f5d5b8; stroke-width: 0.5; }
+  .d5 .canvas-kanji { color: #e8a060; font-family: 'Noto Sans JP'; }
+  .d5 .stroke-modes { background: #FFE8D5; }
+  .d5 .stroke-mode-btn { color: #d4a080; }
+  .d5 .stroke-mode-btn.active { background: #e8753a; color: #fff; }
+  .d5 .action-btn { background: #FFE8D5; color: #b85a20; }
+  .d5 .action-btn.primary { background: linear-gradient(135deg, #e8753a, #f0a050); color: #fff; box-shadow: 0 4px 16px rgba(232,117,58,0.3); }
+  .d5 .stroke-count { color: #d4a080; }
+  .d5 .canvas-strokes path { stroke: #b85a20; }
+
+  .d5-dark .screen { background: linear-gradient(180deg, #1A1410 0%, #1E160E 100%); font-family: 'Plus Jakarta Sans', sans-serif; }
+  .d5-dark .theme-toggle { background: #2a2018; color: #e8a060; }
+  .d5-dark .kanji-ghost { color: #e8853a; font-family: 'Noto Sans JP'; }
+  .d5-dark .meaning { color: #f0b070; }
+  .d5-dark .stroke-badge { background: #2a2018; color: #c4703a; }
+  .d5-dark .kanji-item { background: #221a12; color: #5a4a30; border-color: #3a2a18; font-family: 'Noto Sans JP'; }
+  .d5-dark .kanji-item.active { background: #2a2018; color: #f0b070; border-color: #e8853a; box-shadow: 0 4px 14px rgba(232,133,58,0.15); }
+  .d5-dark .mode-selector { background: #221a12; }
+  .d5-dark .mode-btn { color: #5a4a30; }
+  .d5-dark .mode-btn.active { background: linear-gradient(135deg, #e8753a, #f0a050); color: #fff; }
+  .d5-dark .canvas-area { background: #18120c; border: 1px solid #3a2a18; box-shadow: 0 8px 24px rgba(0,0,0,0.3); border-radius: 20px; }
+  .d5-dark .canvas-grid line { stroke: #3a2a18; stroke-width: 0.5; }
+  .d5-dark .canvas-kanji { color: #e8853a; font-family: 'Noto Sans JP'; }
+  .d5-dark .stroke-modes { background: #221a12; }
+  .d5-dark .stroke-mode-btn { color: #5a4a30; }
+  .d5-dark .stroke-mode-btn.active { background: #e8753a; color: #fff; }
+  .d5-dark .action-btn { background: #221a12; color: #d4903a; }
+  .d5-dark .action-btn.primary { background: linear-gradient(135deg, #e8753a, #f0a050); color: #fff; box-shadow: 0 4px 16px rgba(232,117,58,0.25); }
+  .d5-dark .stroke-count { color: #5a4a30; }
+  .d5-dark .canvas-strokes path { stroke: #f0b070; }
+
+  /* ===================== DESIGN 6: Minimal Mono ===================== */
+  .d6 .screen { background: #FFFFFF; font-family: 'Inter', sans-serif; }
+  .d6 .theme-toggle { background: #f5f5f5; color: #737373; }
+  .d6 .kanji-ghost { color: #a3a3a3; font-family: 'Noto Sans JP'; }
+  .d6 .meaning { color: #171717; }
+  .d6 .stroke-badge { background: #f5f5f5; color: #737373; }
+  .d6 .kanji-item { background: #fafafa; color: #a3a3a3; border-color: #e5e5e5; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d6 .kanji-item.active { background: #171717; color: #fff; border-color: #171717; }
+  .d6 .mode-selector { background: #f5f5f5; }
+  .d6 .mode-btn { color: #a3a3a3; }
+  .d6 .mode-btn.active { background: #171717; color: #fff; }
+  .d6 .canvas-area { background: #fafafa; border: 1px solid #e5e5e5; }
+  .d6 .canvas-grid line { stroke: #e5e5e5; stroke-width: 0.5; }
+  .d6 .canvas-kanji { color: #d4d4d4; font-family: 'Noto Sans JP'; }
+  .d6 .stroke-modes { background: #f5f5f5; }
+  .d6 .stroke-mode-btn { color: #a3a3a3; }
+  .d6 .stroke-mode-btn.active { background: #171717; color: #fff; }
+  .d6 .action-btn { background: #f5f5f5; color: #525252; }
+  .d6 .action-btn.primary { background: #171717; color: #fff; }
+  .d6 .stroke-count { color: #a3a3a3; }
+  .d6 .canvas-strokes path { stroke: #171717; }
+
+  .d6-dark .screen { background: #0a0a0a; font-family: 'Inter', sans-serif; }
+  .d6-dark .theme-toggle { background: #1a1a1a; color: #737373; }
+  .d6-dark .kanji-ghost { color: #525252; font-family: 'Noto Sans JP'; }
+  .d6-dark .meaning { color: #e5e5e5; }
+  .d6-dark .stroke-badge { background: #1a1a1a; color: #737373; }
+  .d6-dark .kanji-item { background: #141414; color: #525252; border-color: #2a2a2a; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d6-dark .kanji-item.active { background: #e5e5e5; color: #0a0a0a; border-color: #e5e5e5; }
+  .d6-dark .mode-selector { background: #141414; }
+  .d6-dark .mode-btn { color: #525252; }
+  .d6-dark .mode-btn.active { background: #e5e5e5; color: #0a0a0a; }
+  .d6-dark .canvas-area { background: #0e0e0e; border: 1px solid #2a2a2a; }
+  .d6-dark .canvas-grid line { stroke: #2a2a2a; stroke-width: 0.5; }
+  .d6-dark .canvas-kanji { color: #333; font-family: 'Noto Sans JP'; }
+  .d6-dark .stroke-modes { background: #141414; }
+  .d6-dark .stroke-mode-btn { color: #525252; }
+  .d6-dark .stroke-mode-btn.active { background: #e5e5e5; color: #0a0a0a; }
+  .d6-dark .action-btn { background: #141414; color: #a3a3a3; }
+  .d6-dark .action-btn.primary { background: #e5e5e5; color: #0a0a0a; }
+  .d6-dark .stroke-count { color: #525252; }
+  .d6-dark .canvas-strokes path { stroke: #e5e5e5; }
+
+  /* ===================== DESIGN 7: Candy Pop ===================== */
+  .d7 .screen { background: #FFFBF5; font-family: 'Outfit', sans-serif; }
+  .d7 .theme-toggle { background: #FFF0DD; color: #e87040; }
+  .d7 .kanji-ghost { color: #FF6B6B; font-family: 'Noto Sans JP'; }
+  .d7 .meaning { color: #4A3AFF; }
+  .d7 .stroke-badge { background: #EDE8FF; color: #7B68EE; }
+  .d7 .kanji-item { background: #FFF5F5; color: #d4a0a0; border-color: #ffd5d5; font-family: 'Noto Sans JP'; border-radius: 16px; }
+  .d7 .kanji-item:nth-child(2) { background: #F0F0FF; border-color: #d5d5ff; color: #a0a0d4; }
+  .d7 .kanji-item:nth-child(3) { background: #F0FFF5; border-color: #d5ffe5; color: #a0d4a8; }
+  .d7 .kanji-item:nth-child(4) { background: #FFF8E0; border-color: #ffe8a0; color: #d4c080; }
+  .d7 .kanji-item:nth-child(5) { background: #FFF0F8; border-color: #ffd5e8; color: #d4a0c0; }
+  .d7 .kanji-item.active { background: #4A3AFF; color: #fff; border-color: #4A3AFF; box-shadow: 0 4px 16px rgba(74,58,255,0.3); }
+  .d7 .mode-selector { background: #FFF0DD; }
+  .d7 .mode-btn { color: #d4a080; }
+  .d7 .mode-btn.active { background: linear-gradient(135deg, #FF6B6B, #FFB347); color: #fff; }
+  .d7 .canvas-area { background: #fff; border: 2px solid #F0E8FF; box-shadow: 0 8px 24px rgba(74,58,255,0.08); border-radius: 24px; }
+  .d7 .canvas-grid line { stroke: #f0e8ff; stroke-width: 0.5; }
+  .d7 .canvas-kanji { color: #FF6B6B; font-family: 'Noto Sans JP'; opacity: 0.06; }
+  .d7 .stroke-modes { background: #EDE8FF; }
+  .d7 .stroke-mode-btn { color: #7B68EE; }
+  .d7 .stroke-mode-btn.active { background: #4A3AFF; color: #fff; }
+  .d7 .action-btn { background: #FFF0DD; color: #e87040; border-radius: 16px; }
+  .d7 .action-btn.primary { background: linear-gradient(135deg, #4A3AFF, #7B68EE); color: #fff; box-shadow: 0 4px 16px rgba(74,58,255,0.3); }
+  .d7 .stroke-count { color: #7B68EE; }
+  .d7 .canvas-strokes path { stroke: #4A3AFF; }
+
+  .d7-dark .screen { background: #12101A; font-family: 'Outfit', sans-serif; }
+  .d7-dark .theme-toggle { background: #221a12; color: #FFB347; }
+  .d7-dark .kanji-ghost { color: #FF6B6B; font-family: 'Noto Sans JP'; }
+  .d7-dark .meaning { color: #8A7AFF; }
+  .d7-dark .stroke-badge { background: #1a1830; color: #7B68EE; }
+  .d7-dark .kanji-item { background: #1e1520; color: #5a3a3a; border-color: #3a2020; font-family: 'Noto Sans JP'; border-radius: 16px; }
+  .d7-dark .kanji-item:nth-child(2) { background: #181828; border-color: #2a2a4a; color: #4a4a7a; }
+  .d7-dark .kanji-item:nth-child(3) { background: #152018; border-color: #2a3a2a; color: #4a6a4a; }
+  .d7-dark .kanji-item:nth-child(4) { background: #201e12; border-color: #3a3820; color: #6a6440; }
+  .d7-dark .kanji-item:nth-child(5) { background: #1e1520; border-color: #3a2030; color: #6a4060; }
+  .d7-dark .kanji-item.active { background: #4A3AFF; color: #fff; border-color: #4A3AFF; box-shadow: 0 4px 16px rgba(74,58,255,0.3); }
+  .d7-dark .mode-selector { background: #1a1510; }
+  .d7-dark .mode-btn { color: #5a4030; }
+  .d7-dark .mode-btn.active { background: linear-gradient(135deg, #FF6B6B, #FFB347); color: #fff; }
+  .d7-dark .canvas-area { background: #0e0c14; border: 2px solid #2a2040; box-shadow: 0 8px 24px rgba(74,58,255,0.1); border-radius: 24px; }
+  .d7-dark .canvas-grid line { stroke: #2a2040; stroke-width: 0.5; }
+  .d7-dark .canvas-kanji { color: #FF6B6B; font-family: 'Noto Sans JP'; opacity: 0.06; }
+  .d7-dark .stroke-modes { background: #1a1830; }
+  .d7-dark .stroke-mode-btn { color: #5a4aaa; }
+  .d7-dark .stroke-mode-btn.active { background: #4A3AFF; color: #fff; }
+  .d7-dark .action-btn { background: #1a1510; color: #e87040; border-radius: 16px; }
+  .d7-dark .action-btn.primary { background: linear-gradient(135deg, #4A3AFF, #7B68EE); color: #fff; box-shadow: 0 4px 16px rgba(74,58,255,0.3); }
+  .d7-dark .stroke-count { color: #5a4aaa; }
+  .d7-dark .canvas-strokes path { stroke: #8A7AFF; }
+
+  /* ===================== DESIGN 11: Candy Wave ===================== */
+  /* Candy Pop x Water — playful aqua palette, solid-color buttons */
+  .d11 .screen { background: #F2FAFF; font-family: 'Outfit', sans-serif; }
+  .d11 .theme-toggle { background: #D6F0FF; color: #0EA5CC; }
+  .d11 .kanji-ghost { color: #FF6B8A; font-family: 'Noto Sans JP'; }
+  .d11 .meaning { color: #0E8EBB; }
+  .d11 .stroke-badge { background: #DFF4FF; color: #2AACCC; }
+  .d11 .kanji-item { background: #FFF0F3; color: #d4a0a8; border-color: #ffd5dd; font-family: 'Noto Sans JP'; border-radius: 50%; }
+  .d11 .kanji-item:nth-child(2) { background: #E8F6FF; border-color: #b8e0f5; color: #7ab0cf; }
+  .d11 .kanji-item:nth-child(3) { background: #F0EEFF; border-color: #d5d0ff; color: #a098d4; }
+  .d11 .kanji-item:nth-child(4) { background: #E5FFF5; border-color: #b8f0d8; color: #70bfa0; }
+  .d11 .kanji-item:nth-child(5) { background: #FFF5E0; border-color: #ffe0a0; color: #d4b870; }
+  .d11 .kanji-item.active { background: #0EA5CC; color: #fff; border-color: #0EA5CC; box-shadow: 0 4px 16px rgba(14,165,204,0.3); }
+  .d11 .mode-selector { background: #DFF4FF; }
+  .d11 .mode-btn { color: #7abacf; }
+  .d11 .mode-btn.active { background: #FF6B8A; color: #fff; }
+  .d11 .canvas-area { background: #fff; border: 2px solid #D6F0FF; box-shadow: 0 8px 24px rgba(14,165,204,0.08); border-radius: 24px; }
+  .d11 .canvas-grid line { stroke: #d6f0ff; stroke-width: 0.5; }
+  .d11 .canvas-kanji { color: #0EA5CC; font-family: 'Noto Sans JP'; opacity: 0.06; }
+  .d11 .stroke-modes { background: #DFF4FF; }
+  .d11 .stroke-mode-btn { color: #7abacf; }
+  .d11 .stroke-mode-btn.active { background: #7B68EE; color: #fff; }
+  .d11 .action-btn { background: #FFE0E8; color: #FF6B8A; border-radius: 16px; }
+  .d11 .action-btn.primary { background: #0EA5CC; color: #fff; box-shadow: 0 4px 16px rgba(14,165,204,0.3); }
+  .d11 .stroke-count { color: #7B68EE; }
+  .d11 .canvas-strokes path { stroke: #0E8EBB; }
+
+  .d11-dark .screen { background: #091418; font-family: 'Outfit', sans-serif; }
+  .d11-dark .theme-toggle { background: #12222a; color: #3DD4FF; }
+  .d11-dark .kanji-ghost { color: #FF6B8A; font-family: 'Noto Sans JP'; }
+  .d11-dark .meaning { color: #5AD8F0; }
+  .d11-dark .stroke-badge { background: #0e1e28; color: #2AACCC; }
+  .d11-dark .kanji-item { background: #1e1218; color: #5a3040; border-color: #3a1828; font-family: 'Noto Sans JP'; border-radius: 50%; }
+  .d11-dark .kanji-item:nth-child(2) { background: #0e1a22; border-color: #183040; color: #2a6a8a; }
+  .d11-dark .kanji-item:nth-child(3) { background: #14122a; border-color: #28204a; color: #5a4aaa; }
+  .d11-dark .kanji-item:nth-child(4) { background: #0e1a14; border-color: #183a28; color: #2a6a4a; }
+  .d11-dark .kanji-item:nth-child(5) { background: #1a1810; border-color: #3a3420; color: #6a5a30; }
+  .d11-dark .kanji-item.active { background: #0EA5CC; color: #fff; border-color: #0EA5CC; box-shadow: 0 4px 16px rgba(14,165,204,0.3); }
+  .d11-dark .mode-selector { background: #0e1e28; }
+  .d11-dark .mode-btn { color: #2a5a6a; }
+  .d11-dark .mode-btn.active { background: #FF6B8A; color: #fff; }
+  .d11-dark .canvas-area { background: #060e14; border: 2px solid #12222a; box-shadow: 0 8px 24px rgba(0,0,0,0.3); border-radius: 24px; }
+  .d11-dark .canvas-grid line { stroke: #12222a; stroke-width: 0.5; }
+  .d11-dark .canvas-kanji { color: #0EA5CC; font-family: 'Noto Sans JP'; opacity: 0.06; }
+  .d11-dark .stroke-modes { background: #0e1e28; }
+  .d11-dark .stroke-mode-btn { color: #2a5a8a; }
+  .d11-dark .stroke-mode-btn.active { background: #7B68EE; color: #fff; }
+  .d11-dark .action-btn { background: #1e1218; color: #FF6B8A; border-radius: 16px; }
+  .d11-dark .action-btn.primary { background: #0EA5CC; color: #fff; box-shadow: 0 4px 16px rgba(14,165,204,0.25); }
+  .d11-dark .stroke-count { color: #5a4aaa; }
+  .d11-dark .canvas-strokes path { stroke: #5AD8F0; }
+
+  /* ===================== DESIGN 12: Still Water ===================== */
+  /* Minimal Mono x Water — clean flat layout, teal as sole accent */
+  .d12 .screen { background: #FFFFFF; font-family: 'Inter', sans-serif; }
+  .d12 .theme-toggle { background: #F0F7FA; color: #5a9aaa; }
+  .d12 .kanji-ghost { color: #b0d5e0; font-family: 'Noto Sans JP'; }
+  .d12 .meaning { color: #1a5a6a; }
+  .d12 .stroke-badge { background: #EDF6FA; color: #5a9aaa; }
+  .d12 .kanji-item { background: #F5FAFB; color: #a0c0cc; border-color: #daeaf0; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d12 .kanji-item.active { background: #1a5a6a; color: #fff; border-color: #1a5a6a; }
+  .d12 .mode-selector { background: #F0F7FA; }
+  .d12 .mode-btn { color: #7aafbf; }
+  .d12 .mode-btn.active { background: #1a5a6a; color: #fff; }
+  .d12 .canvas-area { background: #fafcfd; border: 1px solid #daeaf0; }
+  .d12 .canvas-grid line { stroke: #daeaf0; stroke-width: 0.5; }
+  .d12 .canvas-kanji { color: #c5dfe8; font-family: 'Noto Sans JP'; }
+  .d12 .stroke-modes { background: #F0F7FA; }
+  .d12 .stroke-mode-btn { color: #7aafbf; }
+  .d12 .stroke-mode-btn.active { background: #1a5a6a; color: #fff; }
+  .d12 .action-btn { background: #F0F7FA; color: #3a7a8a; }
+  .d12 .action-btn.primary { background: #1a5a6a; color: #fff; }
+  .d12 .stroke-count { color: #7aafbf; }
+  .d12 .canvas-strokes path { stroke: #1a5a6a; }
+
+  .d12-dark .screen { background: #0a0e10; font-family: 'Inter', sans-serif; }
+  .d12-dark .theme-toggle { background: #121a1e; color: #4a8a9a; }
+  .d12-dark .kanji-ghost { color: #1a3a44; font-family: 'Noto Sans JP'; }
+  .d12-dark .meaning { color: #6ad0e0; }
+  .d12-dark .stroke-badge { background: #121a1e; color: #4a8a9a; }
+  .d12-dark .kanji-item { background: #0e1418; color: #2a4a54; border-color: #1a2a30; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d12-dark .kanji-item.active { background: #6ad0e0; color: #0a0e10; border-color: #6ad0e0; }
+  .d12-dark .mode-selector { background: #0e1418; }
+  .d12-dark .mode-btn { color: #2a5a6a; }
+  .d12-dark .mode-btn.active { background: #6ad0e0; color: #0a0e10; }
+  .d12-dark .canvas-area { background: #080c10; border: 1px solid #1a2a30; }
+  .d12-dark .canvas-grid line { stroke: #1a2a30; stroke-width: 0.5; }
+  .d12-dark .canvas-kanji { color: #1a3040; font-family: 'Noto Sans JP'; }
+  .d12-dark .stroke-modes { background: #0e1418; }
+  .d12-dark .stroke-mode-btn { color: #2a5a6a; }
+  .d12-dark .stroke-mode-btn.active { background: #6ad0e0; color: #0a0e10; }
+  .d12-dark .action-btn { background: #0e1418; color: #5aafbf; }
+  .d12-dark .action-btn.primary { background: #6ad0e0; color: #0a0e10; }
+  .d12-dark .stroke-count { color: #2a5a6a; }
+  .d12-dark .canvas-strokes path { stroke: #6ad0e0; }
+
+  /* ===================== DESIGN 13: Mono Neon ===================== */
+  /* Minimal Mono x Midnight Neon — flat mono layout, electric purple accent */
+  .d13 .screen { background: #FFFFFF; font-family: 'Inter', sans-serif; }
+  .d13 .theme-toggle { background: #f3f2ff; color: #7B68EE; }
+  .d13 .kanji-ghost { color: #c5bdf5; font-family: 'Noto Sans JP'; }
+  .d13 .meaning { color: #4A3ADA; }
+  .d13 .stroke-badge { background: #f0eeff; color: #7B68EE; }
+  .d13 .kanji-item { background: #f8f7ff; color: #b0a8e0; border-color: #e5e0f8; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d13 .kanji-item.active { background: #4A3ADA; color: #fff; border-color: #4A3ADA; }
+  .d13 .mode-selector { background: #f3f2ff; }
+  .d13 .mode-btn { color: #b0a8e0; }
+  .d13 .mode-btn.active { background: #4A3ADA; color: #fff; }
+  .d13 .canvas-area { background: #fbfaff; border: 1px solid #e5e0f8; }
+  .d13 .canvas-grid line { stroke: #e5e0f8; stroke-width: 0.5; }
+  .d13 .canvas-kanji { color: #ddd8f5; font-family: 'Noto Sans JP'; }
+  .d13 .stroke-modes { background: #f3f2ff; }
+  .d13 .stroke-mode-btn { color: #b0a8e0; }
+  .d13 .stroke-mode-btn.active { background: #4A3ADA; color: #fff; }
+  .d13 .action-btn { background: #f3f2ff; color: #6a5ac0; }
+  .d13 .action-btn.primary { background: #4A3ADA; color: #fff; }
+  .d13 .stroke-count { color: #b0a8e0; }
+  .d13 .canvas-strokes path { stroke: #4A3ADA; }
+
+  .d13-dark .screen { background: #0a0a0f; font-family: 'Inter', sans-serif; }
+  .d13-dark .theme-toggle { background: #14141e; color: #00f0ff; }
+  .d13-dark .kanji-ghost { color: #1a1a3a; font-family: 'Noto Sans JP'; }
+  .d13-dark .meaning { color: #00f0ff; }
+  .d13-dark .stroke-badge { background: #14141e; color: #7B68EE; }
+  .d13-dark .kanji-item { background: #10101a; color: #3a3a5a; border-color: #1e1e30; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d13-dark .kanji-item.active { background: #00f0ff; color: #0a0a0f; border-color: #00f0ff; }
+  .d13-dark .mode-selector { background: #10101a; }
+  .d13-dark .mode-btn { color: #3a3a5a; }
+  .d13-dark .mode-btn.active { background: #00f0ff; color: #0a0a0f; }
+  .d13-dark .canvas-area { background: #08080e; border: 1px solid #1e1e30; }
+  .d13-dark .canvas-grid line { stroke: #1e1e30; stroke-width: 0.5; }
+  .d13-dark .canvas-kanji { color: #1a1a35; font-family: 'Noto Sans JP'; }
+  .d13-dark .stroke-modes { background: #10101a; }
+  .d13-dark .stroke-mode-btn { color: #3a3a5a; }
+  .d13-dark .stroke-mode-btn.active { background: #00f0ff; color: #0a0a0f; }
+  .d13-dark .action-btn { background: #10101a; color: #7B68EE; }
+  .d13-dark .action-btn.primary { background: #00f0ff; color: #0a0a0f; }
+  .d13-dark .stroke-count { color: #3a3a5a; }
+  .d13-dark .canvas-strokes path { stroke: #00f0ff; }
+
+  /* 18. Mono Matcha (Mono Neon dark variant + whiter text + matcha green active) */
+  .d18-dark .screen { background: #0a0a0f; font-family: 'Inter', sans-serif; }
+  .d18-dark .theme-toggle { background: #14141e; color: #e5e5e5; }
+  .d18-dark .kanji-ghost { color: #1a1a3a; font-family: 'Noto Sans JP'; }
+  .d18-dark .meaning { color: #f0f0f0; }
+  .d18-dark .stroke-badge { background: #14141e; color: #c0c0c0; }
+  .d18-dark .kanji-item { background: #10101a; color: #7a7a9a; border-color: #1e1e30; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d18-dark .kanji-item.active { background: #c8e64a; color: #0a0a0f; border-color: #c8e64a; }
+  .d18-dark .mode-selector { background: #10101a; }
+  .d18-dark .mode-btn { color: #7a7a9a; }
+  .d18-dark .mode-btn.active { background: #c8e64a; color: #0a0a0f; }
+  .d18-dark .canvas-area { background: #08080e; border: 1px solid #1e1e30; }
+  .d18-dark .canvas-grid line { stroke: #1e1e30; stroke-width: 0.5; }
+  .d18-dark .canvas-kanji { color: #1a1a35; font-family: 'Noto Sans JP'; }
+  .d18-dark .stroke-modes { background: #10101a; }
+  .d18-dark .stroke-mode-btn { color: #7a7a9a; }
+  .d18-dark .stroke-mode-btn.active { background: #c8e64a; color: #0a0a0f; }
+  .d18-dark .action-btn { background: #10101a; color: #c0c0c0; }
+  .d18-dark .action-btn.primary { background: #c8e64a; color: #0a0a0f; }
+  .d18-dark .stroke-count { color: #8a8aaa; }
+  .d18-dark .canvas-strokes path { stroke: #e0e0e0; }
+
+  /* ===================== DESIGN 14: Mono Pop ===================== */
+  /* Minimal Mono x Candy Pop — clean flat layout, candy colors as accents */
+  .d14 .screen { background: #FFFFFF; font-family: 'Inter', sans-serif; }
+  .d14 .theme-toggle { background: #FFF0F2; color: #FF6B6B; }
+  .d14 .kanji-ghost { color: #ffb0b0; font-family: 'Noto Sans JP'; }
+  .d14 .meaning { color: #171717; }
+  .d14 .stroke-badge { background: #f0edff; color: #7B68EE; }
+  .d14 .kanji-item { background: #fafafa; color: #c0c0c0; border-color: #e5e5e5; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d14 .kanji-item:nth-child(1) { border-left: 3px solid #FF6B6B; }
+  .d14 .kanji-item:nth-child(2) { border-left: 3px solid #4A3AFF; }
+  .d14 .kanji-item:nth-child(3) { border-left: 3px solid #FFB347; }
+  .d14 .kanji-item:nth-child(4) { border-left: 3px solid #7B68EE; }
+  .d14 .kanji-item:nth-child(5) { border-left: 3px solid #4ECDC4; }
+  .d14 .kanji-item.active { background: #FF6B6B; color: #fff; border-color: #FF6B6B; border-left-color: #FF6B6B; }
+  .d14 .mode-selector { background: #f5f5f5; }
+  .d14 .mode-btn { color: #a3a3a3; }
+  .d14 .mode-btn.active { background: #4A3AFF; color: #fff; }
+  .d14 .canvas-area { background: #fafafa; border: 1px solid #e5e5e5; }
+  .d14 .canvas-grid line { stroke: #e5e5e5; stroke-width: 0.5; }
+  .d14 .canvas-kanji { color: #e8e8e8; font-family: 'Noto Sans JP'; }
+  .d14 .stroke-modes { background: #f5f5f5; }
+  .d14 .stroke-mode-btn { color: #a3a3a3; }
+  .d14 .stroke-mode-btn.active { background: #7B68EE; color: #fff; }
+  .d14 .action-btn { background: #f5f5f5; color: #525252; }
+  .d14 .action-btn.primary { background: #FF6B6B; color: #fff; }
+  .d14 .stroke-count { color: #a3a3a3; }
+  .d14 .canvas-strokes path { stroke: #4A3AFF; }
+
+  .d14-dark .screen { background: #0a0a0a; font-family: 'Inter', sans-serif; }
+  .d14-dark .theme-toggle { background: #1a1212; color: #FF6B6B; }
+  .d14-dark .kanji-ghost { color: #3a1a1a; font-family: 'Noto Sans JP'; }
+  .d14-dark .meaning { color: #e5e5e5; }
+  .d14-dark .stroke-badge { background: #141220; color: #7B68EE; }
+  .d14-dark .kanji-item { background: #141414; color: #525252; border-color: #2a2a2a; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d14-dark .kanji-item:nth-child(1) { border-left: 3px solid #FF6B6B; }
+  .d14-dark .kanji-item:nth-child(2) { border-left: 3px solid #6A5AFF; }
+  .d14-dark .kanji-item:nth-child(3) { border-left: 3px solid #FFB347; }
+  .d14-dark .kanji-item:nth-child(4) { border-left: 3px solid #7B68EE; }
+  .d14-dark .kanji-item:nth-child(5) { border-left: 3px solid #4ECDC4; }
+  .d14-dark .kanji-item.active { background: #FF6B6B; color: #fff; border-color: #FF6B6B; border-left-color: #FF6B6B; }
+  .d14-dark .mode-selector { background: #141414; }
+  .d14-dark .mode-btn { color: #525252; }
+  .d14-dark .mode-btn.active { background: #6A5AFF; color: #fff; }
+  .d14-dark .canvas-area { background: #0e0e0e; border: 1px solid #2a2a2a; }
+  .d14-dark .canvas-grid line { stroke: #2a2a2a; stroke-width: 0.5; }
+  .d14-dark .canvas-kanji { color: #222; font-family: 'Noto Sans JP'; }
+  .d14-dark .stroke-modes { background: #141414; }
+  .d14-dark .stroke-mode-btn { color: #525252; }
+  .d14-dark .stroke-mode-btn.active { background: #7B68EE; color: #fff; }
+  .d14-dark .action-btn { background: #141414; color: #a3a3a3; }
+  .d14-dark .action-btn.primary { background: #FF6B6B; color: #fff; }
+  .d14-dark .stroke-count { color: #525252; }
+  .d14-dark .canvas-strokes path { stroke: #6A5AFF; }
+
+  /* ===================== DESIGN 15: Mono Frost ===================== */
+  /* Minimal Mono x Arctic Frost — flat mono, icy blue accent */
+  .d15 .screen { background: #FFFFFF; font-family: 'Inter', sans-serif; }
+  .d15 .theme-toggle { background: #EDF1FF; color: #5a6aaa; }
+  .d15 .kanji-ghost { color: #b8c5ee; font-family: 'Noto Sans JP'; }
+  .d15 .meaning { color: #3A4A8A; }
+  .d15 .stroke-badge { background: #EDF1FF; color: #5a6aaa; }
+  .d15 .kanji-item { background: #F5F7FF; color: #a0aad0; border-color: #dde3f5; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d15 .kanji-item.active { background: #3A4A8A; color: #fff; border-color: #3A4A8A; }
+  .d15 .mode-selector { background: #EDF1FF; }
+  .d15 .mode-btn { color: #8a9aDA; }
+  .d15 .mode-btn.active { background: #5a7aEE; color: #fff; }
+  .d15 .canvas-area { background: #fafbff; border: 1px solid #dde3f5; }
+  .d15 .canvas-grid line { stroke: #dde3f5; stroke-width: 0.5; }
+  .d15 .canvas-kanji { color: #d0d8f0; font-family: 'Noto Sans JP'; }
+  .d15 .stroke-modes { background: #EDF1FF; }
+  .d15 .stroke-mode-btn { color: #8a9aDA; }
+  .d15 .stroke-mode-btn.active { background: #5a7aEE; color: #fff; }
+  .d15 .action-btn { background: #EDF1FF; color: #4a5a9a; }
+  .d15 .action-btn.primary { background: #3A4A8A; color: #fff; }
+  .d15 .stroke-count { color: #8a9aDA; }
+  .d15 .canvas-strokes path { stroke: #3A4A8A; }
+
+  .d15-dark .screen { background: #0a0a10; font-family: 'Inter', sans-serif; }
+  .d15-dark .theme-toggle { background: #14161e; color: #8aAAFF; }
+  .d15-dark .kanji-ghost { color: #1a1e30; font-family: 'Noto Sans JP'; }
+  .d15-dark .meaning { color: #8aAAFF; }
+  .d15-dark .stroke-badge { background: #14161e; color: #5a6aaa; }
+  .d15-dark .kanji-item { background: #0e1018; color: #303a5a; border-color: #1a2030; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d15-dark .kanji-item.active { background: #8aAAFF; color: #0a0a10; border-color: #8aAAFF; }
+  .d15-dark .mode-selector { background: #0e1018; }
+  .d15-dark .mode-btn { color: #303a5a; }
+  .d15-dark .mode-btn.active { background: #8aAAFF; color: #0a0a10; }
+  .d15-dark .canvas-area { background: #08080e; border: 1px solid #1a2030; }
+  .d15-dark .canvas-grid line { stroke: #1a2030; stroke-width: 0.5; }
+  .d15-dark .canvas-kanji { color: #1a2040; font-family: 'Noto Sans JP'; }
+  .d15-dark .stroke-modes { background: #0e1018; }
+  .d15-dark .stroke-mode-btn { color: #303a5a; }
+  .d15-dark .stroke-mode-btn.active { background: #8aAAFF; color: #0a0a10; }
+  .d15-dark .action-btn { background: #0e1018; color: #5a7aEE; }
+  .d15-dark .action-btn.primary { background: #8aAAFF; color: #0a0a10; }
+  .d15-dark .stroke-count { color: #303a5a; }
+  .d15-dark .canvas-strokes path { stroke: #8aAAFF; }
+
+  /* ===================== DESIGN 16: Frost Pop ===================== */
+  /* Minimal Mono x Arctic Frost x Candy Pop — icy base, candy accents */
+  .d16 .screen { background: #FFFFFF; font-family: 'Inter', sans-serif; }
+  .d16 .theme-toggle { background: #EDF1FF; color: #FF6B6B; }
+  .d16 .kanji-ghost { color: #8a9aDA; font-family: 'Noto Sans JP'; }
+  .d16 .meaning { color: #3A4A8A; }
+  .d16 .stroke-badge { background: #FFF0F2; color: #FF6B6B; }
+  .d16 .kanji-item { background: #F5F7FF; color: #a0aad0; border-color: #dde3f5; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d16 .kanji-item:nth-child(1) { border-left: 3px solid #FF6B6B; }
+  .d16 .kanji-item:nth-child(2) { border-left: 3px solid #5a7aEE; }
+  .d16 .kanji-item:nth-child(3) { border-left: 3px solid #FFB347; }
+  .d16 .kanji-item:nth-child(4) { border-left: 3px solid #7B68EE; }
+  .d16 .kanji-item:nth-child(5) { border-left: 3px solid #4ECDC4; }
+  .d16 .kanji-item.active { background: #FF6B6B; color: #fff; border-color: #FF6B6B; border-left-color: #FF6B6B; }
+  .d16 .mode-selector { background: #EDF1FF; }
+  .d16 .mode-btn { color: #8a9aDA; }
+  .d16 .mode-btn.active { background: #5a7aEE; color: #fff; }
+  .d16 .canvas-area { background: #fafbff; border: 1px solid #dde3f5; }
+  .d16 .canvas-grid line { stroke: #dde3f5; stroke-width: 0.5; }
+  .d16 .canvas-kanji { color: #d0d8f0; font-family: 'Noto Sans JP'; }
+  .d16 .stroke-modes { background: #EDF1FF; }
+  .d16 .stroke-mode-btn { color: #8a9aDA; }
+  .d16 .stroke-mode-btn.active { background: #7B68EE; color: #fff; }
+  .d16 .action-btn { background: #FFF0F2; color: #FF6B6B; }
+  .d16 .action-btn.primary { background: #5a7aEE; color: #fff; }
+  .d16 .stroke-count { color: #8a9aDA; }
+  .d16 .canvas-strokes path { stroke: #3A4A8A; }
+
+  .d16-dark .screen { background: #0a0a10; font-family: 'Inter', sans-serif; }
+  .d16-dark .theme-toggle { background: #1a1212; color: #FF6B6B; }
+  .d16-dark .kanji-ghost { color: #1a2040; font-family: 'Noto Sans JP'; }
+  .d16-dark .meaning { color: #8aAAFF; }
+  .d16-dark .stroke-badge { background: #1a1215; color: #FF6B6B; }
+  .d16-dark .kanji-item { background: #0e1018; color: #303a5a; border-color: #1a2030; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d16-dark .kanji-item:nth-child(1) { border-left: 3px solid #FF6B6B; }
+  .d16-dark .kanji-item:nth-child(2) { border-left: 3px solid #5a7aEE; }
+  .d16-dark .kanji-item:nth-child(3) { border-left: 3px solid #FFB347; }
+  .d16-dark .kanji-item:nth-child(4) { border-left: 3px solid #7B68EE; }
+  .d16-dark .kanji-item:nth-child(5) { border-left: 3px solid #4ECDC4; }
+  .d16-dark .kanji-item.active { background: #FF6B6B; color: #fff; border-color: #FF6B6B; border-left-color: #FF6B6B; }
+  .d16-dark .mode-selector { background: #0e1018; }
+  .d16-dark .mode-btn { color: #303a5a; }
+  .d16-dark .mode-btn.active { background: #5a7aEE; color: #fff; }
+  .d16-dark .canvas-area { background: #08080e; border: 1px solid #1a2030; }
+  .d16-dark .canvas-grid line { stroke: #1a2030; stroke-width: 0.5; }
+  .d16-dark .canvas-kanji { color: #1a2040; font-family: 'Noto Sans JP'; }
+  .d16-dark .stroke-modes { background: #0e1018; }
+  .d16-dark .stroke-mode-btn { color: #303a5a; }
+  .d16-dark .stroke-mode-btn.active { background: #7B68EE; color: #fff; }
+  .d16-dark .action-btn { background: #1a1215; color: #FF6B6B; }
+  .d16-dark .action-btn.primary { background: #5a7aEE; color: #fff; }
+  .d16-dark .stroke-count { color: #303a5a; }
+  .d16-dark .canvas-strokes path { stroke: #8aAAFF; }
+
+  /* ===================== DESIGN 17: Neon Pop ===================== */
+  /* Minimal Mono x Midnight Neon x Candy Pop — clean base, neon + candy accents */
+  .d17 .screen { background: #FFFFFF; font-family: 'Inter', sans-serif; }
+  .d17 .theme-toggle { background: #f3f2ff; color: #FF6B6B; }
+  .d17 .kanji-ghost { color: #c5bdf5; font-family: 'Noto Sans JP'; }
+  .d17 .meaning { color: #4A3ADA; }
+  .d17 .stroke-badge { background: #FFF0F2; color: #FF6B6B; }
+  .d17 .kanji-item { background: #f8f7ff; color: #b0a8e0; border-color: #e5e0f8; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d17 .kanji-item:nth-child(1) { border-left: 3px solid #FF6B6B; }
+  .d17 .kanji-item:nth-child(2) { border-left: 3px solid #4A3AFF; }
+  .d17 .kanji-item:nth-child(3) { border-left: 3px solid #FFB347; }
+  .d17 .kanji-item:nth-child(4) { border-left: 3px solid #00d4e0; }
+  .d17 .kanji-item:nth-child(5) { border-left: 3px solid #7B68EE; }
+  .d17 .kanji-item.active { background: #FF6B6B; color: #fff; border-color: #FF6B6B; border-left-color: #FF6B6B; }
+  .d17 .mode-selector { background: #f3f2ff; }
+  .d17 .mode-btn { color: #b0a8e0; }
+  .d17 .mode-btn.active { background: #4A3ADA; color: #fff; }
+  .d17 .canvas-area { background: #fbfaff; border: 1px solid #e5e0f8; }
+  .d17 .canvas-grid line { stroke: #e5e0f8; stroke-width: 0.5; }
+  .d17 .canvas-kanji { color: #ddd8f5; font-family: 'Noto Sans JP'; }
+  .d17 .stroke-modes { background: #f3f2ff; }
+  .d17 .stroke-mode-btn { color: #b0a8e0; }
+  .d17 .stroke-mode-btn.active { background: #FF6B6B; color: #fff; }
+  .d17 .action-btn { background: #FFF0F2; color: #FF6B6B; }
+  .d17 .action-btn.primary { background: #4A3ADA; color: #fff; }
+  .d17 .stroke-count { color: #b0a8e0; }
+  .d17 .canvas-strokes path { stroke: #4A3ADA; }
+
+  .d17-dark .screen { background: #0a0a0f; font-family: 'Inter', sans-serif; }
+  .d17-dark .theme-toggle { background: #1a1212; color: #FF6B6B; }
+  .d17-dark .kanji-ghost { color: #1a1a3a; font-family: 'Noto Sans JP'; }
+  .d17-dark .meaning { color: #00f0ff; }
+  .d17-dark .stroke-badge { background: #1a1215; color: #FF6B6B; }
+  .d17-dark .kanji-item { background: #10101a; color: #3a3a5a; border-color: #1e1e30; font-family: 'Noto Sans JP'; border-radius: 12px; }
+  .d17-dark .kanji-item:nth-child(1) { border-left: 3px solid #FF6B6B; }
+  .d17-dark .kanji-item:nth-child(2) { border-left: 3px solid #6A5AFF; }
+  .d17-dark .kanji-item:nth-child(3) { border-left: 3px solid #FFB347; }
+  .d17-dark .kanji-item:nth-child(4) { border-left: 3px solid #00f0ff; }
+  .d17-dark .kanji-item:nth-child(5) { border-left: 3px solid #7B68EE; }
+  .d17-dark .kanji-item.active { background: #FF6B6B; color: #fff; border-color: #FF6B6B; border-left-color: #FF6B6B; }
+  .d17-dark .mode-selector { background: #10101a; }
+  .d17-dark .mode-btn { color: #3a3a5a; }
+  .d17-dark .mode-btn.active { background: #00f0ff; color: #0a0a0f; }
+  .d17-dark .canvas-area { background: #08080e; border: 1px solid #1e1e30; }
+  .d17-dark .canvas-grid line { stroke: #1e1e30; stroke-width: 0.5; }
+  .d17-dark .canvas-kanji { color: #1a1a35; font-family: 'Noto Sans JP'; }
+  .d17-dark .stroke-modes { background: #10101a; }
+  .d17-dark .stroke-mode-btn { color: #3a3a5a; }
+  .d17-dark .stroke-mode-btn.active { background: #FF6B6B; color: #fff; }
+  .d17-dark .action-btn { background: #1a1215; color: #FF6B6B; }
+  .d17-dark .action-btn.primary { background: #00f0ff; color: #0a0a0f; }
+  .d17-dark .stroke-count { color: #3a3a5a; }
+  .d17-dark .canvas-strokes path { stroke: #00f0ff; }
+
+  /* ===================== DESIGN 8: Golden Hour ===================== */
+  .d8 .screen { background: #FBF8F0; font-family: 'DM Sans', sans-serif; }
+  .d8 .theme-toggle { background: #F0E8D0; color: #8a7a3a; }
+  .d8 .kanji-ghost { color: #c4a55a; font-family: 'Noto Sans JP'; }
+  .d8 .meaning { color: #8a6a10; }
+  .d8 .stroke-badge { background: #F0E8D0; color: #a08a40; }
+  .d8 .kanji-item { background: #F5F0E0; color: #c4b080; border-color: #e0d8c0; font-family: 'Noto Sans JP'; }
+  .d8 .kanji-item.active { background: #fff; color: #8a6a10; border-color: #c4a55a; box-shadow: 0 4px 12px rgba(196,165,90,0.2); }
+  .d8 .mode-selector { background: #F0E8D0; }
+  .d8 .mode-btn { color: #b8a870; }
+  .d8 .mode-btn.active { background: linear-gradient(135deg, #c4a55a, #E8C55A); color: #3a3010; }
+  .d8 .canvas-area { background: #FDFBF5; border: 1px solid #e0d8c0; box-shadow: 0 6px 20px rgba(196,165,90,0.08); border-radius: 20px; }
+  .d8 .canvas-grid line { stroke: #e0d8c0; stroke-width: 0.5; }
+  .d8 .canvas-kanji { color: #c4a55a; font-family: 'Noto Sans JP'; }
+  .d8 .stroke-modes { background: #F0E8D0; }
+  .d8 .stroke-mode-btn { color: #b8a870; }
+  .d8 .stroke-mode-btn.active { background: #a08a40; color: #fff; }
+  .d8 .action-btn { background: #F0E8D0; color: #8a6a10; }
+  .d8 .action-btn.primary { background: linear-gradient(135deg, #c4a55a, #E8C55A); color: #3a3010; box-shadow: 0 4px 12px rgba(196,165,90,0.3); }
+  .d8 .stroke-count { color: #b8a870; }
+  .d8 .canvas-strokes path { stroke: #8a6a10; }
+
+  .d8-dark .screen { background: #1C1810; font-family: 'DM Sans', sans-serif; }
+  .d8-dark .theme-toggle { background: #2a2518; color: #c4a55a; }
+  .d8-dark .kanji-ghost { color: #c4a55a; font-family: 'Noto Sans JP'; }
+  .d8-dark .meaning { color: #E8C55A; }
+  .d8-dark .stroke-badge { background: #2a2518; color: #c4a55a; border: 1px solid #3a3520; }
+  .d8-dark .kanji-item { background: #242018; color: #6a6050; border-color: #3a3520; font-family: 'Noto Sans JP'; }
+  .d8-dark .kanji-item.active { background: #2a2518; color: #E8C55A; border-color: #c4a55a; box-shadow: 0 0 20px rgba(232,197,90,0.15); }
+  .d8-dark .mode-selector { background: #242018; border: 1px solid #3a3520; }
+  .d8-dark .mode-btn { color: #6a6050; }
+  .d8-dark .mode-btn.active { background: linear-gradient(135deg, #c4a55a, #E8C55A); color: #1C1810; }
+  .d8-dark .canvas-area { background: #1a1610; border: 1px solid #3a3520; box-shadow: 0 8px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(232,197,90,0.05); border-radius: 20px; }
+  .d8-dark .canvas-grid line { stroke: #2a2518; stroke-width: 0.5; }
+  .d8-dark .canvas-kanji { color: #c4a55a; font-family: 'Noto Sans JP'; }
+  .d8-dark .stroke-modes { background: #242018; border: 1px solid #3a3520; }
+  .d8-dark .stroke-mode-btn { color: #6a6050; }
+  .d8-dark .stroke-mode-btn.active { background: #c4a55a; color: #1C1810; }
+  .d8-dark .action-btn { background: #242018; color: #c4a55a; border: 1px solid #3a3520; }
+  .d8-dark .action-btn.primary { background: linear-gradient(135deg, #c4a55a, #E8C55A); color: #1C1810; border: none; box-shadow: 0 4px 20px rgba(232,197,90,0.2); }
+  .d8-dark .stroke-count { color: #6a6050; }
+  .d8-dark .canvas-strokes path { stroke: #E8C55A; }
+
+  /* ===================== DESIGN 9: Arctic Frost ===================== */
+  .d9 .screen { background: linear-gradient(180deg, #F0F4FF 0%, #E8EFFF 100%); font-family: 'Sora', sans-serif; }
+  .d9 .theme-toggle { background: #DAE3FF; color: #5a6aaa; }
+  .d9 .kanji-ghost { color: #8a9aDA; font-family: 'Noto Sans JP'; }
+  .d9 .meaning { color: #3A4A8A; }
+  .d9 .stroke-badge { background: #DAE3FF; color: #5a6aaa; }
+  .d9 .kanji-item { background: #E8EFFF; color: #8a9aDA; border-color: #c8d5f5; font-family: 'Noto Sans JP'; }
+  .d9 .kanji-item.active { background: #fff; color: #3A4A8A; border-color: #5a7aEE; box-shadow: 0 4px 16px rgba(90,122,238,0.2); }
+  .d9 .mode-selector { background: #DAE3FF; }
+  .d9 .mode-btn { color: #8a9aDA; }
+  .d9 .mode-btn.active { background: linear-gradient(135deg, #5a7aEE, #8aAAFF); color: #fff; }
+  .d9 .canvas-area { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border: 1px solid rgba(200,213,245,0.6); box-shadow: 0 8px 30px rgba(90,122,238,0.08); border-radius: 24px; }
+  .d9 .canvas-grid line { stroke: #c8d5f5; stroke-width: 0.5; }
+  .d9 .canvas-kanji { color: #8a9aDA; font-family: 'Noto Sans JP'; }
+  .d9 .stroke-modes { background: #DAE3FF; }
+  .d9 .stroke-mode-btn { color: #8a9aDA; }
+  .d9 .stroke-mode-btn.active { background: #5a7aEE; color: #fff; }
+  .d9 .action-btn { background: #DAE3FF; color: #3A4A8A; }
+  .d9 .action-btn.primary { background: linear-gradient(135deg, #5a7aEE, #8aAAFF); color: #fff; box-shadow: 0 4px 16px rgba(90,122,238,0.3); }
+  .d9 .stroke-count { color: #8a9aDA; }
+  .d9 .canvas-strokes path { stroke: #3A4A8A; }
+
+  .d9-dark .screen { background: linear-gradient(180deg, #0E1018 0%, #10121E 100%); font-family: 'Sora', sans-serif; }
+  .d9-dark .theme-toggle { background: #1a1e30; color: #8aAAFF; }
+  .d9-dark .kanji-ghost { color: #5a7aEE; font-family: 'Noto Sans JP'; }
+  .d9-dark .meaning { color: #8aAAFF; }
+  .d9-dark .stroke-badge { background: #1a1e30; color: #5a6aaa; }
+  .d9-dark .kanji-item { background: #141828; color: #3a4a7a; border-color: #222a40; font-family: 'Noto Sans JP'; }
+  .d9-dark .kanji-item.active { background: #1a2040; color: #8aAAFF; border-color: #5a7aEE; box-shadow: 0 4px 16px rgba(90,122,238,0.15); }
+  .d9-dark .mode-selector { background: #141828; }
+  .d9-dark .mode-btn { color: #3a4a7a; }
+  .d9-dark .mode-btn.active { background: linear-gradient(135deg, #5a7aEE, #8aAAFF); color: #fff; }
+  .d9-dark .canvas-area { background: rgba(14,16,24,0.8); backdrop-filter: blur(12px); border: 1px solid #222a40; box-shadow: 0 8px 30px rgba(0,0,0,0.3); border-radius: 24px; }
+  .d9-dark .canvas-grid line { stroke: #222a40; stroke-width: 0.5; }
+  .d9-dark .canvas-kanji { color: #5a7aEE; font-family: 'Noto Sans JP'; }
+  .d9-dark .stroke-modes { background: #141828; }
+  .d9-dark .stroke-mode-btn { color: #3a4a7a; }
+  .d9-dark .stroke-mode-btn.active { background: #5a7aEE; color: #fff; }
+  .d9-dark .action-btn { background: #141828; color: #5a7aEE; }
+  .d9-dark .action-btn.primary { background: linear-gradient(135deg, #5a7aEE, #8aAAFF); color: #fff; box-shadow: 0 4px 16px rgba(90,122,238,0.25); }
+  .d9-dark .stroke-count { color: #3a4a7a; }
+  .d9-dark .canvas-strokes path { stroke: #8aAAFF; }
+
+  /* ===================== DESIGN 10: Matcha Latte ===================== */
+  .d10 .screen { background: #FAF8F2; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .d10 .theme-toggle { background: #EDE8D8; color: #6a7a4a; }
+  .d10 .kanji-ghost { color: #a8b888; font-family: 'Noto Sans JP'; }
+  .d10 .meaning { color: #4a5a30; }
+  .d10 .stroke-badge { background: #E8E0C8; color: #8a7a50; }
+  .d10 .kanji-item { background: #F0ECE0; color: #b0a888; border-color: #ddd8c8; font-family: 'Noto Sans JP'; }
+  .d10 .kanji-item.active { background: #fff; color: #4a5a30; border-color: #7a8a5a; box-shadow: 0 4px 12px rgba(122,138,90,0.15); }
+  .d10 .mode-selector { background: #EDE8D8; }
+  .d10 .mode-btn { color: #a8a080; }
+  .d10 .mode-btn.active { background: #6a7a4a; color: #fff; }
+  .d10 .canvas-area { background: #FDFBF5; box-shadow: 0 6px 20px rgba(90,100,60,0.08); border: 1px solid #e8e0d0; border-radius: 20px; }
+  .d10 .canvas-grid line { stroke: #e0d8c8; stroke-width: 0.5; }
+  .d10 .canvas-kanji { color: #a8b888; font-family: 'Noto Sans JP'; }
+  .d10 .stroke-modes { background: #EDE8D8; }
+  .d10 .stroke-mode-btn { color: #a8a080; }
+  .d10 .stroke-mode-btn.active { background: #6a7a4a; color: #fff; }
+  .d10 .action-btn { background: #EDE8D8; color: #5a6a3a; }
+  .d10 .action-btn.primary { background: #6a7a4a; color: #fff; box-shadow: 0 4px 12px rgba(106,122,74,0.25); }
+  .d10 .stroke-count { color: #a8a080; }
+  .d10 .canvas-strokes path { stroke: #4a5a30; }
+
+  .d10-dark .screen { background: #16180E; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .d10-dark .theme-toggle { background: #202210; color: #a8b888; }
+  .d10-dark .kanji-ghost { color: #7a8a5a; font-family: 'Noto Sans JP'; }
+  .d10-dark .meaning { color: #b8c898; }
+  .d10-dark .stroke-badge { background: #202210; color: #7a7a50; }
+  .d10-dark .kanji-item { background: #1a1c10; color: #4a4c30; border-color: #2a2c1a; font-family: 'Noto Sans JP'; }
+  .d10-dark .kanji-item.active { background: #222418; color: #b8c898; border-color: #7a8a5a; box-shadow: 0 4px 12px rgba(122,138,90,0.12); }
+  .d10-dark .mode-selector { background: #1a1c10; }
+  .d10-dark .mode-btn { color: #4a4c30; }
+  .d10-dark .mode-btn.active { background: #6a7a4a; color: #fff; }
+  .d10-dark .canvas-area { background: #14160c; border: 1px solid #2a2c1a; box-shadow: 0 6px 20px rgba(0,0,0,0.3); border-radius: 20px; }
+  .d10-dark .canvas-grid line { stroke: #2a2c1a; stroke-width: 0.5; }
+  .d10-dark .canvas-kanji { color: #7a8a5a; font-family: 'Noto Sans JP'; }
+  .d10-dark .stroke-modes { background: #1a1c10; }
+  .d10-dark .stroke-mode-btn { color: #4a4c30; }
+  .d10-dark .stroke-mode-btn.active { background: #6a7a4a; color: #fff; }
+  .d10-dark .action-btn { background: #1a1c10; color: #8a9a6a; }
+  .d10-dark .action-btn.primary { background: #6a7a4a; color: #fff; box-shadow: 0 4px 12px rgba(106,122,74,0.2); }
+  .d10-dark .stroke-count { color: #4a4c30; }
+  .d10-dark .canvas-strokes path { stroke: #b8c898; }
+
+  @media (max-width: 820px) {
+    .pair { gap: 24px; }
+    .phone { width: 320px; height: 700px; transform: scale(0.92); }
+  }
+  @media (max-width: 700px) {
+    .phone { transform: scale(0.85); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Kanji App Designs</h1>
+  <p>10 concepts &mdash; light + dark mode each</p>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" data-filter="all">All Designs</button>
+  <button class="nav-btn" data-filter="d1">1. Sakura Bloom</button>
+  <button class="nav-btn" data-filter="d2">2. Midnight Neon</button>
+  <button class="nav-btn" data-filter="d3">3. Bamboo Forest</button>
+  <button class="nav-btn" data-filter="d4">4. Ocean Calm</button>
+  <button class="nav-btn" data-filter="d5">5. Sunset Warmth</button>
+  <button class="nav-btn" data-filter="d6">6. Minimal Mono</button>
+  <button class="nav-btn" data-filter="d7">7. Candy Pop</button>
+  <button class="nav-btn" data-filter="d8">8. Golden Hour</button>
+  <button class="nav-btn" data-filter="d9">9. Arctic Frost</button>
+  <button class="nav-btn" data-filter="d10">10. Matcha Latte</button>
+  <button class="nav-btn" data-filter="d11">11. Candy Wave</button>
+  <button class="nav-btn" data-filter="d12">12. Still Water</button>
+  <button class="nav-btn" data-filter="d13">13. Mono Neon</button>
+  <button class="nav-btn" data-filter="d14">14. Mono Pop</button>
+  <button class="nav-btn" data-filter="d15">15. Mono Frost</button>
+  <button class="nav-btn" data-filter="d16">16. Frost Pop</button>
+  <button class="nav-btn" data-filter="d17">17. Neon Pop</button>
+  <button class="nav-btn" data-filter="d18">18. Mono Matcha</button>
+</nav>
+
+<div class="designs" id="designs">
+
+  <!-- 1. Sakura Bloom -->
+  <div class="design-section" data-design="d1" style="animation-delay:0s">
+    <div class="design-header"><h2>1. Sakura Bloom</h2><p>Soft pinks, cherry blossom warmth</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d1"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#23665;</div><div class="meaning">Mountain</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item active">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#23665;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 55 95 L 132 55 L 210 95" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 95 L 85 190" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 180 95 L 180 190" fill="none" stroke-width="6" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d1-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#23665;</div><div class="meaning">Mountain</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item active">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#23665;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 55 95 L 132 55 L 210 95" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 95 L 85 190" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 180 95 L 180 190" fill="none" stroke-width="6" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 2. Midnight Neon -->
+  <div class="design-section" data-design="d2" style="animation-delay:0.05s">
+    <div class="design-header"><h2>2. Midnight Neon</h2><p>Electric glow, purple-cyan energy</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d2"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#24029;</div><div class="meaning">River</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item active">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#24029;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 75 45 C 65 115 70 170 75 220" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 45 L 132 220" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 45 C 200 115 195 170 190 220" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn active">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d2-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#24029;</div><div class="meaning">River</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item active">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#24029;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 75 45 C 65 115 70 170 75 220" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 45 L 132 220" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 45 C 200 115 195 170 190 220" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn active">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 3. Bamboo Forest -->
+  <div class="design-section" data-design="d3" style="animation-delay:0.1s">
+    <div class="design-header"><h2>3. Bamboo Forest</h2><p>Natural greens, organic calm</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d3"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 95 160 C 90 130 100 110 115 90" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 170 160 C 175 130 165 110 150 90" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 55 L 132 190" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 200 L 180 200" fill="none" stroke-width="6" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">4 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d3-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 95 160 C 90 130 100 110 115 90" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 170 160 C 175 130 165 110 150 90" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 55 L 132 190" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 200 L 180 200" fill="none" stroke-width="6" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">4 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 4. Ocean Calm -->
+  <div class="design-section" data-design="d4" style="animation-delay:0.15s">
+    <div class="design-header"><h2>4. Ocean Calm</h2><p>Teal serenity, flowing blues</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d4"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#27700;</div><div class="meaning">Water</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item active">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#27700;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 45 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 75 95 C 85 125 65 155 55 185" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 95 C 180 125 200 155 210 185" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d4-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#27700;</div><div class="meaning">Water</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item active">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#27700;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 45 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 75 95 C 85 125 65 155 55 185" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 95 C 180 125 200 155 210 185" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 5. Sunset Warmth -->
+  <div class="design-section" data-design="d5" style="animation-delay:0.2s">
+    <div class="design-header"><h2>5. Sunset Warmth</h2><p>Orange gradients, golden glow</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d5"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#26408;</div><div class="meaning">Tree</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item active">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#26408;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 55 125 L 210 125" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 45 L 132 225" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 125 L 75 190" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 125 L 190 190" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">4 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d5-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#26408;</div><div class="meaning">Tree</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item active">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#26408;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 55 125 L 210 125" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 45 L 132 225" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 125 L 75 190" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 125 L 190 190" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">4 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 6. Minimal Mono -->
+  <div class="design-section" data-design="d6" style="animation-delay:0.25s">
+    <div class="design-header"><h2>6. Minimal Mono</h2><p>Pure black & white, zero noise</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d6"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#23665;</div><div class="meaning">Mountain</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item active">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#23665;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 55 95 L 132 55 L 210 95" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 95 L 85 190" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 180 95 L 180 190" fill="none" stroke-width="6" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d6-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#23665;</div><div class="meaning">Mountain</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item active">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#23665;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 55 95 L 132 55 L 210 95" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 95 L 85 190" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 180 95 L 180 190" fill="none" stroke-width="6" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 7. Candy Pop -->
+  <div class="design-section" data-design="d7" style="animation-delay:0.3s">
+    <div class="design-header"><h2>7. Candy Pop</h2><p>Vibrant, playful, multi-color burst</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d7"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#24029;</div><div class="meaning">River</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item active">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#24029;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 75 45 C 65 115 70 170 75 220" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 45 L 132 220" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 45 C 200 115 195 170 190 220" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d7-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#24029;</div><div class="meaning">River</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item active">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#24029;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 75 45 C 65 115 70 170 75 220" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 45 L 132 220" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 45 C 200 115 195 170 190 220" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 8. Golden Hour -->
+  <div class="design-section" data-design="d8" style="animation-delay:0.35s">
+    <div class="design-header"><h2>8. Golden Hour</h2><p>Luxurious amber, warm elegance</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d8"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 95 160 C 90 130 100 110 115 90" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 170 160 C 175 130 165 110 150 90" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 55 L 132 190" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 200 L 180 200" fill="none" stroke-width="6" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn active">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">4 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d8-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 95 160 C 90 130 100 110 115 90" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 170 160 C 175 130 165 110 150 90" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 55 L 132 190" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 200 L 180 200" fill="none" stroke-width="6" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn active">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">4 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 9. Arctic Frost -->
+  <div class="design-section" data-design="d9" style="animation-delay:0.4s">
+    <div class="design-header"><h2>9. Arctic Frost</h2><p>Icy blues, frosted glass clarity</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d9"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#27700;</div><div class="meaning">Water</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item active">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#27700;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 45 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 75 95 C 85 125 65 155 55 185" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 95 C 180 125 200 155 210 185" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d9-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#27700;</div><div class="meaning">Water</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item active">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#27700;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 45 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 75 95 C 85 125 65 155 55 185" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 95 C 180 125 200 155 210 185" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn active">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 10. Matcha Latte -->
+  <div class="design-section" data-design="d10" style="animation-delay:0.45s">
+    <div class="design-header"><h2>10. Matcha Latte</h2><p>Earthy greens, creamy warmth</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d10"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#26408;</div><div class="meaning">Tree</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item active">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#26408;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 55 125 L 210 125" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 45 L 132 225" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 125 L 75 190" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 125 L 190 190" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">4 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d10-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#26408;</div><div class="meaning">Tree</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item active">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#26408;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 55 125 L 210 125" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 45 L 132 225" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 132 125 L 75 190" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 125 L 190 190" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">4 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 15. Mono Frost (Minimal Mono x Arctic Frost) -->
+  <div class="design-section" data-design="d15" style="animation-delay:0.7s">
+    <div class="design-header"><h2>15. Mono Frost</h2><p>Minimal Mono + Arctic Frost — flat mono, icy blue accent</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d15"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#24029;</div><div class="meaning">River</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item active">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#24029;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 80 50 C 75 130 85 180 70 230" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 50 L 132 230" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 185 50 C 190 130 180 180 195 230" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d15-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#24029;</div><div class="meaning">River</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item active">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#24029;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 80 50 C 75 130 85 180 70 230" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 132 50 L 132 230" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 185 50 C 190 130 180 180 195 230" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 16. Frost Pop (Minimal Mono x Arctic Frost x Candy Pop) -->
+  <div class="design-section" data-design="d16" style="animation-delay:0.75s">
+    <div class="design-header"><h2>16. Frost Pop</h2><p>Mono + Arctic Frost + Candy Pop — icy base, candy color accents</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d16"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 50 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 80 160 L 55 210" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 185 160 L 210 210" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d16-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 50 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 80 160 L 55 210" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 185 160 L 210 210" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 17. Neon Pop (Minimal Mono x Midnight Neon x Candy Pop) -->
+  <div class="design-section" data-design="d17" style="animation-delay:0.8s">
+    <div class="design-header"><h2>17. Neon Pop</h2><p>Mono + Neon + Candy Pop — clean base, electric + candy accents</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d17"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#23665;</div><div class="meaning">Mountain</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item active">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#23665;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 60 L 132 210" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 50 170 L 215 170" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 130 L 180 130" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d17-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#23665;</div><div class="meaning">Mountain</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item active">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#23665;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 60 L 132 210" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 50 170 L 215 170" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 130 L 180 130" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 13. Mono Neon (Minimal Mono x Midnight Neon) -->
+  <div class="design-section" data-design="d13" style="animation-delay:0.6s">
+    <div class="design-header"><h2>13. Mono Neon</h2><p>Minimal Mono + Midnight Neon — flat mono, electric purple accent</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d13"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 50 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 80 160 L 55 210" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 185 160 L 210 210" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d13-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 50 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 80 160 L 55 210" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 185 160 L 210 210" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 14. Mono Pop (Minimal Mono x Candy Pop) -->
+  <div class="design-section" data-design="d14" style="animation-delay:0.65s">
+    <div class="design-header"><h2>14. Mono Pop</h2><p>Minimal Mono + Candy Pop — monochrome base, candy color accents</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d14"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#23665;</div><div class="meaning">Mountain</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item active">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#23665;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 60 L 132 210" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 50 170 L 215 170" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 130 L 180 130" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d14-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#23665;</div><div class="meaning">Mountain</div><div class="stroke-badge">3 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item active">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#23665;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 60 L 132 210" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 50 170 L 215 170" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 85 130 L 180 130" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 12. Still Water (Minimal Mono x Water) -->
+  <div class="design-section" data-design="d12" style="animation-delay:0.55s">
+    <div class="design-header"><h2>12. Still Water</h2><p>Minimal Mono + Water — clean flat, teal accent</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d12"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#27700;</div><div class="meaning">Water</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item active">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#27700;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 45 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 75 95 C 85 125 65 155 55 185" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 95 C 180 125 200 155 210 185" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d12-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#27700;</div><div class="meaning">Water</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item active">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#27700;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 45 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 75 95 C 85 125 65 155 55 185" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 95 C 180 125 200 155 210 185" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 11. Candy Wave (Candy Pop x Water) -->
+  <div class="design-section" data-design="d11" style="animation-delay:0.5s">
+    <div class="design-header"><h2>11. Candy Wave</h2><p>Candy Pop + Water — playful aqua, solid buttons</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light</div><div class="phone d11"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#27700;</div><div class="meaning">Water</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item active">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#27700;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 45 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 75 95 C 85 125 65 155 55 185" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 95 C 180 125 200 155 210 185" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark</div><div class="phone d11-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#27700;</div><div class="meaning">Water</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item">&#28779;</div><div class="kanji-item active">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#27700;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 45 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 75 95 C 85 125 65 155 55 185" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 190 95 C 180 125 200 155 210 185" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+  <!-- 18. Mono Matcha (Mono Neon dark + whiter text + matcha green active) -->
+  <div class="design-section" data-design="d18" style="animation-delay:0.85s">
+    <div class="design-header"><h2>18. Mono Matcha</h2><p>Mono Neon dark variant — whiter text, matcha green active buttons</p></div>
+    <div class="pair">
+      <div class="phone-col"><div class="mode-label">Light (d13)</div><div class="phone d13"><div class="screen">
+        <div class="theme-toggle">&#9790;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 50 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 80 160 L 55 210" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 185 160 L 210 210" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+      <div class="phone-col"><div class="mode-label">Dark (d18)</div><div class="phone d18-dark"><div class="screen">
+        <div class="theme-toggle">&#9788;</div>
+        <div class="kanji-ghost">&#28779;</div><div class="meaning">Fire</div><div class="stroke-badge">4 strokes</div>
+        <div class="kanji-selector"><div class="kanji-item">&#23665;</div><div class="kanji-item">&#24029;</div><div class="kanji-item active">&#28779;</div><div class="kanji-item">&#27700;</div><div class="kanji-item">&#26408;</div></div>
+        <div class="mode-selector"><div class="mode-btn active"><span class="mode-icon">&#9998;</span> Practice</div><div class="mode-btn"><span class="mode-icon">&#9654;</span> Demo</div><div class="mode-btn"><span class="mode-icon">&#9678;</span> Trace</div></div>
+        <div class="canvas-area"><div class="canvas-kanji">&#28779;</div><svg class="canvas-grid" viewBox="0 0 264 264"><line x1="132" y1="0" x2="132" y2="264"/><line x1="0" y1="132" x2="264" y2="132"/></svg><div class="canvas-strokes"><svg viewBox="0 0 264 264"><path d="M 132 50 L 132 220" fill="none" stroke-width="6" stroke-linecap="round"/><path d="M 80 160 L 55 210" fill="none" stroke-width="5" stroke-linecap="round"/><path d="M 185 160 L 210 210" fill="none" stroke-width="5" stroke-linecap="round"/></svg></div></div>
+        <div class="stroke-modes"><div class="stroke-mode-btn">&#8212; Basic</div><div class="stroke-mode-btn">&#8767; Smooth</div><div class="stroke-mode-btn active">&#128396; Brush</div></div>
+        <div class="actions"><div class="action-btn">&#8617; Undo</div><div class="action-btn">&#10005; Clear</div><div class="action-btn primary">&#10003; Check</div></div>
+        <div class="stroke-count">3 strokes</div>
+      </div></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const designs = document.getElementById('designs');
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const sections = document.querySelectorAll('.design-section');
+
+  navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      sections.forEach(s => {
+        if (filter === 'all' || s.dataset.design === filter) {
+          s.style.display = 'block';
+          s.style.animation = 'none';
+          s.offsetHeight;
+          s.style.animation = 'fadeUp 0.4s ease forwards';
+        } else {
+          s.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

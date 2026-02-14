@@ -3,6 +3,11 @@
  */
 
 import { StrokeDirection, Quadrant } from '../data/kanjiVGTypes';
+import {
+  KANJIVG_VIEWBOX_SIZE,
+  WAYPOINT_MIN_DISTANCE,
+  BEND_THRESHOLD_DEGREES,
+} from '../config/kanjiConfig';
 
 interface Point {
   x: number;
@@ -213,7 +218,12 @@ export function parsePathWithWaypoints(path: string): PathAnalysis {
 /**
  * Legacy function for backward compatibility.
  */
-export function parsePathEndpoints(path: string): { startX: number; startY: number; endX: number; endY: number } {
+export function parsePathEndpoints(path: string): {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+} {
   const { startX, startY, endX, endY } = parsePathWithWaypoints(path);
   return { startX, startY, endX, endY };
 }
@@ -243,7 +253,7 @@ function angleDifference(angle1: number, angle2: number): number {
  * Check if path has a significant bend by analyzing direction changes between waypoints.
  * Returns true if any consecutive segments change direction by more than the threshold.
  */
-function hasBend(waypoints: Point[], thresholdDegrees = 50): boolean {
+function hasBend(waypoints: Point[], thresholdDegrees = BEND_THRESHOLD_DEGREES): boolean {
   if (waypoints.length < 3) {
     return false;
   }
@@ -254,7 +264,7 @@ function hasBend(waypoints: Point[], thresholdDegrees = 50): boolean {
     const prev = significantWaypoints[significantWaypoints.length - 1];
     const curr = waypoints[i];
     const dist = Math.sqrt(Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2));
-    if (dist >= 5) {
+    if (dist >= WAYPOINT_MIN_DISTANCE) {
       significantWaypoints.push(curr);
     }
   }
@@ -333,7 +343,7 @@ export function deriveStrokeDirection(
  * Derive quadrant from coordinates within a 109x109 viewBox.
  * 1=top-left, 2=top-right, 3=bottom-left, 4=bottom-right
  */
-export function deriveQuadrant(x: number, y: number, viewBoxSize = 109): Quadrant {
+export function deriveQuadrant(x: number, y: number, viewBoxSize = KANJIVG_VIEWBOX_SIZE): Quadrant {
   const midX = viewBoxSize / 2;
   const midY = viewBoxSize / 2;
 
@@ -349,24 +359,30 @@ export function deriveQuadrant(x: number, y: number, viewBoxSize = 109): Quadran
  */
 export function deriveStrokeMetadata(
   path: string,
-  viewBoxSize = 109
+  viewBoxSize = KANJIVG_VIEWBOX_SIZE
 ): {
   direction: StrokeDirection;
+  primaryDirection?: StrokeDirection;
   startQuadrant: Quadrant;
   endQuadrant: Quadrant;
 } {
   const { startX, startY, endX, endY, waypoints } = parsePathWithWaypoints(path);
 
+  const straightDirection = deriveStrokeDirection(startX, startY, endX, endY);
+
   // Check for bending strokes first
   let direction: StrokeDirection;
+  let primaryDirection: StrokeDirection | undefined;
   if (hasBend(waypoints)) {
     direction = 'curved';
+    primaryDirection = straightDirection;
   } else {
-    direction = deriveStrokeDirection(startX, startY, endX, endY);
+    direction = straightDirection;
   }
 
   return {
     direction,
+    primaryDirection,
     startQuadrant: deriveQuadrant(startX, startY, viewBoxSize),
     endQuadrant: deriveQuadrant(endX, endY, viewBoxSize),
   };
