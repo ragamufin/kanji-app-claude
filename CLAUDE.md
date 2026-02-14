@@ -57,3 +57,6 @@ Touch events capture `{x, y, timestamp}` points → `pointsToPath()` converts ba
 
 ### Tools
 - use the GitHub CLI (`gh`) for all GitHub-related tasks
+
+## Testing
+- use Playwright CLI when testing in the browser is needed
