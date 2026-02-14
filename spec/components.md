@@ -382,16 +382,26 @@ Supports SVG commands: M, m, L, l, H, h, V, v, C, c, S, s, Q, q, T, t, A, a, Z, 
 
 ### `src/utils/spacedRepetition.ts`
 
-SM-2 spaced repetition algorithm.
+FSRS spaced repetition algorithm (wraps `ts-fsrs`).
 
 | Export | Signature | Description |
 |---|---|---|
-| `SM2State` | interface | `{ easeFactor, interval, repetition }` |
-| `KanjiReviewState` | interface | `{ character, state, nextReviewDate, lastScore }` |
-| `computeReviewStates` | `(records: PracticeRecord[]) => KanjiReviewState[]` | Compute states |
-| `getDueKanji` | `(states: KanjiReviewState[], date?) => KanjiReviewState[]` | Due for review |
+| `FSRSCardState` | interface | `{ character, card (ts-fsrs Card), lastReview }` |
+| `Rating` | enum | Re-exported from ts-fsrs (Again=1, Hard=2, Good=3, Easy=4) |
+| `State` | enum | Re-exported (New, Learning, Review, Relearning) |
+| `GRADE_LABELS` | Record | UI labels per rating |
+| `GRADES` | const | Array of valid ratings |
+| `createNewCardState` | `(character) => FSRSCardState` | Fresh card |
+| `gradeCard` | `(state, rating, now?) => { cardState, log }` | Grade and update |
+| `previewGrades` | `(state, now?) => Record<number, Card>` | Preview all schedules |
+| `isDue` | `(state, now?) => boolean` | Due check |
+| `isNewCard` | `(state) => boolean` | New card check |
+| `getDueCards` | `(cards[], now?) => FSRSCardState[]` | Filter due cards |
+| `getDueCount` | `(cards[], now?) => number` | Count due |
+| `getNewCards` | `(cards[]) => FSRSCardState[]` | Filter new cards |
+| `formatInterval` | `(card: Card) => string` | Human-readable interval |
 
-**Used by:** `ProgressScreen` (future: ReviewScreen)
+**Used by:** `useFSRS`, `StudyCard`, `StudySessionScreen`
 
 ---
 
@@ -444,19 +454,213 @@ Exports: `ThemeProvider`, `useTheme`, `useThemedStyles`, `typography`, `spacing`
 
 ---
 
+### `src/data/fsrsStorage.ts`
+
+AsyncStorage persistence for FSRS card states.
+
+| Export | Signature | Description |
+|---|---|---|
+| `getFSRSCards` | `() => Promise<Record<string, FSRSCardState>>` | Load all card states |
+| `saveFSRSCards` | `(cards) => Promise<void>` | Save all card states |
+| `getOrCreateCardState` | `(character: string) => Promise<FSRSCardState>` | Get or create single state |
+| `updateCardState` | `(state: FSRSCardState) => Promise<void>` | Update single state |
+| `getAllCardStates` | `() => Promise<FSRSCardState[]>` | All states as array |
+| `ensureCardStates` | `(characters: string[]) => Promise<FSRSCardState[]>` | Ensure states exist |
+| `clearFSRSData` | `() => Promise<void>` | Clear all FSRS data |
+
+**Used by:** `useFSRS`
+
+---
+
+### `src/data/listStorage.ts`
+
+AsyncStorage persistence for custom kanji lists.
+
+| Export | Signature | Description |
+|---|---|---|
+| `KanjiList` | interface | `{ id, name, characters[], createdAt, updatedAt }` |
+| `getLists` | `() => Promise<KanjiList[]>` | Load all lists |
+| `createList` | `(name: string) => Promise<KanjiList>` | Create new list |
+| `deleteList` | `(listId: string) => Promise<void>` | Delete list |
+| `renameList` | `(listId, name) => Promise<void>` | Rename list |
+| `addKanjiToList` | `(listId, character) => Promise<void>` | Add kanji |
+| `removeKanjiFromList` | `(listId, character) => Promise<void>` | Remove kanji |
+| `reorderKanji` | `(listId, characters[]) => Promise<void>` | Reorder |
+| `addKanjiAutoCreate` | `(character, listId?) => Promise<KanjiList>` | Auto-create Main |
+| `getList` | `(listId: string) => Promise<KanjiList?>` | Get single list |
+| `clearListData` | `() => Promise<void>` | Clear all lists |
+
+**Used by:** `useLists`
+
+---
+
+## Hooks (new)
+
+### `src/hooks/useFSRS.ts`
+
+FSRS scheduling hook for card state management.
+
+| Export | Signature | Description |
+|---|---|---|
+| `useFSRS` | `() => UseFSRSResult` | Main hook |
+
+**Returns:** `{ cards, dueCards, dueCount, newCount, loading, grade, ensureCards, refresh }`
+
+**Used by:** `HomeScreen`, `StudySetupScreen`, `StudySessionScreen`
+
+---
+
+### `src/hooks/useLists.ts`
+
+Custom kanji list CRUD hook.
+
+| Export | Signature | Description |
+|---|---|---|
+| `useLists` | `() => UseListsResult` | Main hook |
+
+**Returns:** `{ lists, loading, createList, deleteList, addKanji, addKanjiAuto, removeKanji, reorder, refresh }`
+
+**Used by:** `ListsScreen`, `ListDetailScreen`, `StudySetupScreen`
+
+---
+
+### `src/hooks/useStudySession.ts`
+
+Session state machine for study/SRS card queue.
+
+| Export | Signature | Description |
+|---|---|---|
+| `useStudySession` | `({ deck, mode, shuffle }) => UseStudySessionResult` | Main hook |
+
+**Returns:** `{ state, currentCard, currentIndex, totalCards, effectiveMode, reveal, startPractice, exitPractice, nextCard, isComplete, reviewedCount }`
+
+States: `front_shown → revealed → practicing → revealed → next → front_shown | session_complete`
+
+**Used by:** `StudySessionScreen`
+
+---
+
+## Components (new)
+
+### `src/components/StudyCard.tsx`
+
+Flip card for Study/SRS modes with front (keyword or kanji) and back (revealed content + actions).
+
+| Prop | Type | Description |
+|---|---|---|
+| `kanji` | KanjiVGData | Kanji data |
+| `mode` | StudyMode | regular/reverse/random |
+| `isRevealed` | boolean | Card state |
+| `onReveal` | callback | Tap to reveal |
+| `onPractice` | callback | Practice button |
+| `onDemo` | callback | Demo button |
+| `showGradeButtons` | boolean | SRS grade buttons |
+| `onGrade` | `(rating: Rating) => void` | Grade callback |
+| `onNext` | callback | Study mode next |
+| `cardState` | FSRSCardState | For interval preview |
+
+**Used by:** `StudySessionScreen`
+
+---
+
+### `src/components/HomeActionCard.tsx`
+
+CTA card for home screen — hero (large) and compact (grid) variants.
+
+| Prop | Type | Description |
+|---|---|---|
+| `title` | string | Card title |
+| `subtitle` | string | Description |
+| `icon` | string | Emoji icon |
+| `variant` | 'hero' \| 'compact' | Size variant |
+| `onPress` | callback | Tap handler |
+| `badge` | ReactNode | Optional badge |
+| `accentColor` | string | Accent override |
+
+**Used by:** `HomeScreen`
+
+---
+
+### `src/components/DueBadge.tsx`
+
+SRS due count badge indicator (red circle with number).
+
+| Prop | Type | Description |
+|---|---|---|
+| `count` | number | Due count (hidden if 0) |
+
+**Used by:** `HomeScreen`
+
+---
+
+### `src/components/ListPicker.tsx`
+
+Bottom sheet modal for selecting or creating a list when adding kanji.
+
+| Prop | Type | Description |
+|---|---|---|
+| `visible` | boolean | Modal visibility |
+| `lists` | KanjiList[] | Available lists |
+| `onSelect` | `(listId: string) => void` | Select list |
+| `onCreate` | `(name: string) => void` | Create new list |
+| `onClose` | callback | Dismiss |
+
+**Used by:** `BrowseScreen` (future), `StudySessionScreen` (future)
+
+---
+
+## Config (new)
+
+### `src/config/studyConfig.ts`
+
+| Export | Type | Description |
+|---|---|---|
+| `StudyMode` | type | `'regular' \| 'reverse' \| 'random'` |
+| `SessionType` | type | `'study' \| 'srs'` |
+| `SessionState` | type | State machine states |
+| `DEFAULT_NEW_CARDS_PER_SESSION` | number | 20 |
+| `STUDY_MODE_LABELS` | Record | UI labels per mode |
+| `STUDY_MODE_DESCRIPTIONS` | Record | Mode descriptions |
+
+---
+
 ## Screens
+
+### `src/screens/HomeScreen.tsx`
+
+Central hub with Study/SRS hero cards, quick stats, and secondary action grid.
 
 ### `src/screens/PracticeScreen.tsx`
 
-Main practice canvas with mode/stroke selection, kanji selector, and navigation buttons.
+Free Practice — open-ended drawing canvas with kanji selector.
 
 ### `src/screens/BrowseScreen.tsx`
 
-Kanji browsing with KanjiBrowser component and navigation back to practice.
+Kanji browsing with KanjiBrowser component.
 
 ### `src/screens/ProgressScreen.tsx`
 
-Practice statistics dashboard with per-kanji score bars and summary stats.
+Practice statistics dashboard with per-kanji score bars.
+
+### `src/screens/StudySetupScreen.tsx`
+
+Session configuration: source selection (JLPT/Heisig/Lists), mode, shuffle toggle, deck size preview. Shared between Study and SRS (sessionType param).
+
+### `src/screens/StudySessionScreen.tsx`
+
+Card queue shared between Study and SRS. Shows StudyCard, progress bar, practice/demo modals. SRS mode adds grade buttons feeding into FSRS.
+
+### `src/screens/ListsScreen.tsx`
+
+All custom lists with create (FAB) and delete actions.
+
+### `src/screens/ListDetailScreen.tsx`
+
+Single list contents with kanji metadata and delete. "Study this list" button.
+
+### `src/screens/SettingsScreen.tsx`
+
+Settings: theme, stroke mode, daily new cards, delete confirmation toggle, clear data actions.
 
 ---
 
@@ -464,4 +668,4 @@ Practice statistics dashboard with per-kanji score bars and summary stats.
 
 ### `src/navigation/AppNavigator.tsx`
 
-3-screen native stack navigator: Practice (home), Browse, Progress. Slide-from-right transitions, themed headers.
+Home hub with stack navigation to 9 screens. Type-safe `RootStackParamList` with params for StudySetup (sessionType) and StudySession (sessionType, mode, shuffle, kanjiCharacters).

@@ -6,47 +6,72 @@ A kanji drawing practice app built with React Native and Expo. Users learn to wr
 
 ### Goals
 
-1. **Practice** - Draw kanji with multiple rendering modes (basic, smooth, brush)
-2. **Validate** - Check stroke accuracy, direction, and order against KanjiVG data
-3. **Browse** - Discover kanji by JLPT level, Heisig RTK index, or search
-4. **Track** - Monitor progress with per-kanji statistics and spaced repetition scheduling
-5. **Demonstrate** - Watch animated stroke-by-stroke kanji drawing
+1. **Study** - Learn kanji through flip cards with keyword/kanji reveal
+2. **Review** - Spaced repetition (FSRS) with grade-based scheduling
+3. **Practice** - Draw kanji with multiple rendering modes (basic, smooth, brush)
+4. **Validate** - Check stroke accuracy, direction, and order against KanjiVG data
+5. **Browse** - Discover kanji by JLPT level, Heisig RTK index, or search
+6. **Lists** - Create custom kanji lists for targeted study
+7. **Track** - Monitor progress with per-kanji statistics
+8. **Demonstrate** - Watch animated stroke-by-stroke kanji drawing
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                    Screens                       │
-│   PracticeScreen  BrowseScreen  ProgressScreen   │
-├─────────────────────────────────────────────────┤
-│                   Components                     │
-│  KanjiCanvas  DrawingCanvas  CanvasToolbar       │
-│  KanjiBrowser  KanjiSelector  StrokeAnimator     │
-│  TraceGuide  ValidationMessage                   │
-├─────────────────────────────────────────────────┤
-│                     Hooks                        │
-│  useDrawing  useStrokeAnimation                  │
-│  useStrokeValidation  useKanjiList               │
-├─────────────────────────────────────────────────┤
-│                   Utilities                      │
-│  strokeUtils  validationUtils  dtw               │
-│  strokeOrderValidator  svgPathUtils              │
-│  spacedRepetition                                │
-├─────────────────────────────────────────────────┤
-│                     Data                         │
-│  kanjiVGData  kanjiDataService  storage           │
-│  kanjiVGTypes (interfaces)                       │
-├─────────────────────────────────────────────────┤
-│                    Config                        │
-│  kanjiConfig  strokeConfig  validationConfig      │
-├─────────────────────────────────────────────────┤
-│                     Theme                        │
-│  ThemeProvider  colors  createThemedStyles        │
-├─────────────────────────────────────────────────┤
-│                   Navigation                     │
-│  AppNavigator (bottom tabs: Practice/Browse/     │
-│  Progress)                                       │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                      Screens                          │
+│  HomeScreen  StudySetupScreen  StudySessionScreen      │
+│  PracticeScreen  BrowseScreen  ProgressScreen         │
+│  ListsScreen  ListDetailScreen  SettingsScreen        │
+├──────────────────────────────────────────────────────┤
+│                     Components                        │
+│  StudyCard  HomeActionCard  DueBadge  ListPicker      │
+│  KanjiCanvas  DrawingCanvas  CanvasToolbar            │
+│  KanjiBrowser  KanjiSelector  StrokeAnimator          │
+│  TraceGuide  ValidationMessage                        │
+├──────────────────────────────────────────────────────┤
+│                       Hooks                           │
+│  useStudySession  useFSRS  useLists                   │
+│  useDrawing  useStrokeAnimation                       │
+│  useStrokeValidation  useKanjiList                    │
+├──────────────────────────────────────────────────────┤
+│                     Utilities                         │
+│  strokeUtils  validationUtils  dtw                    │
+│  strokeOrderValidator  svgPathUtils                   │
+│  spacedRepetition (FSRS)                              │
+├──────────────────────────────────────────────────────┤
+│                       Data                            │
+│  kanjiVGData  kanjiDataService  storage               │
+│  fsrsStorage  listStorage  kanjiVGTypes               │
+├──────────────────────────────────────────────────────┤
+│                      Config                           │
+│  kanjiConfig  strokeConfig  validationConfig          │
+│  studyConfig                                          │
+├──────────────────────────────────────────────────────┤
+│                       Theme                           │
+│  ThemeProvider  colors  createThemedStyles             │
+├──────────────────────────────────────────────────────┤
+│                    Navigation                         │
+│  AppNavigator (Home hub → stack navigation)           │
+└──────────────────────────────────────────────────────┘
+```
+
+### Navigation Structure
+
+```
+HomeScreen (hub)
+  ├── Study flow
+  │     ├── StudySetupScreen (choose source, mode)
+  │     └── StudySessionScreen (card queue)
+  ├── SRS flow
+  │     ├── StudySetupScreen (due count, source filters)
+  │     └── StudySessionScreen (card queue with grading)
+  ├── PracticeScreen (Free Practice — open-ended drawing)
+  ├── BrowseScreen (kanji browsing with add-to-list)
+  ├── ListsScreen
+  │     └── ListDetailScreen
+  ├── ProgressScreen
+  └── SettingsScreen
 ```
 
 ## Data Pipeline
@@ -142,13 +167,14 @@ Classifies strokes into 9 directions for matching:
 - Curved detection: max perpendicular deviation from start-to-end line > 15% of line length
 - Direction adjacency checks for flexible matching
 
-### SM-2 Spaced Repetition
+### FSRS (Free Spaced Repetition Scheduler)
 
-Review scheduling based on practice scores:
-- Quality = round(score/100 * 5)
-- Failed (quality < 3): reset interval to 1 day
-- Passed: interval grows by ease factor (starting 2.5, min 1.3)
-- Intervals: day 1, day 6, then previous * easeFactor
+Modern spaced repetition algorithm replacing SM-2, powered by `ts-fsrs`:
+- Per-kanji card state: due date, stability, difficulty, elapsed days, reps, lapses
+- Grade mapping: Again(1), Hard(2), Good(3), Easy(4)
+- Stability-based scheduling with forgetting curve
+- Card states: New → Learning → Review → Relearning
+- Stored in AsyncStorage at `@kanji_fsrs_cards`
 
 ### Stroke Order Validation
 
@@ -173,6 +199,7 @@ Weighted composite: 40% direction + 40% spatial + 10% order bonus - 20% count pe
 | react-native-gesture-handler | 2.28 | Touch input |
 | React Navigation | 7.x | Screen navigation |
 | AsyncStorage | 2.2 | Local data persistence |
+| ts-fsrs | latest | FSRS spaced repetition scheduler |
 | ESLint | 9.x | Code linting |
 | Prettier | 3.8 | Code formatting |
 
@@ -202,8 +229,17 @@ All implemented features are documented as task files:
 | 018 | Playwright E2E Tests | pending | `spec/tasks/pending/018-e2e-tests.md` |
 | 019 | Unit & Component Tests | pending | `spec/tasks/pending/019-unit-component-tests.md` |
 | 020 | Browse-to-Practice Navigation | pending | `spec/tasks/pending/020-browse-to-practice.md` |
-| 021 | Review Mode | pending | `spec/tasks/pending/021-review-mode.md` |
-| 022 | Settings Screen | pending | `spec/tasks/pending/022-settings-screen.md` |
+| 021 | Review Mode | superseded | Replaced by task 028 (SRS Session Flow) |
+| 022 | Settings Screen | inprogress | `spec/tasks/inprogress/022-settings-screen.md` |
+| 023 | FSRS Algorithm Upgrade | inprogress | `spec/tasks/inprogress/023-fsrs-algorithm-upgrade.md` |
+| 024 | Custom Lists — Data & Storage | inprogress | `spec/tasks/inprogress/024-custom-lists-data-storage.md` |
+| 025 | Study Card Component | inprogress | `spec/tasks/inprogress/025-study-card-component.md` |
+| 026 | Navigation Redesign — Home Hub | inprogress | `spec/tasks/inprogress/026-navigation-redesign-home-hub.md` |
+| 027 | Study Session Flow | inprogress | `spec/tasks/inprogress/027-study-session-flow.md` |
+| 028 | SRS Session Flow | inprogress | `spec/tasks/inprogress/028-srs-session-flow.md` |
+| 029 | Lists Screen & Management UI | inprogress | `spec/tasks/inprogress/029-lists-screen-management-ui.md` |
+| 030 | Swipeable List Component | pending | `spec/tasks/pending/030-swipeable-list-component.md` |
+| 031 | List Drag-and-Drop Reorder | pending | `spec/tasks/pending/031-list-drag-and-drop-reorder.md` |
 
 ## Testing Strategy
 

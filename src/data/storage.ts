@@ -9,6 +9,8 @@ import { StrokeMode } from '../utils/strokeUtils';
 const KEYS = {
   PRACTICE_RECORDS: '@kanji_practice_records',
   USER_PREFERENCES: '@kanji_user_preferences',
+  KANJI_LISTS: '@kanji_lists',
+  FSRS_CARDS: '@kanji_fsrs_cards',
 };
 
 export interface PracticeRecord {
@@ -23,11 +25,15 @@ export interface PracticeRecord {
 export interface UserPreferences {
   strokeMode: StrokeMode;
   themeMode: 'light' | 'dark' | 'system';
+  deleteConfirmation: boolean;
+  dailyNewCardLimit: number;
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   strokeMode: 'basic',
   themeMode: 'system',
+  deleteConfirmation: true,
+  dailyNewCardLimit: 20,
 };
 
 // Practice Records

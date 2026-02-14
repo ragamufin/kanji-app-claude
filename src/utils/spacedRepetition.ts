@@ -1,120 +1,156 @@
 /**
- * Simplified SM-2 spaced repetition algorithm.
- * Determines which kanji are "due for review" based on practice history.
+ * FSRS (Free Spaced Repetition Scheduler) integration.
+ * Wraps ts-fsrs for kanji review scheduling.
  */
 
-import { PracticeRecord } from '../data/storage';
+import {
+  createEmptyCard,
+  fsrs,
+  Rating,
+  State,
+  type Card,
+  type RecordLogItem,
+  type FSRS,
+} from 'ts-fsrs';
 
-interface SM2State {
-  /** Ease factor (starts at 2.5, min 1.3) */
-  easeFactor: number;
-  /** Current interval in days */
-  interval: number;
-  /** Number of consecutive correct reviews */
-  repetition: number;
+// Re-export for consumers
+export { Rating, State };
+export type { Card };
+
+/** Per-kanji FSRS state stored in AsyncStorage */
+export interface FSRSCardState {
+  character: string;
+  card: Card;
+  lastReview: number; // timestamp
 }
 
-const INITIAL_STATE: SM2State = {
-  easeFactor: 2.5,
-  interval: 1,
-  repetition: 0,
+/** Grade labels for UI */
+export const GRADE_LABELS: Record<number, string> = {
+  [Rating.Again]: 'Again',
+  [Rating.Hard]: 'Hard',
+  [Rating.Good]: 'Good',
+  [Rating.Easy]: 'Easy',
 };
 
-/**
- * Compute SM-2 state from a score (0-100).
- */
-function updateSM2(state: SM2State, score: number): SM2State {
-  // Map 0-100 score to SM-2 quality 0-5
-  const quality = Math.min(5, Math.round((score / 100) * 5));
+/** All valid grades for iteration */
+export const GRADES = [Rating.Again, Rating.Hard, Rating.Good, Rating.Easy] as const;
 
-  if (quality < 3) {
-    // Failed: reset to beginning
-    return {
-      easeFactor: state.easeFactor,
-      interval: 1,
-      repetition: 0,
-    };
+/** Singleton FSRS scheduler instance */
+let scheduler: FSRS | null = null;
+
+function getScheduler(): FSRS {
+  if (!scheduler) {
+    scheduler = fsrs();
   }
+  return scheduler;
+}
 
-  const newRepetition = state.repetition + 1;
-  let newInterval: number;
-
-  if (newRepetition === 1) {
-    newInterval = 1;
-  } else if (newRepetition === 2) {
-    newInterval = 6;
-  } else {
-    newInterval = Math.round(state.interval * state.easeFactor);
-  }
-
-  const newEaseFactor = Math.max(
-    1.3,
-    state.easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-  );
-
+/** Create a fresh FSRS card state for a new kanji */
+export function createNewCardState(character: string): FSRSCardState {
   return {
-    easeFactor: newEaseFactor,
-    interval: newInterval,
-    repetition: newRepetition,
+    character,
+    card: createEmptyCard(),
+    lastReview: 0,
   };
 }
 
-export interface KanjiReviewState {
-  character: string;
-  state: SM2State;
-  nextReviewDate: number; // timestamp
-  lastScore: number;
+/** Get a grade result from the repeat output */
+function getGradeResult(
+  preview: ReturnType<FSRS['repeat']>,
+  rating: Rating
+): RecordLogItem {
+  // ts-fsrs IPreview is indexed by Rating enum values (1-4)
+  return (preview as unknown as Record<number, RecordLogItem>)[rating];
 }
 
-/**
- * Compute review states for all practiced kanji.
- */
-export function computeReviewStates(records: PracticeRecord[]): KanjiReviewState[] {
-  // Group records by character, sorted by timestamp
-  const byCharacter = new Map<string, PracticeRecord[]>();
-  for (const record of records) {
-    const list = byCharacter.get(record.character) ?? [];
-    list.push(record);
-    byCharacter.set(record.character, list);
-  }
+/** Grade a card and return the updated state */
+export function gradeCard(
+  state: FSRSCardState,
+  rating: Rating,
+  now: Date = new Date()
+): { cardState: FSRSCardState; log: RecordLogItem } {
+  const f = getScheduler();
+  const result = f.repeat(state.card, now);
+  const gradeResult = getGradeResult(result, rating);
 
-  const results: KanjiReviewState[] = [];
-
-  for (const [character, charRecords] of byCharacter) {
-    // Sort by timestamp ascending
-    charRecords.sort((a, b) => a.timestamp - b.timestamp);
-
-    let sm2State = INITIAL_STATE;
-    let lastTimestamp = 0;
-    let lastScore = 0;
-
-    for (const record of charRecords) {
-      sm2State = updateSM2(sm2State, record.score);
-      lastTimestamp = record.timestamp;
-      lastScore = record.score;
-    }
-
-    const nextReviewDate = lastTimestamp + sm2State.interval * 24 * 60 * 60 * 1000;
-
-    results.push({
-      character,
-      state: sm2State,
-      nextReviewDate,
-      lastScore,
-    });
-  }
-
-  return results;
+  return {
+    cardState: {
+      character: state.character,
+      card: gradeResult.card,
+      lastReview: now.getTime(),
+    },
+    log: gradeResult,
+  };
 }
 
-/**
- * Get kanji that are due for review (nextReviewDate <= now).
- */
-export function getDueKanji(records: PracticeRecord[]): string[] {
-  const now = Date.now();
-  const states = computeReviewStates(records);
-  return states
-    .filter((s) => s.nextReviewDate <= now)
-    .sort((a, b) => a.nextReviewDate - b.nextReviewDate)
-    .map((s) => s.character);
+/** Preview scheduling for all grades (used to show intervals on buttons) */
+export function previewGrades(
+  state: FSRSCardState,
+  now: Date = new Date()
+): Record<number, Card> {
+  const f = getScheduler();
+  const result = f.repeat(state.card, now);
+  return {
+    [Rating.Again]: getGradeResult(result, Rating.Again).card,
+    [Rating.Hard]: getGradeResult(result, Rating.Hard).card,
+    [Rating.Good]: getGradeResult(result, Rating.Good).card,
+    [Rating.Easy]: getGradeResult(result, Rating.Easy).card,
+  };
+}
+
+/** Check if a card is due for review */
+export function isDue(state: FSRSCardState, now: Date = new Date()): boolean {
+  return new Date(state.card.due) <= now;
+}
+
+/** Check if a card is new (never reviewed) */
+export function isNewCard(state: FSRSCardState): boolean {
+  return state.card.state === State.New;
+}
+
+/** Get due cards from a collection, sorted by due date (most overdue first) */
+export function getDueCards(
+  cards: FSRSCardState[],
+  now: Date = new Date()
+): FSRSCardState[] {
+  return cards
+    .filter((c) => isDue(c, now))
+    .sort((a, b) => new Date(a.card.due).getTime() - new Date(b.card.due).getTime());
+}
+
+/** Get count of due cards */
+export function getDueCount(
+  cards: FSRSCardState[],
+  now: Date = new Date()
+): number {
+  return cards.filter((c) => isDue(c, now)).length;
+}
+
+/** Get new (unreviewed) cards */
+export function getNewCards(cards: FSRSCardState[]): FSRSCardState[] {
+  return cards.filter((c) => isNewCard(c));
+}
+
+/** Format next review interval for display */
+export function formatInterval(card: Card): string {
+  const now = new Date();
+  const due = new Date(card.due);
+  const diffMs = due.getTime() - now.getTime();
+
+  if (diffMs <= 0) return 'now';
+
+  const diffMins = Math.round(diffMs / 60000);
+  if (diffMins < 60) return `${diffMins}m`;
+
+  const diffHours = Math.round(diffMs / 3600000);
+  if (diffHours < 24) return `${diffHours}h`;
+
+  const diffDays = Math.round(diffMs / 86400000);
+  if (diffDays < 30) return `${diffDays}d`;
+
+  const diffMonths = Math.round(diffDays / 30);
+  if (diffMonths < 12) return `${diffMonths}mo`;
+
+  const diffYears = Math.round(diffDays / 365);
+  return `${diffYears}y`;
 }

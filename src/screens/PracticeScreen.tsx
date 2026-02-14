@@ -140,17 +140,10 @@ export function PracticeScreen() {
       <View style={styles.navRow}>
         <Pressable
           style={({ pressed }) => [styles.navButton, { opacity: pressed ? 0.7 : 1 }]}
-          onPress={() => navigation.navigate('Browse')}
+          onPress={() => navigation.navigate('Home')}
         >
-          <Text style={styles.navButtonIcon}>{'\uD83D\uDD0D'}</Text>
-          <Text style={styles.navButtonLabel}>Browse</Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [styles.navButton, { opacity: pressed ? 0.7 : 1 }]}
-          onPress={() => navigation.navigate('Progress')}
-        >
-          <Text style={styles.navButtonIcon}>{'\uD83D\uDCCA'}</Text>
-          <Text style={styles.navButtonLabel}>Progress</Text>
+          <Text style={styles.navButtonIcon}>{'\u2190'}</Text>
+          <Text style={styles.navButtonLabel}>Home</Text>
         </Pressable>
       </View>
 
