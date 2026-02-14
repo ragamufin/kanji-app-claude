@@ -4,7 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Kanji drawing practice app built with React Native and Expo. Users draw kanji characters on a canvas with multiple stroke rendering modes.
+Kanji drawing practice app built with React Native and Expo. Users draw kanji characters on a canvas with multiple stroke rendering modes, validate strokes against KanjiVG reference data, browse 2211 kanji by JLPT/Heisig, and track progress with spaced repetition.
+
+## Specification System
+
+**Read these before writing code:**
+
+- `spec/conventions.md` - Development workflow, code conventions, and testing rules
+- `spec/components.md` - Reusable components/hooks/utilities catalog. **Check before creating new code.**
+- `spec/tasks/` - Task workflow: `pending/` → `inprogress/` → `done/` (move files between folders)
+- `spec/plan.md` - Architecture overview, data pipeline, algorithms, tech stack
 
 ## Development Commands
 
@@ -14,9 +23,10 @@ npx expo start --ios    # Run on iOS simulator
 npx expo start --android # Run on Android emulator
 npx expo start --web    # Run in web browser
 npx tsc --noEmit        # Type check without emitting
+npm run lint            # ESLint
+npm run lint:fix        # ESLint with auto-fix
+npm run format          # Prettier
 ```
-
-No test or lint scripts are configured yet.
 
 ## Architecture
 
@@ -34,29 +44,38 @@ The app has three stroke rendering modes with different algorithms:
 
 ### Key Components
 
-- `App.tsx` - Main screen with kanji hint and canvas
-- `src/components/KanjiCanvas.tsx` - Drawing canvas using PanResponder for touch tracking and react-native-svg for rendering
+- `App.tsx` - Root component with theme, navigation, and gesture providers
+- `src/components/KanjiCanvas.tsx` - Drawing canvas with practice/demo/trace modes
 - `src/utils/strokeUtils.ts` - Stroke algorithms and point-to-path conversion
+- `src/utils/validationUtils.ts` - Stroke validation with DTW and direction matching
 
 ### Data Flow
 
-Touch events capture `{x, y, timestamp}` points → `pointsToPath()` converts based on mode → SVG `<Path>` elements render strokes (stroked for basic/smooth, filled for brush)
+Touch events capture `{x, y, timestamp}` points → `pointsToPath()` converts based on mode → SVG `<Path>` elements render strokes → validation compares against KanjiVG data → results persisted via AsyncStorage
 
 ## Tech Stack
 
-- React Native 0.81 with New Architecture enabled
-- Expo SDK 54
+- React Native with New Architecture enabled
+- Expo SDK
 - react-native-svg for canvas rendering
+- react-native-reanimated for stroke animations
+- React Navigation for screen navigation
+- AsyncStorage for local persistence
 - TypeScript with strict mode
-
+- Use the latest stable version of all libraries
+- Whenever the stack changes, update CLAUDE.md to match
 
 ### Task Tracking
 - Create a task list (TaskCreate) before starting work with 3+ distinct steps
-- Mark tasks `in_progress` when starting, `completed` when done
-- Skip task lists for trivial single-file fixes
+- Move task to `inprogress/` when starting work on it, 
+- Prompt user to accept when a task is completed and if accepted, move task to `done/`
+- New features require a task file first and update `spec/plan.md` to match
+- When features change, update the corresponding task file and `spec/plan.md`
 
 ### Tools
 - use the GitHub CLI (`gh`) for all GitHub-related tasks
 
 ## Testing
 - use Playwright CLI when testing in the browser is needed
+- See `spec/conventions.md` for testing structure and rules
+- Test tags: `@task-NNN` in every describe/it block for traceability
