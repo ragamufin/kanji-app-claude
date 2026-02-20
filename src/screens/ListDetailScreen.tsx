@@ -8,8 +8,11 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { KanjiVGData } from '../data/kanjiVGTypes';
 import { getKanjiData } from '../data/kanjiDataService';
+import { Icon } from '../components/Icon';
 import { useLists } from '../hooks/useLists';
 import {
+  useTheme,
+  fonts,
   spacing,
   borderRadius,
   typography,
@@ -39,7 +42,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   kanjiChar: {
     fontSize: 36,
-    fontWeight: '400' as const,
+    fontFamily: fonts.serif,
     width: 52,
     textAlign: 'center' as const,
     color: colors.primary,
@@ -50,11 +53,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   kanjiMeaning: {
     fontSize: typography.body.fontSize,
-    fontWeight: '500' as const,
+    fontFamily: fonts.sansMedium,
     color: colors.primary,
   },
   kanjiMeta: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
     marginTop: 2,
   },
@@ -65,14 +69,11 @@ const createStyles = (colors: ColorScheme) => ({
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
-  deleteText: {
-    fontSize: 18,
-    color: colors.error,
-  },
   emptyText: {
     textAlign: 'center' as const,
     color: colors.muted,
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     paddingVertical: spacing.xxxl,
     paddingHorizontal: spacing.lg,
   },
@@ -91,13 +92,14 @@ const createStyles = (colors: ColorScheme) => ({
   },
   studyButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: '700' as const,
+    fontFamily: fonts.sansBold,
     color: colors.accentText,
   },
 });
 
 export function ListDetailScreen() {
   const styles = useThemedStyles(createStyles);
+  const { colors } = useTheme();
   const route = useRoute<DetailRoute>();
   const navigation = useNavigation<DetailNavProp>();
   const { lists, removeKanji } = useLists();
@@ -166,7 +168,7 @@ export function ListDetailScreen() {
           ]}
           onPress={handleStudy}
         >
-          <Text style={{ fontSize: 16 }}>{'\uD83D\uDCDA'}</Text>
+          <Icon name="book-open" size={16} color={colors.accentText} />
           <Text style={styles.studyButtonText}>
             Study {list.characters.length} kanji
           </Text>
@@ -200,7 +202,7 @@ export function ListDetailScreen() {
                 onPress={() => handleRemove(character)}
                 hitSlop={8}
               >
-                <Text style={styles.deleteText}>{'\u2715'}</Text>
+                <Icon name="x" size={16} color={colors.error} />
               </Pressable>
             </View>
           );

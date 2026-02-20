@@ -15,6 +15,7 @@ import { clearFSRSData } from '../data/fsrsStorage';
 import { clearListData } from '../data/listStorage';
 import {
   useTheme,
+  fonts,
   spacing,
   borderRadius,
   typography,
@@ -36,10 +37,10 @@ const createStyles = (colors: ColorScheme) => ({
   },
   sectionTitle: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.muted,
     textTransform: 'uppercase' as const,
-    letterSpacing: 0.5,
+    letterSpacing: 1,
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.sm,
   },
@@ -59,11 +60,13 @@ const createStyles = (colors: ColorScheme) => ({
   },
   rowLabel: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sansMedium,
     color: colors.primary,
     flex: 1,
   },
   rowValue: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
   },
   optionRow: {
@@ -83,7 +86,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   optionText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.secondary,
   },
   optionTextSelected: {
@@ -100,7 +103,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   toggleText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.secondary,
   },
   toggleTextActive: {
@@ -117,10 +120,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   destructiveText: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sansBold,
     color: colors.error,
   },
   aboutText: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
     textAlign: 'center' as const,
     paddingVertical: spacing.xl,

@@ -3,10 +3,12 @@
  *
  * Front: keyword (regular mode) or kanji character (reverse mode)
  * Back: hidden side + metadata + action buttons
+ * Uses 3D perspective flip animation via react-native-reanimated.
  */
 
-import React, { useState, useRef, useCallback } from 'react';
-import { View, Text, Pressable, Animated } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { KanjiVGData } from '../data/kanjiVGTypes';
 import { StudyMode } from '../config/studyConfig';
 import {
@@ -17,51 +19,57 @@ import {
   previewGrades,
   FSRSCardState,
 } from '../utils/spacedRepetition';
+import { Icon } from './Icon';
+import { useFlipAnimation } from '../utils/animations';
 import {
   spacing,
   borderRadius,
   typography,
+  fonts,
   getShadow,
   useThemedStyles,
 } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface StudyCardProps {
-  /** Kanji data to display */
   kanji: KanjiVGData;
-  /** Display mode */
   mode: StudyMode;
-  /** Whether card is currently revealed */
   isRevealed: boolean;
-  /** Callback when card is tapped to reveal */
   onReveal: () => void;
-  /** Callback for practice button */
   onPractice: () => void;
-  /** Callback for demo button */
   onDemo: () => void;
-  /** Whether to show SRS grade buttons */
   showGradeButtons: boolean;
-  /** Callback when grade button pressed (SRS mode) */
   onGrade?: (rating: Rating) => void;
-  /** Callback for "Next" button (study mode) */
   onNext?: () => void;
-  /** FSRS card state for interval preview */
   cardState?: FSRSCardState;
 }
 
 const GRADE_COLORS: Record<number, string> = {
-  [Rating.Again]: '#C45B4D',
-  [Rating.Hard]: '#C49B4D',
-  [Rating.Good]: '#4A7C59',
-  [Rating.Easy]: '#4A6A7C',
+  [Rating.Again]: '#B91C1C',
+  [Rating.Hard]: '#B45309',
+  [Rating.Good]: '#3F6B54',
+  [Rating.Easy]: '#1D6A96',
+};
+
+const GRADE_ICONS: Record<number, 'x-circle' | 'minus-circle' | 'check-circle' | 'zap'> = {
+  [Rating.Again]: 'x-circle',
+  [Rating.Hard]: 'minus-circle',
+  [Rating.Good]: 'check-circle',
+  [Rating.Easy]: 'zap',
 };
 
 const createStyles = (colors: ColorScheme) => ({
+  cardWrapper: {
+    width: '100%' as const,
+    minHeight: 320,
+  },
   card: {
     width: '100%' as const,
     minHeight: 320,
     borderRadius: borderRadius.lg,
     backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...getShadow(colors, 'medium'),
     overflow: 'hidden' as const,
   },
@@ -78,18 +86,20 @@ const createStyles = (colors: ColorScheme) => ({
   },
   tapHint: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
+    fontStyle: 'italic' as const,
     color: colors.muted,
     marginTop: spacing.lg,
   },
   kanjiLarge: {
     fontSize: 96,
-    fontWeight: '300' as const,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
     lineHeight: 110,
   },
   keywordLarge: {
     fontSize: 32,
-    fontWeight: '600' as const,
+    fontFamily: fonts.serifMedium,
     color: colors.primary,
     textAlign: 'center' as const,
   },
@@ -99,13 +109,13 @@ const createStyles = (colors: ColorScheme) => ({
   },
   backKanji: {
     fontSize: 64,
-    fontWeight: '300' as const,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
     lineHeight: 76,
   },
   backKeyword: {
     fontSize: typography.meaning.fontSize,
-    fontWeight: typography.meaning.fontWeight,
+    fontFamily: typography.meaning.fontFamily,
     color: colors.primary,
     marginTop: spacing.sm,
   },
@@ -124,7 +134,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   badgeText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '500' as const,
+    fontFamily: fonts.sansMedium,
     color: colors.secondary,
   },
   actionRow: {
@@ -144,7 +154,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   actionButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: typography.button.fontFamily,
     color: colors.accent,
   },
   gradeRow: {
@@ -158,18 +168,19 @@ const createStyles = (colors: ColorScheme) => ({
     alignItems: 'center' as const,
     paddingVertical: spacing.sm + 2,
     paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.full,
     maxWidth: 90,
+    gap: 2,
   },
   gradeLabel: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: typography.button.fontFamily,
     color: '#FFFFFF',
   },
   gradeInterval: {
     fontSize: 11,
+    fontFamily: fonts.sans,
     color: 'rgba(255,255,255,0.8)',
-    marginTop: 2,
   },
   nextButton: {
     alignItems: 'center' as const,
@@ -182,7 +193,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   nextButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: typography.button.fontFamily,
     color: colors.accentText,
   },
   divider: {
@@ -205,8 +216,7 @@ export function StudyCard({
   cardState,
 }: StudyCardProps) {
   const styles = useThemedStyles(createStyles);
-  const flipAnim = useRef(new Animated.Value(0)).current;
-  const [showBack, setShowBack] = useState(false);
+  const { frontStyle, backStyle, flip, reset } = useFlipAnimation();
 
   // Determine what shows on front vs back based on mode
   const effectiveMode = mode === 'random'
@@ -217,60 +227,36 @@ export function StudyCard({
   const handleReveal = useCallback(() => {
     if (isRevealed) return;
     onReveal();
-    Animated.timing(flipAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setShowBack(true);
-    });
-  }, [isRevealed, onReveal, flipAnim]);
+    flip();
+  }, [isRevealed, onReveal, flip]);
 
   // Reset animation when card changes
-  React.useEffect(() => {
-    flipAnim.setValue(0);
-    setShowBack(false);
-  }, [kanji.character, flipAnim]);
+  useEffect(() => {
+    reset();
+  }, [kanji.character, reset]);
 
   // Compute preview intervals for grade buttons
   const intervals = cardState ? previewGrades(cardState) : null;
 
-  const frontOpacity = flipAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1, 0, 0],
-  });
-  const backOpacity = flipAnim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0, 0, 1],
-  });
-
   return (
-    <View style={styles.card}>
+    <View style={styles.cardWrapper}>
       {/* Front side */}
-      {!showBack && (
-        <Animated.View style={[{ opacity: frontOpacity }]}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.frontSide,
-              { opacity: pressed ? 0.9 : 1 },
-            ]}
-            onPress={handleReveal}
-          >
-            {showKanjiOnFront ? (
-              <Text style={styles.kanjiLarge}>{kanji.character}</Text>
-            ) : (
-              <Text style={styles.keywordLarge}>
-                {kanji.heisigKeyword || kanji.meaning}
-              </Text>
-            )}
-            <Text style={styles.tapHint}>Tap to reveal</Text>
-          </Pressable>
-        </Animated.View>
-      )}
+      <Animated.View style={[styles.card, frontStyle, StyleSheet.absoluteFillObject]}>
+        <Pressable style={styles.frontSide} onPress={handleReveal}>
+          {showKanjiOnFront ? (
+            <Text style={styles.kanjiLarge}>{kanji.character}</Text>
+          ) : (
+            <Text style={styles.keywordLarge}>
+              {kanji.heisigKeyword || kanji.meaning}
+            </Text>
+          )}
+          <Text style={styles.tapHint}>Tap to reveal</Text>
+        </Pressable>
+      </Animated.View>
 
       {/* Back side */}
-      {showBack && (
-        <Animated.View style={[styles.backSide, { opacity: backOpacity }]}>
+      <Animated.View style={[styles.card, backStyle]}>
+        <View style={styles.backSide}>
           {/* Header: shows the hidden side */}
           <View style={styles.backHeader}>
             <Text style={styles.backKanji}>{kanji.character}</Text>
@@ -307,7 +293,7 @@ export function StudyCard({
               ]}
               onPress={onPractice}
             >
-              <Text style={{ fontSize: 16 }}>{'\u270E'}</Text>
+              <Icon name="edit-3" size={16} color={styles.actionButtonText.color} />
               <Text style={styles.actionButtonText}>Practice</Text>
             </Pressable>
             <Pressable
@@ -317,7 +303,7 @@ export function StudyCard({
               ]}
               onPress={onDemo}
             >
-              <Text style={{ fontSize: 16 }}>{'\u25B6'}</Text>
+              <Icon name="play" size={16} color={styles.actionButtonText.color} />
               <Text style={styles.actionButtonText}>Demo</Text>
             </Pressable>
           </View>
@@ -339,6 +325,7 @@ export function StudyCard({
                   ]}
                   onPress={() => onGrade(rating)}
                 >
+                  <Icon name={GRADE_ICONS[rating]} size={16} color="#FFFFFF" />
                   <Text style={styles.gradeLabel}>{GRADE_LABELS[rating]}</Text>
                   {intervals && (
                     <Text style={styles.gradeInterval}>
@@ -359,8 +346,8 @@ export function StudyCard({
               <Text style={styles.nextButtonText}>Next</Text>
             </Pressable>
           ) : null}
-        </Animated.View>
-      )}
+        </View>
+      </Animated.View>
     </View>
   );
 }

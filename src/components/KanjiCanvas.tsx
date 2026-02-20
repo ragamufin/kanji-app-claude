@@ -32,7 +32,9 @@ const createStyles = (colors: ColorScheme) => ({
     borderRadius: borderRadius.lg,
     overflow: 'hidden' as const,
     backgroundColor: colors.canvas,
-    ...getShadow(colors, 'medium'),
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...getShadow(colors, 'low'),
   },
 });
 

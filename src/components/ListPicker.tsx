@@ -12,10 +12,12 @@ import {
   Alert,
 } from 'react-native';
 import { KanjiList } from '../data/listStorage';
+import { Icon } from './Icon';
 import {
   spacing,
   borderRadius,
   typography,
+  fonts,
   getShadow,
   useThemedStyles,
 } from '../theme';
@@ -54,7 +56,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   title: {
     fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
+    fontFamily: typography.label.fontFamily,
     color: colors.primary,
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.md,
@@ -70,10 +72,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   listName: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sansMedium,
     color: colors.primary,
   },
   listCount: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
   },
   createRow: {
@@ -83,13 +87,9 @@ const createStyles = (colors: ColorScheme) => ({
     paddingHorizontal: spacing.lg,
     gap: spacing.sm,
   },
-  createIcon: {
-    fontSize: 20,
-    color: colors.accent,
-  },
   createText: {
     fontSize: typography.body.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.accent,
   },
 });
@@ -163,7 +163,7 @@ export function ListPicker({
             ]}
             onPress={handleCreate}
           >
-            <Text style={styles.createIcon}>+</Text>
+            <Icon name="plus" size={18} color={styles.createText.color} />
             <Text style={styles.createText}>Create New List</Text>
           </Pressable>
         </View>

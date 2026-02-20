@@ -9,7 +9,8 @@ import {
   getHeisigKanjiCount,
 } from '../data/kanjiDataService';
 import { useKanjiList } from '../hooks/useKanjiList';
-import { spacing, borderRadius, typography, getShadow, useTheme, useThemedStyles } from '../theme';
+import { Icon } from './Icon';
+import { spacing, borderRadius, typography, fonts, getShadow, useTheme, useThemedStyles } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface KanjiBrowserProps {
@@ -40,19 +41,26 @@ const createStyles = (colors: ColorScheme) => ({
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.md,
   },
-  searchInput: {
+  searchWrapper: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    fontSize: typography.body.fontSize,
-    color: colors.primary,
     borderWidth: 1,
     borderColor: colors.border,
+    gap: spacing.sm,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: spacing.sm + 2,
+    fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
+    color: colors.primary,
   },
   sectionHeader: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansMedium,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
     color: colors.muted,
@@ -74,7 +82,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   filterChipText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: fonts.sansMedium,
   },
   grid: {
     paddingHorizontal: spacing.lg,
@@ -87,6 +95,7 @@ const createStyles = (colors: ColorScheme) => ({
     textAlign: 'center' as const,
     color: colors.muted,
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     paddingVertical: spacing.xl,
   },
 });
@@ -116,7 +125,7 @@ function KanjiCard({
           borderWidth: isSelected ? 2 : 1,
           minWidth: 70,
           maxWidth: 90,
-          backgroundColor: isSelected ? colors.surface : colors.background,
+          backgroundColor: isSelected ? colors.accent + '0A' : colors.background,
           borderColor: isSelected ? colors.accent : colors.border,
           opacity: pressed ? 0.7 : 1,
           ...(isSelected ? getShadow(colors, 'low') : {}),
@@ -131,24 +140,26 @@ function KanjiCard({
             top: 3,
             right: 5,
             fontSize: 8,
-            fontWeight: '600',
+            fontFamily: fonts.sansBold,
             color: colors.accent,
           }}
         >
           #{kanji.heisigIndex}
         </Text>
       )}
-      <Text style={{ fontSize: 32, fontWeight: '500', color: colors.primary }}>
+      <Text style={{ fontSize: 32, fontFamily: fonts.serif, color: colors.primary }}>
         {kanji.character}
       </Text>
       <Text
-        style={{ fontSize: 10, marginTop: 2, color: colors.muted }}
+        style={{ fontSize: 10, fontFamily: fonts.sans, marginTop: 2, color: colors.muted }}
         numberOfLines={1}
         ellipsizeMode="tail"
       >
         {kanji.meaning}
       </Text>
-      <Text style={{ fontSize: 9, color: colors.border }}>{kanji.strokes.length} strokes</Text>
+      <Text style={{ fontSize: 9, fontFamily: fonts.sans, color: colors.borderStrong }}>
+        {kanji.strokes.length} strokes
+      </Text>
     </Pressable>
   );
 }
@@ -202,15 +213,18 @@ export function KanjiBrowser({ onSelect, selectedCharacter }: KanjiBrowserProps)
     <View style={styles.container}>
       {/* Search */}
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search kanji, meaning, or keyword..."
-          placeholderTextColor={colors.muted}
-          value={search}
-          onChangeText={setSearch}
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
+        <View style={styles.searchWrapper}>
+          <Icon name="search" size={16} color={colors.muted} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search kanji, meaning, or keyword..."
+            placeholderTextColor={colors.muted}
+            value={search}
+            onChangeText={setSearch}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+        </View>
       </View>
 
       {/* JLPT Filter */}

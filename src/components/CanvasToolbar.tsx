@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, Pressable, Text } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { StrokeMode } from '../utils/strokeUtils';
-import { spacing, borderRadius, typography, getShadow, useTheme, useThemedStyles } from '../theme';
+import { Icon, IconName } from './Icon';
+import { useAnimatedPress } from '../utils/animations';
+import { spacing, borderRadius, typography, fonts, getShadow, useTheme, useThemedStyles } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
-const STROKE_MODES: { mode: StrokeMode; label: string; icon: string }[] = [
-  { mode: 'basic', label: 'Basic', icon: '\u2014' },
-  { mode: 'smooth', label: 'Smooth', icon: '\u223F' },
-  { mode: 'brush', label: 'Brush', icon: '\uD83D\uDD8C' },
+const STROKE_MODES: { mode: StrokeMode; label: string; icon: IconName }[] = [
+  { mode: 'basic', label: 'Basic', icon: 'minus' },
+  { mode: 'smooth', label: 'Smooth', icon: 'activity' },
+  { mode: 'brush', label: 'Brush', icon: 'edit-3' },
 ];
 
 interface CanvasToolbarProps {
@@ -28,6 +31,8 @@ const createStyles = (colors: ColorScheme) => ({
     borderRadius: borderRadius.full,
     gap: spacing.xs,
     backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...getShadow(colors, 'low'),
   },
   modeButton: {
@@ -38,12 +43,9 @@ const createStyles = (colors: ColorScheme) => ({
     borderRadius: borderRadius.full,
     gap: spacing.xs,
   },
-  modeButtonIcon: {
-    fontSize: 14,
-  },
   modeButtonText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: fonts.sansBold,
   },
   buttons: {
     flexDirection: 'row' as const,
@@ -58,20 +60,50 @@ const createStyles = (colors: ColorScheme) => ({
     borderRadius: borderRadius.xl,
     gap: spacing.sm,
   },
-  buttonIcon: {
-    fontSize: 16,
-    fontWeight: '600' as const,
-  },
   buttonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: typography.button.fontFamily,
   },
   strokeCount: {
     marginTop: spacing.md,
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
   },
 });
+
+function ActionButton({
+  icon,
+  label,
+  color,
+  bgColor,
+  shadow,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  color: string;
+  bgColor: string;
+  shadow?: object;
+  onPress: () => void;
+}) {
+  const styles = useThemedStyles(createStyles);
+  const { animatedStyle, onPressIn, onPressOut } = useAnimatedPress();
+
+  return (
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        style={[styles.button, { backgroundColor: bgColor, ...shadow }]}
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+      >
+        <Icon name={icon} size={16} color={color} />
+        <Text style={[styles.buttonText, { color }]}>{label}</Text>
+      </Pressable>
+    </Animated.View>
+  );
+}
 
 export function CanvasToolbar({
   strokeMode,
@@ -94,18 +126,15 @@ export function CanvasToolbar({
           return (
             <Pressable
               key={mode}
-              style={({ pressed }) => [
+              style={[
                 styles.modeButton,
                 {
-                  backgroundColor: isActive ? colors.secondary : 'transparent',
-                  opacity: pressed ? 0.8 : 1,
+                  backgroundColor: isActive ? colors.accent : 'transparent',
                 },
               ]}
               onPress={() => onStrokeModeChange(mode)}
             >
-              <Text style={[styles.modeButtonIcon, { color: isActive ? colors.accentText : colors.muted }]}>
-                {icon}
-              </Text>
+              <Icon name={icon} size={14} color={isActive ? colors.accentText : colors.muted} />
               <Text
                 style={[styles.modeButtonText, { color: isActive ? colors.accentText : colors.secondary }]}
               >
@@ -118,51 +147,31 @@ export function CanvasToolbar({
 
       {/* Action Buttons */}
       <View style={styles.buttons}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            {
-              backgroundColor: colors.surface,
-              opacity: pressed ? 0.8 : 1,
-              ...getShadow(colors, 'low'),
-            },
-          ]}
+        <ActionButton
+          icon="corner-up-left"
+          label="Undo"
+          color={colors.secondary}
+          bgColor={colors.surface}
+          shadow={getShadow(colors, 'low')}
           onPress={onUndo}
-        >
-          <Text style={[styles.buttonIcon, { color: colors.secondary }]}>{'\u21A9'}</Text>
-          <Text style={[styles.buttonText, { color: colors.secondary }]}>Undo</Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            {
-              backgroundColor: colors.surface,
-              opacity: pressed ? 0.8 : 1,
-              ...getShadow(colors, 'low'),
-            },
-          ]}
+        />
+        <ActionButton
+          icon="trash-2"
+          label="Clear"
+          color={colors.secondary}
+          bgColor={colors.surface}
+          shadow={getShadow(colors, 'low')}
           onPress={onClear}
-        >
-          <Text style={[styles.buttonIcon, { color: colors.secondary }]}>{'\u2715'}</Text>
-          <Text style={[styles.buttonText, { color: colors.secondary }]}>Clear</Text>
-        </Pressable>
-
+        />
         {showCheck && (
-          <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: colors.accent,
-                opacity: pressed ? 0.8 : 1,
-                ...getShadow(colors, 'medium'),
-              },
-            ]}
+          <ActionButton
+            icon="check"
+            label="Check"
+            color={colors.accentText}
+            bgColor={colors.accent}
+            shadow={getShadow(colors, 'medium')}
             onPress={onCheck}
-          >
-            <Text style={[styles.buttonIcon, { color: colors.accentText }]}>{'\u2713'}</Text>
-            <Text style={[styles.buttonText, { color: colors.accentText }]}>Check</Text>
-          </Pressable>
+          />
         )}
       </View>
 

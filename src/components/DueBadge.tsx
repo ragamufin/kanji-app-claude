@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { View, Text } from 'react-native';
-import { useThemedStyles, borderRadius } from '../theme';
+import { useThemedStyles, borderRadius, fonts } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface DueBadgeProps {
@@ -13,17 +13,17 @@ interface DueBadgeProps {
 
 const createStyles = (colors: ColorScheme) => ({
   badge: {
-    minWidth: 22,
-    height: 22,
+    minWidth: 20,
+    height: 20,
     borderRadius: borderRadius.full,
     backgroundColor: colors.error,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-    paddingHorizontal: 6,
+    paddingHorizontal: 5,
   },
   text: {
-    fontSize: 12,
-    fontWeight: '700' as const,
+    fontSize: 11,
+    fontFamily: fonts.sansBold,
     color: '#FFFFFF',
   },
 });

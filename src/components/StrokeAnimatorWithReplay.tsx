@@ -40,7 +40,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   buttonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: typography.button.fontFamily,
     color: colors.accentText,
   },
 });

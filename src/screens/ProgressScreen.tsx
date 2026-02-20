@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { getKanjiStats, getPracticeRecords } from '../data/storage';
-import { useTheme, spacing, typography, useThemedStyles } from '../theme';
+import { useTheme, fonts, spacing, typography, useThemedStyles } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface KanjiStat {
@@ -29,17 +29,18 @@ const createStyles = (colors: ColorScheme) => ({
   },
   summaryValue: {
     fontSize: 28,
-    fontWeight: '700' as const,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
   },
   summaryLabel: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
     marginTop: 2,
   },
   sectionTitle: {
     fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
+    fontFamily: fonts.sansMedium,
     color: colors.secondary,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
@@ -55,7 +56,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   kanjiChar: {
     fontSize: 32,
-    fontWeight: '500' as const,
+    fontFamily: fonts.serif,
     width: 48,
     textAlign: 'center' as const,
     color: colors.primary,
@@ -66,11 +67,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   scoreText: {
     fontSize: typography.body.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.primary,
   },
   attemptsText: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
   },
   scoreBar: {
@@ -87,6 +89,7 @@ const createStyles = (colors: ColorScheme) => ({
     textAlign: 'center' as const,
     color: colors.muted,
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     paddingVertical: spacing.xxxl,
     paddingHorizontal: spacing.lg,
   },
@@ -177,7 +180,7 @@ export function ProgressScreen() {
                     styles.scoreFill,
                     {
                       width: `${item.bestScore}%`,
-                      backgroundColor: item.bestScore >= 70 ? colors.success : colors.error,
+                      backgroundColor: item.bestScore >= 70 ? colors.accent : colors.error,
                     },
                   ]}
                 />

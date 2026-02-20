@@ -5,14 +5,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
+import Animated, { SharedValue } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { HomeActionCard } from '../components/HomeActionCard';
 import { DueBadge } from '../components/DueBadge';
+import { Icon } from '../components/Icon';
 import { useFSRS } from '../hooks/useFSRS';
+import { useStaggeredEntrance, useStaggeredItemStyle } from '../hooks/useStaggeredEntrance';
 import { getKanjiStats, getPracticeRecords } from '../data/storage';
 import {
   useTheme,
+  fonts,
   spacing,
   borderRadius,
   typography,
@@ -41,8 +45,8 @@ const createStyles = (colors: ColorScheme) => ({
     marginBottom: spacing.xl,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700' as const,
+    fontSize: 32,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
   },
   settingsButton: {
@@ -74,18 +78,21 @@ const createStyles = (colors: ColorScheme) => ({
   },
   statValue: {
     fontSize: 22,
-    fontWeight: '700' as const,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
   },
   statLabel: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
     marginTop: 2,
   },
   sectionTitle: {
     fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
+    fontFamily: fonts.sansMedium,
     color: colors.secondary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1,
     marginBottom: spacing.md,
   },
   secondaryGrid: {
@@ -98,6 +105,23 @@ const createStyles = (colors: ColorScheme) => ({
   },
 });
 
+function StaggeredItem({
+  index,
+  progress,
+  delayMs,
+  translateY,
+  children,
+}: {
+  index: number;
+  progress: SharedValue<number>;
+  delayMs: number;
+  translateY: number;
+  children: React.ReactNode;
+}) {
+  const style = useStaggeredItemStyle(index, progress, delayMs, translateY);
+  return <Animated.View style={style}>{children}</Animated.View>;
+}
+
 export function HomeScreen() {
   const styles = useThemedStyles(createStyles);
   const { colors } = useTheme();
@@ -105,6 +129,8 @@ export function HomeScreen() {
   const { dueCount } = useFSRS();
   const [kanjiCount, setKanjiCount] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
+
+  const { progress, delayMs, translateY } = useStaggeredEntrance(8);
 
   useEffect(() => {
     let cancelled = false;
@@ -136,86 +162,98 @@ export function HomeScreen() {
           ]}
           onPress={() => navigation.navigate('Settings')}
         >
-          <Text style={{ fontSize: 20 }}>{'\u2699\uFE0F'}</Text>
+          <Icon name="settings" size={20} color={colors.secondary} />
         </Pressable>
       </View>
 
       {/* Hero cards: Study + SRS */}
-      <View style={styles.heroRow}>
-        <HomeActionCard
-          title="Study"
-          subtitle="Learn new kanji"
-          icon={'\uD83D\uDCDA'}
-          variant="hero"
-          accentColor={colors.accent}
-          onPress={() => navigation.navigate('StudySetup', { sessionType: 'study' })}
-        />
-        <HomeActionCard
-          title="Review"
-          subtitle={dueCount > 0 ? `${dueCount} due today` : 'All caught up'}
-          icon={'\uD83D\uDD04'}
-          variant="hero"
-          accentColor={colors.success}
-          badge={<DueBadge count={dueCount} />}
-          onPress={() => navigation.navigate('StudySetup', { sessionType: 'srs' })}
-        />
-      </View>
+      <StaggeredItem index={0} progress={progress} delayMs={delayMs} translateY={translateY}>
+        <View style={styles.heroRow}>
+          <HomeActionCard
+            title="Study"
+            subtitle="Learn new kanji"
+            icon="book-open"
+            variant="hero"
+            accentColor={colors.accent}
+            onPress={() => navigation.navigate('StudySetup', { sessionType: 'study' })}
+          />
+          <HomeActionCard
+            title="Review"
+            subtitle={dueCount > 0 ? `${dueCount} due today` : 'All caught up'}
+            icon="refresh-cw"
+            variant="hero"
+            accentColor={colors.success}
+            badge={<DueBadge count={dueCount} />}
+            onPress={() => navigation.navigate('StudySetup', { sessionType: 'srs' })}
+          />
+        </View>
+      </StaggeredItem>
 
       {/* Quick stats */}
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{kanjiCount}</Text>
-          <Text style={styles.statLabel}>Practiced</Text>
+      <StaggeredItem index={1} progress={progress} delayMs={delayMs} translateY={translateY}>
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{kanjiCount}</Text>
+            <Text style={styles.statLabel}>Practiced</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{totalAttempts}</Text>
+            <Text style={styles.statLabel}>Attempts</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{dueCount}</Text>
+            <Text style={styles.statLabel}>Due</Text>
+          </View>
         </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{totalAttempts}</Text>
-          <Text style={styles.statLabel}>Attempts</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{dueCount}</Text>
-          <Text style={styles.statLabel}>Due</Text>
-        </View>
-      </View>
+      </StaggeredItem>
 
       {/* Secondary actions */}
       <Text style={styles.sectionTitle}>Quick Actions</Text>
       <View style={styles.secondaryGrid}>
-        <View style={styles.secondaryItem}>
-          <HomeActionCard
-            title="Free Practice"
-            subtitle="Open drawing"
-            icon={'\u270E\uFE0F'}
-            variant="compact"
-            onPress={() => navigation.navigate('Practice')}
-          />
-        </View>
-        <View style={styles.secondaryItem}>
-          <HomeActionCard
-            title="Browse"
-            subtitle="Explore kanji"
-            icon={'\uD83D\uDD0D'}
-            variant="compact"
-            onPress={() => navigation.navigate('Browse')}
-          />
-        </View>
-        <View style={styles.secondaryItem}>
-          <HomeActionCard
-            title="Lists"
-            subtitle="Custom lists"
-            icon={'\uD83D\uDCCB'}
-            variant="compact"
-            onPress={() => navigation.navigate('Lists')}
-          />
-        </View>
-        <View style={styles.secondaryItem}>
-          <HomeActionCard
-            title="Progress"
-            subtitle="Your stats"
-            icon={'\uD83D\uDCCA'}
-            variant="compact"
-            onPress={() => navigation.navigate('Progress')}
-          />
-        </View>
+        <StaggeredItem index={2} progress={progress} delayMs={delayMs} translateY={translateY}>
+          <View style={styles.secondaryItem}>
+            <HomeActionCard
+              title="Free Practice"
+              subtitle="Open drawing"
+              icon="edit-3"
+              variant="compact"
+              onPress={() => navigation.navigate('Practice')}
+            />
+          </View>
+        </StaggeredItem>
+        <StaggeredItem index={3} progress={progress} delayMs={delayMs} translateY={translateY}>
+          <View style={styles.secondaryItem}>
+            <HomeActionCard
+              title="Browse"
+              subtitle="Explore kanji"
+              icon="search"
+              variant="compact"
+              onPress={() => navigation.navigate('Browse')}
+            />
+          </View>
+        </StaggeredItem>
+        <StaggeredItem index={4} progress={progress} delayMs={delayMs} translateY={translateY}>
+          <View style={styles.secondaryItem}>
+            <HomeActionCard
+              title="Lists"
+              subtitle="Custom lists"
+              icon="list"
+              variant="compact"
+              onPress={() => navigation.navigate('Lists')}
+            />
+          </View>
+        </StaggeredItem>
+        <StaggeredItem index={5} progress={progress} delayMs={delayMs} translateY={translateY}>
+          <View style={styles.secondaryItem}>
+            <HomeActionCard
+              title="Progress"
+              subtitle="Your stats"
+              icon="bar-chart-2"
+              variant="compact"
+              onPress={() => navigation.navigate('Progress')}
+            />
+          </View>
+        </StaggeredItem>
       </View>
     </ScrollView>
   );

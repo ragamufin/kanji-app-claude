@@ -10,10 +10,15 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Icon } from '../components/Icon';
+import { useAnimatedPress } from '../utils/animations';
 import { useLists } from '../hooks/useLists';
 import {
+  useTheme,
+  fonts,
   spacing,
   borderRadius,
   typography,
@@ -46,11 +51,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   listName: {
     fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
+    fontFamily: fonts.sansMedium,
     color: colors.primary,
   },
   listMeta: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
     marginTop: 2,
   },
@@ -62,19 +68,14 @@ const createStyles = (colors: ColorScheme) => ({
     justifyContent: 'center' as const,
     marginLeft: spacing.md,
   },
-  deleteText: {
-    fontSize: 18,
-    color: colors.error,
-  },
-  chevron: {
-    fontSize: 18,
-    color: colors.muted,
+  chevronContainer: {
     marginLeft: spacing.sm,
   },
   emptyText: {
     textAlign: 'center' as const,
     color: colors.muted,
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     paddingVertical: spacing.xxxl,
     paddingHorizontal: spacing.lg,
   },
@@ -90,16 +91,29 @@ const createStyles = (colors: ColorScheme) => ({
     justifyContent: 'center' as const,
     ...getShadow(colors, 'high'),
   },
-  fabText: {
-    fontSize: 28,
-    color: colors.accentText,
-    fontWeight: '300' as const,
-    marginTop: -2,
-  },
 });
+
+function AnimatedFAB({ onPress, colors }: { onPress: () => void; colors: ColorScheme }) {
+  const styles = useThemedStyles(createStyles);
+  const { animatedStyle, onPressIn, onPressOut } = useAnimatedPress(0.92);
+
+  return (
+    <Animated.View style={[styles.fab, animatedStyle]}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        style={{ flex: 1, alignItems: 'center', justifyContent: 'center', width: '100%' }}
+      >
+        <Icon name="plus" size={24} color={colors.accentText} />
+      </Pressable>
+    </Animated.View>
+  );
+}
 
 export function ListsScreen() {
   const styles = useThemedStyles(createStyles);
+  const { colors } = useTheme();
   const navigation = useNavigation<ListsNavProp>();
   const { lists, createList, deleteList } = useLists();
 
@@ -178,9 +192,11 @@ export function ListsScreen() {
               }
               hitSlop={8}
             >
-              <Text style={styles.deleteText}>{'\u2715'}</Text>
+              <Icon name="x" size={16} color={colors.error} />
             </Pressable>
-            <Text style={styles.chevron}>{'\u203A'}</Text>
+            <View style={styles.chevronContainer}>
+              <Icon name="chevron-right" size={18} color={colors.muted} />
+            </View>
           </Pressable>
         )}
         ListEmptyComponent={
@@ -193,12 +209,7 @@ export function ListsScreen() {
       />
 
       {/* FAB */}
-      <Pressable
-        style={({ pressed }) => [styles.fab, { opacity: pressed ? 0.85 : 1 }]}
-        onPress={handleCreate}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </Pressable>
+      <AnimatedFAB onPress={handleCreate} colors={colors} />
     </View>
   );
 }

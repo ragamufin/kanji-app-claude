@@ -5,11 +5,15 @@
 
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { Icon, IconName } from './Icon';
+import { useAnimatedPress } from '../utils/animations';
 import {
   useThemedStyles,
   spacing,
   borderRadius,
   typography,
+  fonts,
   getShadow,
 } from '../theme';
 import { ColorScheme } from '../theme/colors';
@@ -17,7 +21,7 @@ import { ColorScheme } from '../theme/colors';
 interface HomeActionCardProps {
   title: string;
   subtitle?: string;
-  icon: string;
+  icon: IconName;
   /** Large hero style or compact grid style */
   variant: 'hero' | 'compact';
   onPress: () => void;
@@ -35,6 +39,8 @@ const createStyles = (colors: ColorScheme) => ({
     backgroundColor: colors.surface,
     padding: spacing.xl,
     justifyContent: 'space-between' as const,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...getShadow(colors, 'medium'),
   },
   compactCard: {
@@ -44,6 +50,8 @@ const createStyles = (colors: ColorScheme) => ({
     backgroundColor: colors.surface,
     padding: spacing.lg,
     justifyContent: 'space-between' as const,
+    borderWidth: 1,
+    borderColor: colors.border,
     ...getShadow(colors, 'low'),
   },
   headerRow: {
@@ -58,9 +66,6 @@ const createStyles = (colors: ColorScheme) => ({
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
-  iconText: {
-    fontSize: 22,
-  },
   compactIconContainer: {
     width: 32,
     height: 32,
@@ -68,28 +73,27 @@ const createStyles = (colors: ColorScheme) => ({
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
-  compactIconText: {
-    fontSize: 18,
-  },
   heroTitle: {
     fontSize: 20,
-    fontWeight: '700' as const,
+    fontFamily: fonts.sansBold,
     color: colors.primary,
     marginTop: spacing.md,
   },
   heroSubtitle: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     color: colors.secondary,
     marginTop: spacing.xs,
   },
   compactTitle: {
     fontSize: typography.button.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.primary,
     marginTop: spacing.sm,
   },
   compactSubtitle: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
     marginTop: 2,
   },
@@ -105,43 +109,47 @@ export function HomeActionCard({
   accentColor,
 }: HomeActionCardProps) {
   const styles = useThemedStyles(createStyles);
+  const { animatedStyle, onPressIn, onPressOut } = useAnimatedPress();
   const isHero = variant === 'hero';
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        isHero ? styles.heroCard : styles.compactCard,
-        { opacity: pressed ? 0.85 : 1 },
-      ]}
-      onPress={onPress}
-    >
-      <View style={styles.headerRow}>
-        <View
-          style={[
-            isHero ? styles.iconContainer : styles.compactIconContainer,
-            {
-              backgroundColor: accentColor
-                ? accentColor + '18'
-                : 'rgba(128,128,128,0.1)',
-            },
-          ]}
-        >
-          <Text style={isHero ? styles.iconText : styles.compactIconText}>
-            {icon}
-          </Text>
+    <Animated.View style={[isHero ? styles.heroCard : styles.compactCard, animatedStyle]}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        style={{ flex: 1, justifyContent: 'space-between' }}
+      >
+        <View style={styles.headerRow}>
+          <View
+            style={[
+              isHero ? styles.iconContainer : styles.compactIconContainer,
+              {
+                backgroundColor: accentColor
+                  ? accentColor + '18'
+                  : 'rgba(128,128,128,0.1)',
+              },
+            ]}
+          >
+            <Icon
+              name={icon}
+              size={isHero ? 20 : 16}
+              color={accentColor || '#888'}
+            />
+          </View>
+          {badge}
         </View>
-        {badge}
-      </View>
-      <View>
-        <Text style={isHero ? styles.heroTitle : styles.compactTitle}>
-          {title}
-        </Text>
-        {subtitle && (
-          <Text style={isHero ? styles.heroSubtitle : styles.compactSubtitle}>
-            {subtitle}
+        <View>
+          <Text style={isHero ? styles.heroTitle : styles.compactTitle}>
+            {title}
           </Text>
-        )}
-      </View>
-    </Pressable>
+          {subtitle && (
+            <Text style={isHero ? styles.heroSubtitle : styles.compactSubtitle}>
+              {subtitle}
+            </Text>
+          )}
+        </View>
+      </Pressable>
+    </Animated.View>
   );
 }

@@ -2,36 +2,53 @@ import React, { createContext, useContext, useState, useMemo, ReactNode } from '
 import { useColorScheme } from 'react-native';
 import { lightColors, darkColors, ColorScheme } from './colors';
 
+// Font family tokens
+export const fonts = {
+  serif: 'NotoSerifJP_400Regular',
+  serifMedium: 'NotoSerifJP_500Medium',
+  serifBold: 'NotoSerifJP_700Bold',
+  sans: 'ZenKakuGothicNew_400Regular',
+  sansMedium: 'ZenKakuGothicNew_500Medium',
+  sansBold: 'ZenKakuGothicNew_700Bold',
+};
+
 // Typography scale
 export const typography = {
   kanjiDisplay: {
-    fontSize: 72,
-    fontWeight: '700' as const,
+    fontSize: 80,
+    fontFamily: fonts.serifBold,
   },
   meaning: {
-    fontSize: 28,
-    fontWeight: '600' as const,
+    fontSize: 26,
+    fontFamily: fonts.serifMedium,
+  },
+  heading: {
+    fontSize: 22,
+    fontFamily: fonts.sansBold,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '500' as const,
+    fontSize: 15,
+    fontFamily: fonts.sansMedium,
   },
   button: {
-    fontSize: 15,
-    fontWeight: '600' as const,
-  },
-  caption: {
-    fontSize: 13,
-    fontWeight: '400' as const,
+    fontSize: 14,
+    fontFamily: fonts.sansBold,
+    letterSpacing: 0.3,
   },
   body: {
     fontSize: 14,
-    fontWeight: '400' as const,
+    fontFamily: fonts.sans,
+  },
+  caption: {
+    fontSize: 12,
+    fontFamily: fonts.sans,
+    letterSpacing: 0.2,
   },
 };
 
 // Spacing scale (based on 4px grid)
 export const spacing = {
+  xxs: 2,
   xs: 4,
   sm: 8,
   md: 12,
@@ -43,36 +60,37 @@ export const spacing = {
 
 // Border radius tokens
 export const borderRadius = {
+  xs: 4,
   sm: 8,
   md: 12,
   lg: 16,
-  xl: 24,
+  xl: 20,
   full: 9999,
 };
 
-// Shadow presets for different elevations
+// Shadow presets — color-tinted for premium feel
 export const getShadow = (colors: ColorScheme, elevation: 'low' | 'medium' | 'high') => {
   const shadows = {
     low: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.06,
-      shadowRadius: 4,
-      elevation: 2,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.04,
+      shadowRadius: 3,
+      elevation: 1,
     },
     medium: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.1,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06,
       shadowRadius: 8,
-      elevation: 4,
+      elevation: 3,
     },
     high: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.15,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.08,
       shadowRadius: 16,
-      elevation: 8,
+      elevation: 6,
     },
   };
   return shadows[elevation];

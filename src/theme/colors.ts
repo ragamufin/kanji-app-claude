@@ -1,63 +1,63 @@
-// Zen Ink Color System
-// Inspired by Japanese calligraphy and modern zen aesthetics
+// Elevated Zen Color System
+// Premium Japanese stationery meets modern design tool
 
 export const lightColors = {
   // Backgrounds
-  background: '#FAF8F5', // warm cream, like aged paper
-  surface: '#FFFFFF', // white
-  canvas: '#FFF9F0', // soft cream with warmth
+  background: '#F7F4EF', // deeper warm parchment
+  surface: '#FEFDFB', // barely off-white, premium paper
+  canvas: '#FBF6ED', // warm drawing paper
 
   // Text & Primary
-  primary: '#2D2D2D', // rich black ink
-  secondary: '#6B5B4F', // warm brown, like aged wood
+  primary: '#1C1917', // true ink black — deeper, richer
+  secondary: '#57534E', // stone gray-brown
 
-  // Accents
-  accent: '#007AFF', // iOS system blue
-  accentLight: '#3395FF', // lighter blue for hover states
-  accentText: '#FFFFFF', // white text on blue backgrounds
+  // Accents — warm amber, like a hanko seal
+  accent: '#B45309', // warm amber/burnt orange — signature color
+  accentLight: '#D97706', // lighter amber hover
+  accentText: '#FFFBEB', // warm cream on amber
 
   // Semantic
-  success: '#4A7C59', // matcha green
-  successLight: '#dcfce7', // light green background
-  error: '#C45B4D', // soft red
-  errorLight: '#fee2e2', // light red background
+  success: '#3F6B54', // deeper matcha
+  successLight: '#ECFDF5', // light green background
+  error: '#B91C1C', // more decisive red
+  errorLight: '#FEF2F2', // light red background
 
   // Neutral
-  muted: '#9C9184', // warm gray
-  border: '#E8E4DF', // subtle warm border
-  borderStrong: '#D4CFC8', // stronger border
+  muted: '#A8A29E', // cool stone
+  border: '#E7E5E4', // subtle stone border
+  borderStrong: '#D6D3D1', // stronger stone
 
   // Shadows
-  shadow: 'rgba(45, 45, 45, 0.08)',
-  shadowMedium: 'rgba(45, 45, 45, 0.12)',
-  shadowStrong: 'rgba(45, 45, 45, 0.16)',
+  shadow: 'rgba(28, 25, 23, 0.06)',
+  shadowMedium: 'rgba(28, 25, 23, 0.10)',
+  shadowStrong: 'rgba(28, 25, 23, 0.14)',
 };
 
 export const darkColors = {
   // Backgrounds
-  background: '#1A1918', // deep warm black
-  surface: '#242220', // elevated surface
-  canvas: '#2A2725', // dark paper feel
+  background: '#0C0A09', // deeper sumi ink
+  surface: '#1C1917', // charcoal surface
+  canvas: '#231F1D', // dark paper
 
   // Text & Primary
-  primary: '#F5F2ED', // off-white
-  secondary: '#B8A99A', // warm tan
+  primary: '#F5F5F4', // clean off-white
+  secondary: '#A8A29E', // warm stone
 
-  // Accents
-  accent: '#c8e64a', // bright lime green
-  accentLight: '#d4f05a', // lighter lime for hover states
-  accentText: '#0a0a0f', // dark text for use on bright accent backgrounds
+  // Accents — warm gold, like gold leaf on lacquer
+  accent: '#F59E0B', // warm gold
+  accentLight: '#FBBF24', // lighter gold
+  accentText: '#0C0A09', // deep black on gold
 
   // Semantic
   success: '#6B9B7A', // muted green
   successLight: '#2D3D32', // dark green background
-  error: '#D47A6F', // soft red
+  error: '#EF4444', // clear red
   errorLight: '#3D2A28', // dark red background
 
   // Neutral
-  muted: '#6B645C', // muted warm gray
-  border: '#3A3634', // subtle border
-  borderStrong: '#4A4542', // stronger border
+  muted: '#57534E', // warm muted
+  border: '#292524', // subtle border
+  borderStrong: '#44403C', // stronger border
 
   // Shadows
   shadow: 'rgba(0, 0, 0, 0.2)',

@@ -10,7 +10,7 @@ import { ListsScreen } from '../screens/ListsScreen';
 import { ListDetailScreen } from '../screens/ListDetailScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { SessionType, StudyMode } from '../config/studyConfig';
-import { useTheme } from '../theme';
+import { useTheme, fonts } from '../theme';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -39,7 +39,7 @@ export function AppNavigator() {
       screenOptions={{
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.primary,
-        headerTitleStyle: { fontWeight: '600' },
+        headerTitleStyle: { fontFamily: fonts.sansMedium },
         headerShadowVisible: false,
         contentStyle: { backgroundColor: colors.background },
         animation: 'slide_from_right',

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { ValidationResult } from '../utils/validationUtils';
-import { spacing, borderRadius, typography, useTheme, useThemedStyles } from '../theme';
+import { Icon } from './Icon';
+import { spacing, borderRadius, typography, fonts, useTheme, useThemedStyles } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface ValidationMessageProps {
@@ -18,19 +19,25 @@ const createStyles = (colors: ColorScheme) => ({
     minWidth: 200,
     borderWidth: 1,
   },
+  titleRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
   title: {
     fontSize: 18,
-    fontWeight: '700' as const,
-    marginBottom: spacing.xs,
+    fontFamily: fonts.sansBold,
   },
   score: {
     fontSize: 22,
-    fontWeight: '700' as const,
+    fontFamily: fonts.serifBold,
     marginBottom: spacing.xs,
     color: colors.primary,
   },
   text: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     color: colors.primary,
   },
   perStrokeContainer: {
@@ -45,6 +52,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   perStrokeText: {
     fontSize: 12,
+    fontFamily: fonts.sans,
     width: 60,
     color: colors.primary,
   },
@@ -61,13 +69,14 @@ const createStyles = (colors: ColorScheme) => ({
   },
   perStrokeAccuracy: {
     fontSize: 11,
+    fontFamily: fonts.sans,
     width: 32,
     textAlign: 'right' as const,
     color: colors.muted,
   },
   orderWarning: {
     fontSize: 10,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.error,
   },
 });
@@ -98,9 +107,16 @@ export function ValidationMessage({ result }: ValidationMessageProps) {
         },
       ]}
     >
-      <Text style={[styles.title, { color: statusColor }]}>
-        {overallMatch ? 'Great work!' : 'Keep practicing'}
-      </Text>
+      <View style={styles.titleRow}>
+        <Icon
+          name={overallMatch ? 'check-circle' : 'x-circle'}
+          size={20}
+          color={statusColor}
+        />
+        <Text style={[styles.title, { color: statusColor }]}>
+          {overallMatch ? 'Great work!' : 'Keep practicing'}
+        </Text>
+      </View>
       <Text style={styles.score}>Score: {overallScore}%</Text>
       <Text style={styles.text}>
         Strokes: {actualStrokes}/{expectedStrokes} {strokeCountMatch ? '\u2713' : '\u2717'}

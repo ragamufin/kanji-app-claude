@@ -19,16 +19,19 @@ import { getKanjiData } from '../data/kanjiDataService';
 import { StudyCard } from '../components/StudyCard';
 import { KanjiCanvas } from '../components/KanjiCanvas';
 import { StrokeAnimatorWithReplay } from '../components/StrokeAnimatorWithReplay';
+import { Icon } from '../components/Icon';
 import { useStudySession } from '../hooks/useStudySession';
 import { useFSRS } from '../hooks/useFSRS';
 import { Rating, getDueCards } from '../utils/spacedRepetition';
 import { StudyMode } from '../config/studyConfig';
 import {
+  fonts,
   spacing,
   borderRadius,
   typography,
   getShadow,
   useThemedStyles,
+  useTheme,
 } from '../theme';
 import { ColorScheme } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -54,19 +57,19 @@ const createStyles = (colors: ColorScheme) => ({
   },
   progressText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansMedium,
     color: colors.secondary,
   },
   progressTrack: {
     flex: 1,
-    height: 4,
-    borderRadius: 2,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: colors.border,
     marginHorizontal: spacing.md,
   },
   progressFill: {
     height: '100%' as const,
-    borderRadius: 2,
+    borderRadius: 3,
     backgroundColor: colors.accent,
   },
   exitButton: {
@@ -75,12 +78,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   exitText: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sansMedium,
     color: colors.muted,
-    fontWeight: '600' as const,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
   },
@@ -94,7 +97,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '700' as const,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
     textAlign: 'center' as const,
     marginBottom: spacing.lg,
@@ -110,18 +113,18 @@ const createStyles = (colors: ColorScheme) => ({
     justifyContent: 'center' as const,
     padding: spacing.xl,
   },
-  completeEmoji: {
-    fontSize: 64,
+  completeIconContainer: {
     marginBottom: spacing.lg,
   },
   completeTitle: {
     fontSize: 24,
-    fontWeight: '700' as const,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
     marginBottom: spacing.sm,
   },
   completeSubtitle: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     color: colors.secondary,
     textAlign: 'center' as const,
     marginBottom: spacing.xl,
@@ -137,11 +140,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   completeStatLabel: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     color: colors.secondary,
   },
   completeStatValue: {
     fontSize: typography.body.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
   },
   doneButton: {
@@ -155,13 +159,14 @@ const createStyles = (colors: ColorScheme) => ({
   },
   doneButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: '700' as const,
+    fontFamily: fonts.sansBold,
     color: colors.accentText,
   },
 });
 
 export function StudySessionScreen() {
   const styles = useThemedStyles(createStyles);
+  const { colors } = useTheme();
   const { width } = useWindowDimensions();
   const navigation = useNavigation<SessionNavProp>();
   const route = useRoute<SessionRoute>();
@@ -259,7 +264,9 @@ export function StudySessionScreen() {
   if (session.isComplete) {
     return (
       <View style={[styles.container, styles.completeContainer]}>
-        <Text style={styles.completeEmoji}>{'\uD83C\uDF89'}</Text>
+        <View style={styles.completeIconContainer}>
+          <Icon name="award" size={48} color={colors.accent} />
+        </View>
         <Text style={styles.completeTitle}>Session Complete!</Text>
         <Text style={styles.completeSubtitle}>
           {isSRS

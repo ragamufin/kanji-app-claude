@@ -25,6 +25,7 @@ import {
 } from '../config/studyConfig';
 import {
   useTheme,
+  fonts,
   spacing,
   borderRadius,
   typography,
@@ -50,8 +51,10 @@ const createStyles = (colors: ColorScheme) => ({
   },
   sectionTitle: {
     fontSize: typography.label.fontSize,
-    fontWeight: typography.label.fontWeight,
+    fontFamily: fonts.sansBold,
     color: colors.secondary,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1,
     marginTop: spacing.xl,
     marginBottom: spacing.md,
   },
@@ -73,7 +76,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   chipText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: fonts.sansMedium,
     color: colors.secondary,
   },
   chipTextSelected: {
@@ -93,11 +96,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   modeTitle: {
     fontSize: typography.button.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansMedium,
     color: colors.primary,
   },
   modeDescription: {
     fontSize: typography.caption.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
     marginTop: 2,
   },
@@ -112,6 +116,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   toggleLabel: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     color: colors.primary,
   },
   toggleButton: {
@@ -125,7 +130,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   toggleButtonText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.secondary,
   },
   toggleButtonTextActive: {
@@ -140,11 +145,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   deckCount: {
     fontSize: 32,
-    fontWeight: '700' as const,
+    fontFamily: fonts.serifBold,
     color: colors.primary,
   },
   deckLabel: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     color: colors.muted,
     marginLeft: spacing.sm,
   },
@@ -161,7 +167,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   startButtonText: {
     fontSize: 17,
-    fontWeight: '700' as const,
+    fontFamily: fonts.sansBold,
     color: colors.accentText,
   },
   srsInfo: {
@@ -178,11 +184,12 @@ const createStyles = (colors: ColorScheme) => ({
   },
   srsInfoLabel: {
     fontSize: typography.body.fontSize,
+    fontFamily: fonts.sans,
     color: colors.secondary,
   },
   srsInfoValue: {
     fontSize: typography.body.fontSize,
-    fontWeight: '600' as const,
+    fontFamily: fonts.sansBold,
     color: colors.primary,
   },
   loading: {

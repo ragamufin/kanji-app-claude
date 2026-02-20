@@ -4,19 +4,20 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { KanjiCanvas } from '../components/KanjiCanvas';
 import { KanjiSelector } from '../components/KanjiSelector';
+import { Icon, IconName } from '../components/Icon';
 import { KanjiVGData, CanvasMode } from '../data/kanjiVGTypes';
 import { StrokeMode } from '../utils/strokeUtils';
 import { useKanjiList } from '../hooks/useKanjiList';
-import { useTheme, spacing, borderRadius, typography, getShadow, useThemedStyles } from '../theme';
+import { useTheme, fonts, spacing, borderRadius, typography, getShadow, useThemedStyles } from '../theme';
 import { ColorScheme } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type PracticeNavProp = NativeStackNavigationProp<RootStackParamList, 'Practice'>;
 
-const CANVAS_MODES: { mode: CanvasMode; label: string; icon: string }[] = [
-  { mode: 'practice', label: 'Practice', icon: '\u270E' },
-  { mode: 'demo', label: 'Demo', icon: '\u25B6' },
-  { mode: 'trace', label: 'Trace', icon: '\u25CE' },
+const CANVAS_MODES: { mode: CanvasMode; label: string; icon: IconName }[] = [
+  { mode: 'practice', label: 'Practice', icon: 'edit-3' },
+  { mode: 'demo', label: 'Demo', icon: 'play' },
+  { mode: 'trace', label: 'Trace', icon: 'target' },
 ];
 
 const createStyles = (colors: ColorScheme) => ({
@@ -37,14 +38,14 @@ const createStyles = (colors: ColorScheme) => ({
   },
   kanjiCharacter: {
     fontSize: typography.kanjiDisplay.fontSize,
-    fontWeight: typography.kanjiDisplay.fontWeight,
+    fontFamily: typography.kanjiDisplay.fontFamily,
     opacity: 0.15,
     marginBottom: -spacing.sm,
     color: colors.muted,
   },
   meaning: {
     fontSize: typography.meaning.fontSize,
-    fontWeight: typography.meaning.fontWeight,
+    fontFamily: typography.meaning.fontFamily,
     marginBottom: spacing.sm,
     color: colors.primary,
   },
@@ -57,7 +58,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
   strokeBadgeText: {
     fontSize: typography.caption.fontSize,
-    fontWeight: typography.caption.fontWeight,
+    fontFamily: fonts.sansMedium,
     color: colors.secondary,
   },
   modeSelector: {
@@ -77,12 +78,9 @@ const createStyles = (colors: ColorScheme) => ({
     borderRadius: borderRadius.full,
     gap: spacing.xs,
   },
-  modeButtonIcon: {
-    fontSize: 14,
-  },
   modeButtonText: {
     fontSize: typography.button.fontSize,
-    fontWeight: typography.button.fontWeight,
+    fontFamily: fonts.sansMedium,
   },
   navRow: {
     flexDirection: 'row' as const,
@@ -103,12 +101,9 @@ const createStyles = (colors: ColorScheme) => ({
     gap: 4,
     ...getShadow(colors, 'low'),
   },
-  navButtonIcon: {
-    fontSize: 18,
-  },
   navButtonLabel: {
     fontSize: typography.caption.fontSize,
-    fontWeight: typography.caption.fontWeight,
+    fontFamily: fonts.sans,
     color: colors.secondary,
   },
 });
@@ -142,7 +137,7 @@ export function PracticeScreen() {
           style={({ pressed }) => [styles.navButton, { opacity: pressed ? 0.7 : 1 }]}
           onPress={() => navigation.navigate('Home')}
         >
-          <Text style={styles.navButtonIcon}>{'\u2190'}</Text>
+          <Icon name="home" size={18} color={colors.secondary} />
           <Text style={styles.navButtonLabel}>Home</Text>
         </Pressable>
       </View>
@@ -167,7 +162,7 @@ export function PracticeScreen() {
         ]}
         onPress={toggleTheme}
       >
-        <Text style={{ fontSize: 20 }}>{isDark ? '\u2600\uFE0F' : '\uD83C\uDF19'}</Text>
+        <Icon name={isDark ? 'sun' : 'moon'} size={20} color={colors.secondary} />
       </Pressable>
 
       <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
@@ -202,11 +197,11 @@ export function PracticeScreen() {
                 ]}
                 onPress={() => setCanvasMode(mode)}
               >
-                <Text
-                  style={[styles.modeButtonIcon, { color: isActive ? colors.accentText : colors.muted }]}
-                >
-                  {icon}
-                </Text>
+                <Icon
+                  name={icon}
+                  size={14}
+                  color={isActive ? colors.accentText : colors.muted}
+                />
                 <Text
                   style={[
                     styles.modeButtonText,
