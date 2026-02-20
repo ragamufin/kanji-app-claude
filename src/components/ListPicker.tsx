@@ -3,24 +3,10 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  Pressable,
-  FlatList,
-  Alert,
-} from 'react-native';
+import { View, Text, Modal, Pressable, FlatList, Alert } from 'react-native';
 import { KanjiList } from '../data/listStorage';
 import { Icon } from './Icon';
-import {
-  spacing,
-  borderRadius,
-  typography,
-  fonts,
-  getShadow,
-  useThemedStyles,
-} from '../theme';
+import { spacing, borderRadius, typography, fonts, getShadow, useThemedStyles } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface ListPickerProps {
@@ -94,13 +80,7 @@ const createStyles = (colors: ColorScheme) => ({
   },
 });
 
-export function ListPicker({
-  visible,
-  lists,
-  onSelect,
-  onCreate,
-  onClose,
-}: ListPickerProps) {
+export function ListPicker({ visible, lists, onSelect, onCreate, onClose }: ListPickerProps) {
   const styles = useThemedStyles(createStyles);
 
   const handleCreate = useCallback(() => {
@@ -125,12 +105,7 @@ export function ListPicker({
   }, [onCreate]);
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
         <View style={styles.sheet} onStartShouldSetResponder={() => true}>
           <View style={styles.handle} />
@@ -141,26 +116,18 @@ export function ListPicker({
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <Pressable
-                style={({ pressed }) => [
-                  styles.listItem,
-                  { opacity: pressed ? 0.7 : 1 },
-                ]}
+                style={({ pressed }) => [styles.listItem, { opacity: pressed ? 0.7 : 1 }]}
                 onPress={() => onSelect(item.id)}
               >
                 <Text style={styles.listName}>{item.name}</Text>
-                <Text style={styles.listCount}>
-                  {item.characters.length} kanji
-                </Text>
+                <Text style={styles.listCount}>{item.characters.length} kanji</Text>
               </Pressable>
             )}
           />
 
           {/* Create new */}
           <Pressable
-            style={({ pressed }) => [
-              styles.createRow,
-              { opacity: pressed ? 0.7 : 1 },
-            ]}
+            style={({ pressed }) => [styles.createRow, { opacity: pressed ? 0.7 : 1 }]}
             onPress={handleCreate}
           >
             <Icon name="plus" size={18} color={styles.createText.color} />

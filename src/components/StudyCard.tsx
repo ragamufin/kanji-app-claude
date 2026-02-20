@@ -21,14 +21,7 @@ import {
 } from '../utils/spacedRepetition';
 import { Icon } from './Icon';
 import { useFlipAnimation } from '../utils/animations';
-import {
-  spacing,
-  borderRadius,
-  typography,
-  fonts,
-  getShadow,
-  useThemedStyles,
-} from '../theme';
+import { spacing, borderRadius, typography, fonts, getShadow, useThemedStyles } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface StudyCardProps {
@@ -219,9 +212,7 @@ export function StudyCard({
   const { frontStyle, backStyle, flip, reset } = useFlipAnimation();
 
   // Determine what shows on front vs back based on mode
-  const effectiveMode = mode === 'random'
-    ? (Math.random() > 0.5 ? 'regular' : 'reverse')
-    : mode;
+  const effectiveMode = mode === 'random' ? (Math.random() > 0.5 ? 'regular' : 'reverse') : mode;
   const showKanjiOnFront = effectiveMode === 'reverse';
 
   const handleReveal = useCallback(() => {
@@ -246,9 +237,7 @@ export function StudyCard({
           {showKanjiOnFront ? (
             <Text style={styles.kanjiLarge}>{kanji.character}</Text>
           ) : (
-            <Text style={styles.keywordLarge}>
-              {kanji.heisigKeyword || kanji.meaning}
-            </Text>
+            <Text style={styles.keywordLarge}>{kanji.heisigKeyword || kanji.meaning}</Text>
           )}
           <Text style={styles.tapHint}>Tap to reveal</Text>
         </Pressable>
@@ -260,9 +249,7 @@ export function StudyCard({
           {/* Header: shows the hidden side */}
           <View style={styles.backHeader}>
             <Text style={styles.backKanji}>{kanji.character}</Text>
-            <Text style={styles.backKeyword}>
-              {kanji.heisigKeyword || kanji.meaning}
-            </Text>
+            <Text style={styles.backKeyword}>{kanji.heisigKeyword || kanji.meaning}</Text>
           </View>
 
           {/* Metadata badges */}
@@ -287,20 +274,14 @@ export function StudyCard({
           {/* Action buttons */}
           <View style={styles.actionRow}>
             <Pressable
-              style={({ pressed }) => [
-                styles.actionButton,
-                { opacity: pressed ? 0.7 : 1 },
-              ]}
+              style={({ pressed }) => [styles.actionButton, { opacity: pressed ? 0.7 : 1 }]}
               onPress={onPractice}
             >
               <Icon name="edit-3" size={16} color={styles.actionButtonText.color} />
               <Text style={styles.actionButtonText}>Practice</Text>
             </Pressable>
             <Pressable
-              style={({ pressed }) => [
-                styles.actionButton,
-                { opacity: pressed ? 0.7 : 1 },
-              ]}
+              style={({ pressed }) => [styles.actionButton, { opacity: pressed ? 0.7 : 1 }]}
               onPress={onDemo}
             >
               <Icon name="play" size={16} color={styles.actionButtonText.color} />
@@ -328,19 +309,14 @@ export function StudyCard({
                   <Icon name={GRADE_ICONS[rating]} size={16} color="#FFFFFF" />
                   <Text style={styles.gradeLabel}>{GRADE_LABELS[rating]}</Text>
                   {intervals && (
-                    <Text style={styles.gradeInterval}>
-                      {formatInterval(intervals[rating])}
-                    </Text>
+                    <Text style={styles.gradeInterval}>{formatInterval(intervals[rating])}</Text>
                   )}
                 </Pressable>
               ))}
             </View>
           ) : onNext ? (
             <Pressable
-              style={({ pressed }) => [
-                styles.nextButton,
-                { opacity: pressed ? 0.8 : 1 },
-              ]}
+              style={({ pressed }) => [styles.nextButton, { opacity: pressed ? 0.8 : 1 }]}
               onPress={onNext}
             >
               <Text style={styles.nextButtonText}>Next</Text>

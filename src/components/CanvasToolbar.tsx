@@ -4,7 +4,15 @@ import Animated from 'react-native-reanimated';
 import { StrokeMode } from '../utils/strokeUtils';
 import { Icon, IconName } from './Icon';
 import { useAnimatedPress } from '../utils/animations';
-import { spacing, borderRadius, typography, fonts, getShadow, useTheme, useThemedStyles } from '../theme';
+import {
+  spacing,
+  borderRadius,
+  typography,
+  fonts,
+  getShadow,
+  useTheme,
+  useThemedStyles,
+} from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 const STROKE_MODES: { mode: StrokeMode; label: string; icon: IconName }[] = [
@@ -136,7 +144,10 @@ export function CanvasToolbar({
             >
               <Icon name={icon} size={14} color={isActive ? colors.accentText : colors.muted} />
               <Text
-                style={[styles.modeButtonText, { color: isActive ? colors.accentText : colors.secondary }]}
+                style={[
+                  styles.modeButtonText,
+                  { color: isActive ? colors.accentText : colors.secondary },
+                ]}
               >
                 {label}
               </Text>

@@ -11,7 +11,7 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" \"App.tsx\"",
     "typecheck": "tsc --noEmit",
-    "process-kanjivg": "npx tsx scripts/processKanjiVG.ts"
+    "process-kanjivg": "bun scripts/processKanjiVG.ts"
   },
   "dependencies": {
     "@expo-google-fonts/noto-serif-jp": "^0.4.3",

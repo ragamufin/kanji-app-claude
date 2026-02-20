@@ -18,14 +18,14 @@ Kanji drawing practice app built with React Native and Expo. Users study kanji t
 ## Development Commands
 
 ```bash
-npx expo start          # Start Expo dev server
-npx expo start --ios    # Run on iOS simulator
-npx expo start --android # Run on Android emulator
-npx expo start --web    # Run in web browser
-npx tsc --noEmit        # Type check without emitting
-npm run lint            # ESLint
-npm run lint:fix        # ESLint with auto-fix
-npm run format          # Prettier
+bunx expo start          # Start Expo dev server
+bunx expo start --ios    # Run on iOS simulator
+bunx expo start --android # Run on Android emulator
+bunx expo start --web    # Run in web browser
+bunx tsc --noEmit        # Type check without emitting
+bun run lint             # ESLint
+bun run lint:fix         # ESLint with auto-fix
+bun run format           # Prettier
 ```
 
 ## Architecture
@@ -60,6 +60,7 @@ Touch events capture `{x, y, timestamp}` points → `pointsToPath()` converts ba
 
 ## Tech Stack
 
+- **Bun** as package manager and script runner (not npm/yarn)
 - React Native with New Architecture enabled
 - Expo SDK
 - react-native-svg for canvas rendering

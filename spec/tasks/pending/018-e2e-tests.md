@@ -17,7 +17,7 @@ End-to-end tests using Playwright against the Expo web build. Cover the core use
 
 ## Implementation Notes
 
-- Target Expo web dev server (`npx expo start --web`)
+- Target Expo web dev server (`bunx expo start --web`)
 - Test touch/mouse drawing on canvas SVG element
 - Verify stroke rendering (SVG paths appear after drawing)
 - Test mode switching (practice/demo/trace)

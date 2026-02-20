@@ -130,7 +130,9 @@ export function ListDetailScreen() {
     };
     load();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [list]);
 
   const handleRemove = useCallback(
@@ -162,16 +164,11 @@ export function ListDetailScreen() {
     <View style={styles.container}>
       {list.characters.length > 0 && (
         <Pressable
-          style={({ pressed }) => [
-            styles.studyButton,
-            { opacity: pressed ? 0.85 : 1 },
-          ]}
+          style={({ pressed }) => [styles.studyButton, { opacity: pressed ? 0.85 : 1 }]}
           onPress={handleStudy}
         >
           <Icon name="book-open" size={16} color={colors.accentText} />
-          <Text style={styles.studyButtonText}>
-            Study {list.characters.length} kanji
-          </Text>
+          <Text style={styles.studyButtonText}>Study {list.characters.length} kanji</Text>
         </Pressable>
       )}
 

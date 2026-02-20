@@ -57,10 +57,7 @@ export function useStudySession({
   mode,
   shuffle = false,
 }: UseStudySessionProps): UseStudySessionResult {
-  const orderedDeck = useMemo(
-    () => (shuffle ? shuffleArray(deck) : deck),
-    [deck, shuffle]
-  );
+  const orderedDeck = useMemo(() => (shuffle ? shuffleArray(deck) : deck), [deck, shuffle]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [state, setState] = useState<SessionState>('front_shown');

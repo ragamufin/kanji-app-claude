@@ -4,13 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { JLPTLevel, KanjiVGData } from '../data/kanjiVGTypes';
@@ -211,7 +205,9 @@ export function StudySetupScreen() {
 
   // Filter state
   const [selectedLevels, setSelectedLevels] = useState<JLPTLevel[]>([]);
-  const [selectedHeisig, setSelectedHeisig] = useState<{ label: string; range: [number, number] }[]>([]);
+  const [selectedHeisig, setSelectedHeisig] = useState<
+    { label: string; range: [number, number] }[]
+  >([]);
   const [selectedListIds, setSelectedListIds] = useState<string[]>([]);
   const [studyMode, setStudyMode] = useState<StudyMode>('regular');
   const [shuffleEnabled, setShuffle] = useState(false);
@@ -239,23 +235,17 @@ export function StudySetupScreen() {
     };
   }, [selectedLevels, selectedHeisig, selectedListIds, lists]);
 
-  const deckSize = sessionType === 'srs'
-    ? dueCount + Math.min(newCount, 5)
-    : filteredKanji.length;
+  const deckSize = sessionType === 'srs' ? dueCount + Math.min(newCount, 5) : filteredKanji.length;
 
   const toggleLevel = (level: JLPTLevel) => {
     setSelectedLevels((prev) =>
-      prev.includes(level)
-        ? prev.filter((l) => l !== level)
-        : [...prev, level]
+      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
     );
   };
 
   const toggleHeisig = (item: { label: string; range: [number, number] }) => {
     setSelectedHeisig((prev) => {
-      const exists = prev.some(
-        (r) => r.range[0] === item.range[0] && r.range[1] === item.range[1]
-      );
+      const exists = prev.some((r) => r.range[0] === item.range[0] && r.range[1] === item.range[1]);
       return exists
         ? prev.filter((r) => !(r.range[0] === item.range[0] && r.range[1] === item.range[1]))
         : [...prev, item];
@@ -264,9 +254,7 @@ export function StudySetupScreen() {
 
   const toggleList = (listId: string) => {
     setSelectedListIds((prev) =>
-      prev.includes(listId)
-        ? prev.filter((id) => id !== listId)
-        : [...prev, listId]
+      prev.includes(listId) ? prev.filter((id) => id !== listId) : [...prev, listId]
     );
   };
 
@@ -324,11 +312,7 @@ export function StudySetupScreen() {
               style={[styles.chip, selected && styles.chipSelected]}
               onPress={() => toggleLevel(level)}
             >
-              <Text
-                style={[styles.chipText, selected && styles.chipTextSelected]}
-              >
-                {level}
-              </Text>
+              <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{level}</Text>
             </Pressable>
           );
         })}
@@ -347,9 +331,7 @@ export function StudySetupScreen() {
               style={[styles.chip, selected && styles.chipSelected]}
               onPress={() => toggleHeisig(item)}
             >
-              <Text
-                style={[styles.chipText, selected && styles.chipTextSelected]}
-              >
+              <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                 {item.label}
               </Text>
             </Pressable>
@@ -370,12 +352,7 @@ export function StudySetupScreen() {
                   style={[styles.chip, selected && styles.chipSelected]}
                   onPress={() => toggleList(list.id)}
                 >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      selected && styles.chipTextSelected,
-                    ]}
-                  >
+                  <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                     {list.name} ({list.characters.length})
                   </Text>
                 </Pressable>
@@ -396,31 +373,16 @@ export function StudySetupScreen() {
             onPress={() => setStudyMode(m)}
           >
             <Text style={styles.modeTitle}>{STUDY_MODE_LABELS[m]}</Text>
-            <Text style={styles.modeDescription}>
-              {STUDY_MODE_DESCRIPTIONS[m]}
-            </Text>
+            <Text style={styles.modeDescription}>{STUDY_MODE_DESCRIPTIONS[m]}</Text>
           </Pressable>
         );
       })}
 
       {/* Shuffle toggle */}
-      <Pressable
-        style={styles.toggleRow}
-        onPress={() => setShuffle(!shuffleEnabled)}
-      >
+      <Pressable style={styles.toggleRow} onPress={() => setShuffle(!shuffleEnabled)}>
         <Text style={styles.toggleLabel}>Shuffle order</Text>
-        <View
-          style={[
-            styles.toggleButton,
-            shuffleEnabled && styles.toggleButtonActive,
-          ]}
-        >
-          <Text
-            style={[
-              styles.toggleButtonText,
-              shuffleEnabled && styles.toggleButtonTextActive,
-            ]}
-          >
+        <View style={[styles.toggleButton, shuffleEnabled && styles.toggleButtonActive]}>
+          <Text style={[styles.toggleButtonText, shuffleEnabled && styles.toggleButtonTextActive]}>
             {shuffleEnabled ? 'ON' : 'OFF'}
           </Text>
         </View>

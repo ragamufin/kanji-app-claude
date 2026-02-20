@@ -8,14 +8,7 @@ import { View, Text, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Icon, IconName } from './Icon';
 import { useAnimatedPress } from '../utils/animations';
-import {
-  useThemedStyles,
-  spacing,
-  borderRadius,
-  typography,
-  fonts,
-  getShadow,
-} from '../theme';
+import { useThemedStyles, spacing, borderRadius, typography, fonts, getShadow } from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface HomeActionCardProps {
@@ -125,28 +118,18 @@ export function HomeActionCard({
             style={[
               isHero ? styles.iconContainer : styles.compactIconContainer,
               {
-                backgroundColor: accentColor
-                  ? accentColor + '18'
-                  : 'rgba(128,128,128,0.1)',
+                backgroundColor: accentColor ? accentColor + '18' : 'rgba(128,128,128,0.1)',
               },
             ]}
           >
-            <Icon
-              name={icon}
-              size={isHero ? 20 : 16}
-              color={accentColor || '#888'}
-            />
+            <Icon name={icon} size={isHero ? 20 : 16} color={accentColor || '#888'} />
           </View>
           {badge}
         </View>
         <View>
-          <Text style={isHero ? styles.heroTitle : styles.compactTitle}>
-            {title}
-          </Text>
+          <Text style={isHero ? styles.heroTitle : styles.compactTitle}>{title}</Text>
           {subtitle && (
-            <Text style={isHero ? styles.heroSubtitle : styles.compactSubtitle}>
-              {subtitle}
-            </Text>
+            <Text style={isHero ? styles.heroSubtitle : styles.compactSubtitle}>{subtitle}</Text>
           )}
         </View>
       </Pressable>

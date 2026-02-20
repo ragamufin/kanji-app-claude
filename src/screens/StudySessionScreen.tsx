@@ -4,14 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Modal,
-  useWindowDimensions,
-} from 'react-native';
+import { View, Text, ScrollView, Pressable, Modal, useWindowDimensions } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { KanjiVGData } from '../data/kanjiVGTypes';
@@ -198,14 +191,10 @@ export function StudySessionScreen() {
 
       if (isSRS) {
         // For SRS, filter to only due cards + some new cards
-        const dueChars = new Set(
-          getDueCards(fsrsCards).map((c) => c.character)
-        );
+        const dueChars = new Set(getDueCards(fsrsCards).map((c) => c.character));
         const dueKanji = kanjiData.filter((k) => dueChars.has(k.character));
         // Add a few new cards
-        const newKanji = kanjiData
-          .filter((k) => !dueChars.has(k.character))
-          .slice(0, 5);
+        const newKanji = kanjiData.filter((k) => !dueChars.has(k.character)).slice(0, 5);
         setDeck([...dueKanji, ...newKanji]);
       } else {
         setDeck(kanjiData);
@@ -213,7 +202,9 @@ export function StudySessionScreen() {
       setLoading(false);
     };
     loadDeck();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [kanjiCharacters, isSRS, fsrsCards]);
 
   const session = useStudySession({
@@ -250,9 +241,7 @@ export function StudySessionScreen() {
   if (loading || deck.length === 0) {
     return (
       <View style={[styles.container, styles.completeContainer]}>
-        <Text style={styles.completeTitle}>
-          {loading ? 'Loading...' : 'No cards to study'}
-        </Text>
+        <Text style={styles.completeTitle}>{loading ? 'Loading...' : 'No cards to study'}</Text>
         <Pressable style={styles.doneButton} onPress={() => navigation.goBack()}>
           <Text style={styles.doneButtonText}>Go Back</Text>
         </Pressable>
@@ -269,9 +258,7 @@ export function StudySessionScreen() {
         </View>
         <Text style={styles.completeTitle}>Session Complete!</Text>
         <Text style={styles.completeSubtitle}>
-          {isSRS
-            ? 'Great job reviewing your kanji!'
-            : 'You studied all the cards in your deck.'}
+          {isSRS ? 'Great job reviewing your kanji!' : 'You studied all the cards in your deck.'}
         </Text>
         <View style={styles.completeStat}>
           <Text style={styles.completeStatLabel}>Cards reviewed</Text>
@@ -279,15 +266,10 @@ export function StudySessionScreen() {
         </View>
         <View style={styles.completeStat}>
           <Text style={styles.completeStatLabel}>Session type</Text>
-          <Text style={styles.completeStatValue}>
-            {isSRS ? 'SRS Review' : 'Study'}
-          </Text>
+          <Text style={styles.completeStatValue}>{isSRS ? 'SRS Review' : 'Study'}</Text>
         </View>
         <Pressable
-          style={({ pressed }) => [
-            styles.doneButton,
-            { opacity: pressed ? 0.85 : 1 },
-          ]}
+          style={({ pressed }) => [styles.doneButton, { opacity: pressed ? 0.85 : 1 }]}
           onPress={() => navigation.navigate('Home')}
         >
           <Text style={styles.doneButtonText}>Done</Text>
@@ -309,23 +291,15 @@ export function StudySessionScreen() {
           {session.currentIndex + 1} / {session.totalCards}
         </Text>
         <View style={styles.progressTrack}>
-          <View
-            style={[styles.progressFill, { width: `${progress * 100}%` }]}
-          />
+          <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
         </View>
-        <Pressable
-          style={styles.exitButton}
-          onPress={() => navigation.goBack()}
-        >
+        <Pressable style={styles.exitButton} onPress={() => navigation.goBack()}>
           <Text style={styles.exitText}>Exit</Text>
         </Pressable>
       </View>
 
       {/* Card */}
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <StudyCard
           kanji={currentCard}
           mode={session.effectiveMode}

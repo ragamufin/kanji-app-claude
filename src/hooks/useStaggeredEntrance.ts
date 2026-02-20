@@ -40,7 +40,7 @@ export function useStaggeredItemStyle(
   index: number,
   progress: SharedValue<number>,
   delayMs = 50,
-  translateY = 12,
+  translateY = 12
 ) {
   return useAnimatedStyle(() => {
     const delay = index * delayMs;

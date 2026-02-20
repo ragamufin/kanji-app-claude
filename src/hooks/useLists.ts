@@ -53,7 +53,9 @@ export function useLists(): UseListsResult {
         setLoading(false);
       }
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   const createList = useCallback(

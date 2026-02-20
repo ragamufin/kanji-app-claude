@@ -10,7 +10,15 @@ import {
 } from '../data/kanjiDataService';
 import { useKanjiList } from '../hooks/useKanjiList';
 import { Icon } from './Icon';
-import { spacing, borderRadius, typography, fonts, getShadow, useTheme, useThemedStyles } from '../theme';
+import {
+  spacing,
+  borderRadius,
+  typography,
+  fonts,
+  getShadow,
+  useTheme,
+  useThemedStyles,
+} from '../theme';
 import { ColorScheme } from '../theme/colors';
 
 interface KanjiBrowserProps {
@@ -165,7 +173,11 @@ function KanjiCard({
 }
 
 /** Toggle a value in/out of an array (by equality check). */
-function toggleInArray<T>(arr: T[], value: T, eq: (a: T, b: T) => boolean = (a, b) => a === b): T[] {
+function toggleInArray<T>(
+  arr: T[],
+  value: T,
+  eq: (a: T, b: T) => boolean = (a, b) => a === b
+): T[] {
   const idx = arr.findIndex((v) => eq(v, value));
   if (idx >= 0) {
     return [...arr.slice(0, idx), ...arr.slice(idx + 1)];

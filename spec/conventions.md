@@ -59,7 +59,7 @@ Decisions made, algorithms chosen, edge cases handled.
 
 - Use latest stable versions of all libraries
 - Pin major versions in package.json (`^` prefix is fine)
-- Run `npx tsc --noEmit` after adding/updating dependencies
+- Run `bunx tsc --noEmit` after adding/updating dependencies
 
 ### TypeScript
 
@@ -128,17 +128,17 @@ describe('strokeUtils @task-003', () => {
 
 - **Unit/Component**: `jest-expo` + `@testing-library/react-native`
 - **E2E**: Playwright against Expo web build
-- **Type checking**: `npx tsc --noEmit`
-- **Linting**: `npm run lint`
+- **Type checking**: `bunx tsc --noEmit`
+- **Linting**: `bun run lint`
 
 ### Running Tests
 
 ```bash
-npm test                    # All unit + component tests
-npm run test:e2e            # Playwright E2E (headless)
-npm run test:e2e:headed     # Playwright E2E (headed)
-npx tsc --noEmit            # Type check
-npm run lint                # ESLint
+bun test                    # All unit + component tests
+bun run test:e2e            # Playwright E2E (headless)
+bun run test:e2e:headed     # Playwright E2E (headed)
+bunx tsc --noEmit           # Type check
+bun run lint                # ESLint
 ```
 
 ## GitHub Workflow

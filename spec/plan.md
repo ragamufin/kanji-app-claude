@@ -257,7 +257,7 @@ tests/
 ### Tools
 
 - **Unit/Component**: jest-expo + @testing-library/react-native
-- **E2E**: Playwright against `npx expo start --web`
+- **E2E**: Playwright against `bunx expo start --web`
 - **Traceability**: `@task-NNN` tags in every describe/it block
 
 ### Coverage Priorities

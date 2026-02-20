@@ -11,11 +11,7 @@ import {
   getNewCards,
   gradeCard,
 } from '../utils/spacedRepetition';
-import {
-  getAllCardStates,
-  updateCardState,
-  ensureCardStates,
-} from '../data/fsrsStorage';
+import { getAllCardStates, updateCardState, ensureCardStates } from '../data/fsrsStorage';
 
 interface UseFSRSResult {
   /** All card states */
@@ -54,7 +50,9 @@ export function useFSRS(): UseFSRSResult {
         setLoading(false);
       }
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   const dueCards = getDueCards(cards);
@@ -71,9 +69,7 @@ export function useFSRS(): UseFSRSResult {
       const { cardState: updated } = gradeCard(cardState, rating);
       await updateCardState(updated);
 
-      setCards((prev) =>
-        prev.map((c) => (c.character === character ? updated : c))
-      );
+      setCards((prev) => prev.map((c) => (c.character === character ? updated : c)));
 
       return updated;
     },

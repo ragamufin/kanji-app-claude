@@ -3,13 +3,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Pressable,
-  Alert,
-} from 'react-native';
+import { View, Text, FlatList, Pressable, Alert } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -167,29 +161,16 @@ export function ListsScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Pressable
-            style={({ pressed }) => [
-              styles.listItem,
-              { opacity: pressed ? 0.9 : 1 },
-            ]}
-            onPress={() =>
-              navigation.navigate('ListDetail', { listId: item.id })
-            }
+            style={({ pressed }) => [styles.listItem, { opacity: pressed ? 0.9 : 1 }]}
+            onPress={() => navigation.navigate('ListDetail', { listId: item.id })}
           >
             <View style={styles.listInfo}>
               <Text style={styles.listName}>{item.name}</Text>
-              <Text style={styles.listMeta}>
-                {item.characters.length} kanji
-              </Text>
+              <Text style={styles.listMeta}>{item.characters.length} kanji</Text>
             </View>
             <Pressable
               style={styles.deleteButton}
-              onPress={() =>
-                handleDelete(
-                  item.id,
-                  item.name,
-                  item.characters.length === 0
-                )
-              }
+              onPress={() => handleDelete(item.id, item.name, item.characters.length === 0)}
               hitSlop={8}
             >
               <Icon name="x" size={16} color={colors.error} />
@@ -201,8 +182,7 @@ export function ListsScreen() {
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
-            No lists yet. Tap + to create one, or add kanji from the Browse
-            screen.
+            No lists yet. Tap + to create one, or add kanji from the Browse screen.
           </Text>
         }
         contentContainerStyle={{ paddingBottom: 100 }}

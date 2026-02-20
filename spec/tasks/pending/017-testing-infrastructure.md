@@ -31,8 +31,8 @@ Set up testing infrastructure for the project. Install jest-expo, @testing-libra
 - [ ] jest-expo and @testing-library/react-native installed
 - [ ] Playwright installed and configured
 - [ ] Test directory structure created
-- [ ] `npm test` runs unit + component tests
-- [ ] `npm run test:e2e` runs Playwright tests
+- [ ] `bun test` runs unit + component tests
+- [ ] `bun run test:e2e` runs Playwright tests
 - [ ] Smoke test passes for each test type
 - [ ] TypeScript types for test utilities configured
 

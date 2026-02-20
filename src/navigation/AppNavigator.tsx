@@ -45,26 +45,14 @@ export function AppNavigator() {
         animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="Practice"
         component={PracticeScreen}
         options={{ title: 'Free Practice', headerShown: false }}
       />
-      <Stack.Screen
-        name="Browse"
-        component={BrowseScreen}
-        options={{ title: 'Browse Kanji' }}
-      />
-      <Stack.Screen
-        name="Progress"
-        component={ProgressScreen}
-        options={{ title: 'Progress' }}
-      />
+      <Stack.Screen name="Browse" component={BrowseScreen} options={{ title: 'Browse Kanji' }} />
+      <Stack.Screen name="Progress" component={ProgressScreen} options={{ title: 'Progress' }} />
       <Stack.Screen
         name="StudySetup"
         component={StudySetupScreen}
@@ -80,21 +68,9 @@ export function AppNavigator() {
           gestureEnabled: false,
         }}
       />
-      <Stack.Screen
-        name="Lists"
-        component={ListsScreen}
-        options={{ title: 'My Lists' }}
-      />
-      <Stack.Screen
-        name="ListDetail"
-        component={ListDetailScreen}
-        options={{ title: 'List' }}
-      />
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{ title: 'Settings' }}
-      />
+      <Stack.Screen name="Lists" component={ListsScreen} options={{ title: 'My Lists' }} />
+      <Stack.Screen name="ListDetail" component={ListDetailScreen} options={{ title: 'List' }} />
+      <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
     </Stack.Navigator>
   );
 }

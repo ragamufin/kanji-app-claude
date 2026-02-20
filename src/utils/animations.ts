@@ -3,11 +3,7 @@
  */
 
 import { useCallback } from 'react';
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 const PRESS_SPRING_CONFIG = {
   damping: 15,

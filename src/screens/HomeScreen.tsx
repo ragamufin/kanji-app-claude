@@ -134,13 +134,11 @@ export function HomeScreen() {
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([getKanjiStats(), getPracticeRecords()]).then(
-      ([statsMap, records]) => {
-        if (cancelled) return;
-        setKanjiCount(statsMap.size);
-        setTotalAttempts(records.length);
-      }
-    );
+    Promise.all([getKanjiStats(), getPracticeRecords()]).then(([statsMap, records]) => {
+      if (cancelled) return;
+      setKanjiCount(statsMap.size);
+      setTotalAttempts(records.length);
+    });
     return () => {
       cancelled = true;
     };
@@ -156,10 +154,7 @@ export function HomeScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Kanji</Text>
         <Pressable
-          style={({ pressed }) => [
-            styles.settingsButton,
-            { opacity: pressed ? 0.7 : 1 },
-          ]}
+          style={({ pressed }) => [styles.settingsButton, { opacity: pressed ? 0.7 : 1 }]}
           onPress={() => navigation.navigate('Settings')}
         >
           <Icon name="settings" size={20} color={colors.secondary} />

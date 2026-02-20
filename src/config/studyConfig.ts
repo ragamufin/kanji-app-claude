@@ -9,12 +9,7 @@ export type StudyMode = 'regular' | 'reverse' | 'random';
 export type SessionType = 'study' | 'srs';
 
 /** Session state machine states */
-export type SessionState =
-  | 'setup'
-  | 'front_shown'
-  | 'revealed'
-  | 'practicing'
-  | 'session_complete';
+export type SessionState = 'setup' | 'front_shown' | 'revealed' | 'practicing' | 'session_complete';
 
 /** Default new cards per SRS session */
 export const DEFAULT_NEW_CARDS_PER_SESSION = 20;

@@ -108,11 +108,7 @@ export function ValidationMessage({ result }: ValidationMessageProps) {
       ]}
     >
       <View style={styles.titleRow}>
-        <Icon
-          name={overallMatch ? 'check-circle' : 'x-circle'}
-          size={20}
-          color={statusColor}
-        />
+        <Icon name={overallMatch ? 'check-circle' : 'x-circle'} size={20} color={statusColor} />
         <Text style={[styles.title, { color: statusColor }]}>
           {overallMatch ? 'Great work!' : 'Keep practicing'}
         </Text>

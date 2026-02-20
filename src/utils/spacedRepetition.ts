@@ -55,10 +55,7 @@ export function createNewCardState(character: string): FSRSCardState {
 }
 
 /** Get a grade result from the repeat output */
-function getGradeResult(
-  preview: ReturnType<FSRS['repeat']>,
-  rating: Rating
-): RecordLogItem {
+function getGradeResult(preview: ReturnType<FSRS['repeat']>, rating: Rating): RecordLogItem {
   // ts-fsrs IPreview is indexed by Rating enum values (1-4)
   return (preview as unknown as Record<number, RecordLogItem>)[rating];
 }
@@ -84,10 +81,7 @@ export function gradeCard(
 }
 
 /** Preview scheduling for all grades (used to show intervals on buttons) */
-export function previewGrades(
-  state: FSRSCardState,
-  now: Date = new Date()
-): Record<number, Card> {
+export function previewGrades(state: FSRSCardState, now: Date = new Date()): Record<number, Card> {
   const f = getScheduler();
   const result = f.repeat(state.card, now);
   return {
@@ -109,20 +103,14 @@ export function isNewCard(state: FSRSCardState): boolean {
 }
 
 /** Get due cards from a collection, sorted by due date (most overdue first) */
-export function getDueCards(
-  cards: FSRSCardState[],
-  now: Date = new Date()
-): FSRSCardState[] {
+export function getDueCards(cards: FSRSCardState[], now: Date = new Date()): FSRSCardState[] {
   return cards
     .filter((c) => isDue(c, now))
     .sort((a, b) => new Date(a.card.due).getTime() - new Date(b.card.due).getTime());
 }
 
 /** Get count of due cards */
-export function getDueCount(
-  cards: FSRSCardState[],
-  now: Date = new Date()
-): number {
+export function getDueCount(cards: FSRSCardState[], now: Date = new Date()): number {
   return cards.filter((c) => isDue(c, now)).length;
 }
 

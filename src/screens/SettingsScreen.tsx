@@ -5,12 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { StrokeMode } from '../utils/strokeUtils';
-import {
-  getPreferences,
-  savePreferences,
-  UserPreferences,
-  clearAllData,
-} from '../data/storage';
+import { getPreferences, savePreferences, UserPreferences, clearAllData } from '../data/storage';
 import { clearFSRSData } from '../data/fsrsStorage';
 import { clearListData } from '../data/listStorage';
 import {
@@ -154,13 +149,10 @@ export function SettingsScreen() {
     getPreferences().then(setPrefs);
   }, []);
 
-  const updatePref = useCallback(
-    async (update: Partial<UserPreferences>) => {
-      await savePreferences(update);
-      setPrefs((prev) => (prev ? { ...prev, ...update } : prev));
-    },
-    []
-  );
+  const updatePref = useCallback(async (update: Partial<UserPreferences>) => {
+    await savePreferences(update);
+    setPrefs((prev) => (prev ? { ...prev, ...update } : prev));
+  }, []);
 
   const handleClearPractice = useCallback(() => {
     Alert.alert(
@@ -199,21 +191,17 @@ export function SettingsScreen() {
   }, []);
 
   const handleClearLists = useCallback(() => {
-    Alert.alert(
-      'Delete All Lists',
-      'This will delete all custom lists. This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            await clearListData();
-            Alert.alert('Done', 'All lists deleted.');
-          },
+    Alert.alert('Delete All Lists', 'This will delete all custom lists. This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          await clearListData();
+          Alert.alert('Done', 'All lists deleted.');
         },
-      ]
-    );
+      },
+    ]);
   }, []);
 
   if (!prefs) return null;
@@ -231,21 +219,13 @@ export function SettingsScreen() {
               return (
                 <Pressable
                   key={value}
-                  style={[
-                    styles.optionChip,
-                    selected && styles.optionChipSelected,
-                  ]}
+                  style={[styles.optionChip, selected && styles.optionChipSelected]}
                   onPress={() => {
                     setThemeMode(value);
                     updatePref({ themeMode: value });
                   }}
                 >
-                  <Text
-                    style={[
-                      styles.optionText,
-                      selected && styles.optionTextSelected,
-                    ]}
-                  >
+                  <Text style={[styles.optionText, selected && styles.optionTextSelected]}>
                     {label}
                   </Text>
                 </Pressable>
@@ -266,18 +246,10 @@ export function SettingsScreen() {
               return (
                 <Pressable
                   key={value}
-                  style={[
-                    styles.optionChip,
-                    selected && styles.optionChipSelected,
-                  ]}
+                  style={[styles.optionChip, selected && styles.optionChipSelected]}
                   onPress={() => updatePref({ strokeMode: value })}
                 >
-                  <Text
-                    style={[
-                      styles.optionText,
-                      selected && styles.optionTextSelected,
-                    ]}
-                  >
+                  <Text style={[styles.optionText, selected && styles.optionTextSelected]}>
                     {label}
                   </Text>
                 </Pressable>
@@ -298,18 +270,10 @@ export function SettingsScreen() {
               return (
                 <Pressable
                   key={n}
-                  style={[
-                    styles.optionChip,
-                    selected && styles.optionChipSelected,
-                  ]}
+                  style={[styles.optionChip, selected && styles.optionChipSelected]}
                   onPress={() => updatePref({ dailyNewCardLimit: n })}
                 >
-                  <Text
-                    style={[
-                      styles.optionText,
-                      selected && styles.optionTextSelected,
-                    ]}
-                  >
+                  <Text style={[styles.optionText, selected && styles.optionTextSelected]}>
                     {n}
                   </Text>
                 </Pressable>
@@ -325,20 +289,10 @@ export function SettingsScreen() {
         <View style={[styles.row, styles.rowFirst]}>
           <Text style={styles.rowLabel}>Confirm before deleting items</Text>
           <Pressable
-            style={[
-              styles.toggleButton,
-              prefs.deleteConfirmation && styles.toggleActive,
-            ]}
-            onPress={() =>
-              updatePref({ deleteConfirmation: !prefs.deleteConfirmation })
-            }
+            style={[styles.toggleButton, prefs.deleteConfirmation && styles.toggleActive]}
+            onPress={() => updatePref({ deleteConfirmation: !prefs.deleteConfirmation })}
           >
-            <Text
-              style={[
-                styles.toggleText,
-                prefs.deleteConfirmation && styles.toggleTextActive,
-              ]}
-            >
+            <Text style={[styles.toggleText, prefs.deleteConfirmation && styles.toggleTextActive]}>
               {prefs.deleteConfirmation ? 'ON' : 'OFF'}
             </Text>
           </Pressable>
@@ -348,10 +302,7 @@ export function SettingsScreen() {
       {/* Data */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Data</Text>
-        <Pressable
-          style={[styles.destructiveRow, styles.rowFirst]}
-          onPress={handleClearPractice}
-        >
+        <Pressable style={[styles.destructiveRow, styles.rowFirst]} onPress={handleClearPractice}>
           <Text style={styles.destructiveText}>Clear Practice Data</Text>
         </Pressable>
         <Pressable style={styles.destructiveRow} onPress={handleClearSRS}>

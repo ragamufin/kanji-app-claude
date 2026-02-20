@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Text, View, ScrollView, Pressable, ActivityIndicator, useWindowDimensions } from 'react-native';
+import {
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+  useWindowDimensions,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { KanjiCanvas } from '../components/KanjiCanvas';
@@ -8,7 +15,15 @@ import { Icon, IconName } from '../components/Icon';
 import { KanjiVGData, CanvasMode } from '../data/kanjiVGTypes';
 import { StrokeMode } from '../utils/strokeUtils';
 import { useKanjiList } from '../hooks/useKanjiList';
-import { useTheme, fonts, spacing, borderRadius, typography, getShadow, useThemedStyles } from '../theme';
+import {
+  useTheme,
+  fonts,
+  spacing,
+  borderRadius,
+  typography,
+  getShadow,
+  useThemedStyles,
+} from '../theme';
 import { ColorScheme } from '../theme/colors';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
@@ -165,7 +180,10 @@ export function PracticeScreen() {
         <Icon name={isDark ? 'sun' : 'moon'} size={20} color={colors.secondary} />
       </Pressable>
 
-      <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Kanji Display */}
         <View style={styles.kanjiDisplaySection}>
           <Text style={styles.kanjiCharacter}>{activeKanji.character}</Text>
@@ -197,11 +215,7 @@ export function PracticeScreen() {
                 ]}
                 onPress={() => setCanvasMode(mode)}
               >
-                <Icon
-                  name={icon}
-                  size={14}
-                  color={isActive ? colors.accentText : colors.muted}
-                />
+                <Icon name={icon} size={14} color={isActive ? colors.accentText : colors.muted} />
                 <Text
                   style={[
                     styles.modeButtonText,
